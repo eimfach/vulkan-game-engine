@@ -16,16 +16,13 @@ namespace bm {
 	}
 
 	std::vector<char> Pipeline::read_file(const std::string& filepath) {
-		std::ifstream file{ filepath, std::ios::ate, std::ios::binary };
+		std::ifstream file{ filepath, std::ios::binary };
 
 		if (!file.is_open()) {
 			throw std::runtime_error("Failed to open file: " + filepath);
 		}
 
-		const size_t file_size = static_cast<size_t>(file.tellg());
-		std::vector<char> buffer(file_size);
-		file.seekg(0);
-		file.read(buffer.data(), static_cast<std::streamsize>(file_size));
+		std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
 
 		file.close();
 		return buffer;
