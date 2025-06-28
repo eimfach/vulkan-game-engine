@@ -27,6 +27,7 @@ namespace bm {
 		void operator= (const Pipeline&) = delete;
 
 		static PipelineConfig defaultCfg(uint32_t width, uint32_t height);
+		void bind(VkCommandBuffer command_buffer);
 
 	private:
 		Device& device;

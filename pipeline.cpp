@@ -39,6 +39,11 @@ namespace bm {
 		}
 	}
 
+	void Pipeline::bind(VkCommandBuffer command_buffer) {
+		vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, gpuPipeline);
+
+	}
+
 	void Pipeline::createGraphicsPipeline(const PipelineConfig& cfg, const std::string& vertex_filepath, const std::string& fragment_filepath) {
 		assert(cfg.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline: no pipeline layout provided in config");
 		assert(cfg.renderPass != VK_NULL_HANDLE && "Cannot create graphics pipeline: no pipeline layout provided in config");
