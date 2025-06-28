@@ -169,4 +169,29 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ItemDefinitionGroup>
+    <CustomBuildStep>
+      <Command>glslc.exe --target-env=vulkan1.0 --target-spv=spv1.0 $(ProjectDir)shaders\simple_shader.vert -o $(ProjectDir)\shaders\simple_shader.vert.spv</Command>
+      <Outputs>$(ProjectDir)\shaders\simple_shader.vert.spv</Outputs>
+      <Inputs>$(ProjectDir)\shaders\simple_shader.vert</Inputs>
+      <Message>Compiled simple_shader.vert</Message>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <CustomBuildStep>
+      <Command>glslc.exe --target-env=vulkan1.0 --target-spv=spv1.0 $(ProjectDir)shaders\simple_shader.frag -o $(ProjectDir)\shaders\simple_shader.frag.spv</Command>
+      <Outputs>$(ProjectDir)\shaders\simple_shader.frag.spv</Outputs>
+      <Inputs>$(ProjectDir)\shaders\simple_shader.frag</Inputs>
+      <Message>Compiled simple_shader.frag</Message>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <CustomBuildStep>
+      <Command>$(ProjectDir)task\compile_shaders.bat</Command>
+      <Message>Compiled Shaders</Message>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <PropertyGroup>
+  <CustomBuildAfterTargets>ClCompile</CustomBuildAfterTargets>
+  </PropertyGroup>
 </Project>
