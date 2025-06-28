@@ -39,6 +39,9 @@
     <ClCompile Include="swap_chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vertex_model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.hpp">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="swap_chain.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vertex_model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

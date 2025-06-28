@@ -3,6 +3,7 @@
 #include "window.hpp"
 #include "pipeline.hpp"
 #include "swap_chain.hpp"
+#include "vertex_model.hpp"
 
 // std
 #include <memory>
@@ -30,10 +31,13 @@ namespace bm {
 		VkPipelineLayout pipelineLayout;
 		
 		std::unique_ptr<Pipeline> pipeline;
+		std::unique_ptr<VertexModel> vertexModel;
+
 		std::vector<VkCommandBuffer> commandBuffers;
 
 		//Pipeline pipeline{ device, Pipeline::defaultCfg(WIDTH, HEIGHT), "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv"};
 
+		void loadModels();
 		void createPipelineLayout();
 		void createPipeline();
 		void createCommandBuffers();

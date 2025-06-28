@@ -8,6 +8,7 @@
 namespace bm {
 
 	FirstApp::FirstApp() {
+		loadModels();
 		createPipelineLayout();
 		createPipeline();
 		createCommandBuffers();
@@ -25,6 +26,17 @@ namespace bm {
 
 		vkDeviceWaitIdle(device.device());
 	}
+
+	void FirstApp::loadModels() {
+		float y{ 0.45 };
+		std::vector<VertexModel::Vertex> verticies{
+			{{0.0f, -y}, {1.0f, 0.0f, 0.0f}},
+			{{y, y}, {0.0f, 1.0f, 0.0f}},
+			{{-y, y}, {0.0f, 0.0f, 1.0f}},
+		};
+
+		vertexModel = std::make_unique<VertexModel>(device, verticies);
+	};
 
 	void FirstApp::createPipelineLayout() {
 		VkPipelineLayoutCreateInfo pipeline_layout_info{};
@@ -80,8 +92,9 @@ namespace bm {
 
 			vkCmdBeginRenderPass(commandBuffers[i], &render_pass, VK_SUBPASS_CONTENTS_INLINE);
 			pipeline->bind(commandBuffers[i]);
+			vertexModel->bind(commandBuffers[i]);
+			vertexModel->draw(commandBuffers[i]);
 
-			vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
 			vkCmdEndRenderPass(commandBuffers[i]);
 			
 			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {

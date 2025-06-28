@@ -1,4 +1,5 @@
 #include "pipeline.hpp"
+#include "vertex_model.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -74,12 +75,15 @@ namespace bm {
 		shader_stages[1].pNext = nullptr;
 		shader_stages[1].pSpecializationInfo = nullptr;
 
+		auto v_bindings = VertexModel::Vertex::getBindingDescriptions();
+		auto v_attributes = VertexModel::Vertex::getAttributeDescriptions();
+
 		VkPipelineVertexInputStateCreateInfo vertex_input{};
 		vertex_input.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertex_input.vertexAttributeDescriptionCount = 0;
-		vertex_input.vertexBindingDescriptionCount = 0;
-		vertex_input.pVertexAttributeDescriptions = nullptr;
-		vertex_input.pVertexBindingDescriptions = nullptr;
+		vertex_input.vertexAttributeDescriptionCount = static_cast<uint32_t>(v_attributes.size());
+		vertex_input.vertexBindingDescriptionCount = static_cast<uint32_t>(v_bindings.size());;
+		vertex_input.pVertexAttributeDescriptions = v_attributes.data();
+		vertex_input.pVertexBindingDescriptions = v_bindings.data();
 
 		VkPipelineViewportStateCreateInfo viewport{};
 		// combine viewport and scissor
