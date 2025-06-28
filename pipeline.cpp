@@ -84,6 +84,17 @@ namespace bm {
 		viewport.scissorCount = 1;
 		viewport.pScissors = &cfg.scissor;
 
+		VkPipelineColorBlendStateCreateInfo color_blend_info{};
+		color_blend_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		color_blend_info.logicOpEnable = VK_FALSE;
+		color_blend_info.logicOp = VK_LOGIC_OP_COPY;  // Optional
+		color_blend_info.attachmentCount = 1;
+		color_blend_info.pAttachments = &cfg.colorBlendAttachment;
+		color_blend_info.blendConstants[0] = 0.0f;  // Optional
+		color_blend_info.blendConstants[1] = 0.0f;  // Optional
+		color_blend_info.blendConstants[2] = 0.0f;  // Optional
+		color_blend_info.blendConstants[3] = 0.0f;  // Optional
+
 		VkGraphicsPipelineCreateInfo pipeline{};
 		pipeline.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipeline.stageCount = 2;
@@ -93,7 +104,7 @@ namespace bm {
 		pipeline.pViewportState = &viewport;
 		pipeline.pRasterizationState = &cfg.rasterizationInfo;
 		pipeline.pMultisampleState = &cfg.multisampleInfo;
-		pipeline.pColorBlendState = &cfg.colorBlendInfo;
+		pipeline.pColorBlendState = &color_blend_info;
 		pipeline.pDepthStencilState = &cfg.depthStencilInfo;
 		pipeline.pDynamicState = nullptr;
 
@@ -164,16 +175,6 @@ namespace bm {
 		cfg.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
 		cfg.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
 		cfg.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
-
-		cfg.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-		cfg.colorBlendInfo.logicOpEnable = VK_FALSE;
-		cfg.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY;  // Optional
-		cfg.colorBlendInfo.attachmentCount = 1;
-		cfg.colorBlendInfo.pAttachments = &cfg.colorBlendAttachment;
-		cfg.colorBlendInfo.blendConstants[0] = 0.0f;  // Optional
-		cfg.colorBlendInfo.blendConstants[1] = 0.0f;  // Optional
-		cfg.colorBlendInfo.blendConstants[2] = 0.0f;  // Optional
-		cfg.colorBlendInfo.blendConstants[3] = 0.0f;  // Optional
 
 		cfg.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 		cfg.depthStencilInfo.depthTestEnable = VK_TRUE;
