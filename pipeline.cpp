@@ -85,14 +85,6 @@ namespace bm {
 		vertex_input.pVertexAttributeDescriptions = v_attributes.data();
 		vertex_input.pVertexBindingDescriptions = v_bindings.data();
 
-		VkPipelineViewportStateCreateInfo viewport{};
-		// combine viewport and scissor
-		viewport.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewport.viewportCount = 1;
-		viewport.pViewports = &cfg.viewport;
-		viewport.scissorCount = 1;
-		viewport.pScissors = &cfg.scissor;
-
 		VkPipelineColorBlendStateCreateInfo color_blend_info{};
 		color_blend_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		color_blend_info.logicOpEnable = VK_FALSE;
@@ -110,12 +102,12 @@ namespace bm {
 		pipeline.pStages = shader_stages;
 		pipeline.pVertexInputState = &vertex_input;
 		pipeline.pInputAssemblyState = &cfg.inputAssemblyInfo;
-		pipeline.pViewportState = &viewport;
+		pipeline.pViewportState = &cfg.viewportInfo;
 		pipeline.pRasterizationState = &cfg.rasterizationInfo;
 		pipeline.pMultisampleState = &cfg.multisampleInfo;
 		pipeline.pColorBlendState = &color_blend_info;
 		pipeline.pDepthStencilState = &cfg.depthStencilInfo;
-		pipeline.pDynamicState = nullptr;
+		pipeline.pDynamicState = &cfg.dynamicStateInfo;
 
 		pipeline.layout = cfg.pipelineLayout;
 		pipeline.renderPass = cfg.renderPass;
@@ -130,27 +122,19 @@ namespace bm {
 
 	}
 
-	PipelineConfig Pipeline::defaultCfg(uint32_t width, uint32_t height) {
-		PipelineConfig cfg{};
-
+	void Pipeline::defaultCfg(PipelineConfig& cfg) {
 		// INPUT ASSEMBLY STAGE
 
 		cfg.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		cfg.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		cfg.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
-		// how to transistion our gl_Position (from the vertex shader code) values to the output images
-		cfg.viewport.x = 0.0f;
-		cfg.viewport.y = 0.0f;
-		cfg.viewport.width = static_cast<float>(width);
-		cfg.viewport.height = static_cast<float>(height);
-		// z-component of gl_Position:
-		cfg.viewport.minDepth = 0.0f;
-		cfg.viewport.maxDepth = 1.0f;
-
-		// discard/cut pixels
-		cfg.scissor.offset = { 0, 0 };
-		cfg.scissor.extent = { width, height };
+		// combine viewport and scissor
+		cfg.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		cfg.viewportInfo.viewportCount = 1;
+		cfg.viewportInfo.pViewports = nullptr;
+		cfg.viewportInfo.scissorCount = 1;
+		cfg.viewportInfo.pScissors = nullptr;
 
 		// RASTERIZATION STAGE
 
@@ -196,7 +180,11 @@ namespace bm {
 		cfg.depthStencilInfo.front = {};  // Optional
 		cfg.depthStencilInfo.back = {};   // Optional
 
-		return cfg;
+		cfg.dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+		cfg.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		cfg.dynamicStateInfo.pDynamicStates = cfg.dynamicStateEnables.data();
+		cfg.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(cfg.dynamicStateEnables.size());
+		cfg.dynamicStateInfo.flags = 0;
 	}
 	
 }

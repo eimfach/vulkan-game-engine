@@ -1,9 +1,8 @@
 #pragma once
 
 #include "window.hpp"
-#include "pipeline.hpp"
-#include "swap_chain.hpp"
-#include "vertex_model.hpp"
+#include "rendering.hpp"
+#include "vertex_base.hpp"
 
 // std
 #include <memory>
@@ -16,7 +15,6 @@ namespace bm {
 		static constexpr int HEIGHT = 600;
 
 		FirstApp();
-		~FirstApp();
 
 		// delete copy constructor and copy operator
 		FirstApp(const FirstApp&) = delete;
@@ -25,22 +23,9 @@ namespace bm {
 		void run();
 
 	private:
-		Window window{WIDTH, HEIGHT, "Hello Vulkan!"};
-		Device device{ window };
-		SwapChain swapChain{ device, window.getExtent() };
-		VkPipelineLayout pipelineLayout;
-		
-		std::unique_ptr<Pipeline> pipeline;
-		std::unique_ptr<VertexModel> vertexModel;
-
-		std::vector<VkCommandBuffer> commandBuffers;
-
-		//Pipeline pipeline{ device, Pipeline::defaultCfg(WIDTH, HEIGHT), "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv"};
+		Rendering rendering{};
+		std::vector<VertexBase> verticies;
 
 		void loadModels();
-		void createPipelineLayout();
-		void createPipeline();
-		void createCommandBuffers();
-		void drawFrame();
 	};
 }

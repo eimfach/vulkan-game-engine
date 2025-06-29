@@ -1,6 +1,7 @@
 #pragma once
 
 #include "device.hpp"
+#include "vertex_base.hpp"
 
 // libs
 // don't use degrees, force use radians
@@ -15,15 +16,12 @@ namespace bm {
 	class VertexModel {
 	public:
 
-		struct Vertex {
-			glm::vec2 position;
-			glm::vec3 color;
-
+		struct Vertex : VertexBase {
 			static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
 			static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 		};
 
-		VertexModel(Device& device, const std::vector<Vertex>& verticies);
+		VertexModel(Device& device, const std::vector<VertexBase>& verticies);
 		~VertexModel();
 
 		// delete copy constructor and copy operator
@@ -39,6 +37,6 @@ namespace bm {
 		VkDeviceMemory vertexMemory;
 		uint32_t vertexCount;
 
-		void createVertexBuffers(const std::vector<Vertex>& verticies);
+		void createVertexBuffers(const std::vector<VertexBase>& verticies);
 	};
 }

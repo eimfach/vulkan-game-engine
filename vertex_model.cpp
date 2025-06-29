@@ -6,7 +6,7 @@
 #include <stdexcept>
 
 namespace bm {
-	VertexModel::VertexModel(Device& device, const std::vector<Vertex>& verticies) : device{device} {
+	VertexModel::VertexModel(Device& device, const std::vector<VertexBase>& verticies) : device{device} {
 		createVertexBuffers(verticies);
 	}
 	VertexModel::~VertexModel() {
@@ -14,7 +14,7 @@ namespace bm {
 		vkFreeMemory(device.device(), vertexMemory, nullptr);
 	}
 
-	void VertexModel::createVertexBuffers(const std::vector<Vertex>& verticies) {
+	void VertexModel::createVertexBuffers(const std::vector<VertexBase>& verticies) {
 		vertexCount = static_cast<uint32_t>(verticies.size());
 		assert(vertexCount >= 3 && "Vertex count must be at least 3");
 

@@ -7,8 +7,11 @@
 
 namespace bm {
 	struct PipelineConfig {
-		VkViewport viewport;
-		VkRect2D scissor;
+		PipelineConfig() = default;
+		PipelineConfig(const PipelineConfig&) = delete;
+		PipelineConfig& operator=(const PipelineConfig&) = delete;
+
+		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 		VkPipelineMultisampleStateCreateInfo multisampleInfo;
@@ -16,6 +19,10 @@ namespace bm {
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
 		VkPipelineLayout pipelineLayout = nullptr;
 		VkRenderPass renderPass = nullptr;
+
+		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+		std::vector<VkDynamicState> dynamicStateEnables;
+
 		uint32_t subpass = 0;
 	};
 
@@ -23,10 +30,11 @@ namespace bm {
 	public:
 		Pipeline(Device& device, const PipelineConfig& cfg, const std::string& vertex_filepath, const std::string& fragment_filepath);
 		~Pipeline();
-		Pipeline(const Pipeline&) = delete;
-		void operator= (const Pipeline&) = delete;
 
-		static PipelineConfig defaultCfg(uint32_t width, uint32_t height);
+		Pipeline(const Pipeline&) = delete;
+		Pipeline& operator=(const Pipeline&) = delete;
+
+		static void defaultCfg(PipelineConfig& cfg);
 		void bind(VkCommandBuffer command_buffer);
 
 	private:

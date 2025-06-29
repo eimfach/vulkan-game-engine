@@ -42,6 +42,9 @@
     <ClCompile Include="vertex_model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rendering.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.hpp">
@@ -62,6 +65,12 @@
     <ClInclude Include="vertex_model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="rendering.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vertex_base.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple_shader.vert">
@@ -73,5 +82,6 @@
     <None Include="shaders\simple_shader.frag">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

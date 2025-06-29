@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="bm::Pipeline">
+    <Position X="2" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQACAIAAAIEAAAAAQAAAAAAAAAAAAAAkAgIAAAA=</HashCode>
+      <FileName>pipeline.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="bm::FirstApp">
+    <Position X="5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAEAgAiAAAAAgQBBAAAAACAAAUAAAAIogAgMABAAAA=</HashCode>
+      <FileName>first_app.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

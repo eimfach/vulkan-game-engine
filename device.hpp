@@ -34,10 +34,10 @@ class Device {
   ~Device();
 
   // Not copyable or movable
-  Device(const Device &) = delete;
-  void operator= (const Device &) = delete;
+  Device(const Device&) = delete;
+  Device& operator=(const Device&) = delete;
   Device(Device &&) = delete;
-  Device &operator= (Device &&) = delete;
+  Device &operator=(Device &&) = delete;
 
   VkCommandPool getCommandPool() { return commandPool; }
   VkDevice device() { return device_; }
