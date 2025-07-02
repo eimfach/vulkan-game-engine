@@ -9,7 +9,7 @@
 #include <set>
 #include <stdexcept>
 
-namespace bm {
+namespace Biosim::Engine {
 
 SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent)
     : device{ deviceRef }, windowExtent{ extent } {

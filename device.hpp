@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace bm {
+namespace Biosim::Engine {
 
 struct SwapChainSupportDetails {
   VkSurfaceCapabilitiesKHR capabilities;
@@ -30,7 +30,7 @@ class Device {
   const bool enableValidationLayers = true;
 #endif
 
-  Device(bm::Window &window);
+  Device(Window &window);
   ~Device();
 
   // Not copyable or movable
@@ -93,7 +93,7 @@ class Device {
   VkInstance instance;
   VkDebugUtilsMessengerEXT debugMessenger;
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-  bm::Window &window;
+  Window &window;
   VkCommandPool commandPool;
 
   VkDevice device_;

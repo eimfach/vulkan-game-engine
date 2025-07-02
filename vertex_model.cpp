@@ -5,7 +5,7 @@
 #include <cstring>
 #include <stdexcept>
 
-namespace bm {
+namespace Biosim::Engine {
 	VertexModel::VertexModel(Device& device, const std::vector<VertexBase>& verticies) : device{device} {
 		createVertexBuffers(verticies);
 	}
@@ -65,6 +65,12 @@ namespace bm {
 		attribute_descriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attribute_descriptions[1].offset = offsetof(Vertex, color);
 
+		// extend to add new input variables for shader
+		// attribute_descriptions[1].binding = 0;
+		// attribute_descriptions[1].location = 2;
+		// attribute_descriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		// attribute_descriptions[1].offset = offsetof(Vertex, rotation);
+		// 
 		//return {
 		//	{0,0,VK_FORMAT_R32G32_SFLOAT,offsetof(Vertex, position)},
 		//	{0,1,VK_FORMAT_R32G32B32_SFLOAT,offsetof(Vertex, color)}

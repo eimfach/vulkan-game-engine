@@ -2,7 +2,7 @@
 
 #include <glm.hpp>
 
-namespace bm {
+namespace Biosim::Engine {
 	struct VertexBase {
 		glm::vec2 position;
 		glm::vec3 color;

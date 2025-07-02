@@ -1,14 +1,14 @@
 #pragma once
 
-#include "window.hpp"
-#include "rendering.hpp"
+#include "renderer.hpp"
 #include "vertex_base.hpp"
+#include "game_object.hpp"
 
 // std
 #include <memory>
 #include <vector>
 
-namespace bm {
+namespace Biosim {
 	class FirstApp {
 	public:
 		static constexpr int WIDTH = 800;
@@ -23,9 +23,9 @@ namespace bm {
 		void run();
 
 	private:
-		Rendering rendering{};
-		std::vector<VertexBase> verticies;
+		Engine::Renderer rendering{};
+		std::vector<GameObject> gameObjects;
 
-		void loadModels();
+		void loadGameObjects();
 	};
 }

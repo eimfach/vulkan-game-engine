@@ -42,7 +42,7 @@
     <ClCompile Include="vertex_model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rendering.cpp">
+    <ClCompile Include="renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,10 +65,13 @@
     <ClInclude Include="vertex_model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rendering.hpp">
+    <ClInclude Include="renderer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vertex_base.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game_object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

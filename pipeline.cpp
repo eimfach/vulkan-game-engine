@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cassert>
 
-namespace bm {
+namespace Biosim::Engine {
 	Pipeline::Pipeline(Device& device, const PipelineConfig& cfg, const std::string& vertex_filepath, const std::string& fragment_filepath) : device{device} {
 		createGraphicsPipeline(cfg, vertex_filepath, fragment_filepath);
 	}

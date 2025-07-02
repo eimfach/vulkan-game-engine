@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace bm {
+namespace Biosim::Engine {
 	class Window {
 	
 	public:

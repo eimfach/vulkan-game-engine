@@ -6,7 +6,7 @@
 #include <set>
 #include <unordered_set>
 
-namespace bm {
+namespace Biosim::Engine {
 
 // local callback functions
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
@@ -47,7 +47,7 @@ void DestroyDebugUtilsMessengerEXT(
 }
 
 // class member functions
-Device::Device(bm::Window &window) : window{window} {
+Device::Device(Window &window) : window{window} {
   createInstance();
   setupDebugMessenger();
   createSurface();

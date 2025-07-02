@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace bm {
+namespace Biosim::Engine {
 	struct PipelineConfig {
 		PipelineConfig() = default;
 		PipelineConfig(const PipelineConfig&) = delete;

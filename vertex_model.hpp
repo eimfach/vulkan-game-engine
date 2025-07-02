@@ -12,7 +12,7 @@
 // std
 #include <vector>
 
-namespace bm {
+namespace Biosim::Engine {
 	class VertexModel {
 	public:
 

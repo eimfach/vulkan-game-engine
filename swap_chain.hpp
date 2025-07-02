@@ -10,7 +10,7 @@
 #include <vector>
 #include <memory>
 
-namespace bm {
+namespace Biosim::Engine {
 
 class SwapChain {
  public:
