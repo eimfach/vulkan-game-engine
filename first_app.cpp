@@ -1,10 +1,17 @@
 #include "first_app.hpp"
 
+#include "simple_render_system.hpp"
+
+// libs
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm.hpp>
 #include <gtc/constants.hpp>
 
 //std
 #include <stdexcept>
 #include <array>
+#include <cassert>
 
 namespace Biosim {
 
@@ -12,16 +19,26 @@ namespace Biosim {
 		loadGameObjects();
 	}
 
+	FirstApp::~FirstApp() {}
+
 	void FirstApp::run() {
-		while (!rendering.windowShouldClose()) {
+		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass() };
+
+		while (!renderer.windowShouldClose()) {
 			glfwPollEvents();
 			for (auto& obj : gameObjects) {
 				obj.transform2D.rotation = glm::mod(obj.transform2D.rotation + 0.01f, glm::two_pi<float>());
 			}
-			rendering.drawFrame(gameObjects);
+
+			if (auto cmd_buffer = renderer.beginFrame()) {
+				renderer.beginSwapChainRenderPass(cmd_buffer);
+				render_system.renderObjects(gameObjects, cmd_buffer);
+				renderer.endSwapChainRenderPass(cmd_buffer);
+				renderer.endFrame();
+			}
 		}
 
-		rendering.deviceWaitIdle();
+		renderer.deviceWaitIdle();
 	}
 
 	void FirstApp::loadGameObjects() {
@@ -32,7 +49,7 @@ namespace Biosim {
 			{{-y, y}, {0.0f, 0.0f, 1.0f}},
 		};
 
-		auto vertex_model = rendering.createVertexModel(verticies);
+		auto vertex_model = renderer.createVertexModel(verticies);
 		auto triangle = GameObject::createGameObject();
 		triangle.model = vertex_model;
 		triangle.color = { .2f, .8f, .2f };
@@ -42,5 +59,4 @@ namespace Biosim {
 
 		gameObjects.push_back(std::move(triangle));
 	}
-
 }
