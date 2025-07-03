@@ -4,7 +4,7 @@
 
 namespace Biosim::Engine {
 	struct VertexBase {
-		glm::vec2 position;
+		glm::vec3 position;
 		glm::vec3 color;
 	};
 }

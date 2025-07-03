@@ -13,9 +13,8 @@
 namespace Biosim::Engine {
 
 	struct SimplePushConstantData {
-		glm::mat2 transform{ 1.f };
-		glm::vec2 offset;
-		glm::float32 rotation{};
+		glm::mat4 transform{ 1.f };
+		alignas(16) glm::vec3 rotation{};
 		alignas(16) glm::vec3 color;
 	};
 
@@ -61,10 +60,9 @@ namespace Biosim::Engine {
 
 		for (auto& obj : objects) {
 			SimplePushConstantData push{};
-			push.offset = obj.transform2D.translation;
 			push.color = obj.color;
-			push.transform = obj.transform2D.mat2();
-			push.rotation = obj.transform2D.rotation;
+			push.transform = obj.transform.mat4();
+			push.rotation = obj.transform.rotation;
 
 			vkCmdPushConstants(cmd_buffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,

@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 #include <cassert>
+#include <iostream>
 
 namespace Biosim::Engine {
 	class Renderer {
@@ -45,7 +46,7 @@ namespace Biosim::Engine {
 		void deviceWaitIdle();
 		bool windowShouldClose();
 		std::shared_ptr<Biosim::Engine::VertexModel> createVertexModel(const std::vector<VertexBase>& verticies);
-
+		std::shared_ptr<VertexModel> Renderer::createCubeModel(glm::vec3 offset);
 	private:
 		Window& window;
 		Device& device;
