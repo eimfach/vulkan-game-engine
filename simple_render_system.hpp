@@ -1,5 +1,6 @@
 #pragma once
 
+#include "camera.hpp"
 #include "device.hpp"
 #include "game_object.hpp"
 #include "pipeline.hpp"
@@ -18,7 +19,11 @@ namespace Biosim::Engine {
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 		SimpleRenderSystem& operator= (const SimpleRenderSystem&) = delete;
 
-		void renderObjects(const std::vector<GameObject>& objects, VkCommandBuffer cmd_buffer);
+		void renderObjects(
+			const std::vector<GameObject>& objects,
+			VkCommandBuffer cmd_buffer,
+			const Camera& camera
+			);
 
 	private:
 		Device& device;

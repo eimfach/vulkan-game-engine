@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="device.cpp" />
     <ClCompile Include="first_app.cpp" />
     <ClCompile Include="main.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="pipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.hpp" />
     <ClInclude Include="device.hpp" />
     <ClInclude Include="game_object.hpp" />
     <ClInclude Include="pipeline.hpp" />

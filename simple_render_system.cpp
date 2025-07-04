@@ -55,13 +55,17 @@ namespace Biosim::Engine {
 		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv");
 	}
 
-	void SimpleRenderSystem::renderObjects(const std::vector<GameObject>& objects, VkCommandBuffer cmd_buffer) {
+	void SimpleRenderSystem::renderObjects(
+		const std::vector<GameObject>& objects,
+		VkCommandBuffer cmd_buffer,
+		const Camera& camera) {
+
 		pipeline->bind(cmd_buffer);
 
 		for (auto& obj : objects) {
 			SimplePushConstantData push{};
 			push.color = obj.color;
-			push.transform = obj.transform.mat4();
+			push.transform = camera.getProjection() * obj.transform.mat4();
 			push.rotation = obj.transform.rotation;
 
 			vkCmdPushConstants(cmd_buffer,
