@@ -62,10 +62,12 @@ namespace Biosim::Engine {
 
 		pipeline->bind(cmd_buffer);
 
+		auto projection_view = camera.getProjection() * camera.getView();
+
 		for (auto& obj : objects) {
 			SimplePushConstantData push{};
 			push.color = obj.color;
-			push.transform = camera.getProjection() * obj.transform.mat4();
+			push.transform = projection_view * obj.transform.mat4();
 			push.rotation = obj.transform.rotation;
 
 			vkCmdPushConstants(cmd_buffer,
