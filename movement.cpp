@@ -37,7 +37,7 @@ namespace Biosim::Engine {
 		if (glm::dot(move_dir, move_dir) > std::numeric_limits<float>::epsilon()) {
 			// scale rotate with lookspeed and delta time (frame time unindepentent) 
 			// and normalize the rotation vector to be even in speed in all directions (diagonal is faster)
-			game_obj.transform.translation += lookSpeed * delta * glm::normalize(move_dir);
+			game_obj.transform.translation += moveSpeed * delta * glm::normalize(move_dir);
 		}
 	}
 }

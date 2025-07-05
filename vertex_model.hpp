@@ -21,7 +21,12 @@ namespace Biosim::Engine {
 			static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 		};
 
-		VertexModel(Device& device, const std::vector<VertexBase>& verticies);
+		struct Builder {
+			std::vector<VertexBase> verticies{};
+			std::vector<uint32_t> indicies{};
+		};
+
+		VertexModel(Device& device, const VertexModel::Builder& builder);
 		~VertexModel();
 
 		// delete copy constructor and copy operator
@@ -37,6 +42,12 @@ namespace Biosim::Engine {
 		VkDeviceMemory vertexMemory;
 		uint32_t vertexCount;
 
+		bool hasIndexBuffer{ false };
+		VkBuffer indexBuffer;
+		VkDeviceMemory indexMemory;
+		uint32_t indexCount;
+
 		void createVertexBuffers(const std::vector<VertexBase>& verticies);
+		void createIndexBuffers(const std::vector<uint32_t>& indicies);
 	};
 }

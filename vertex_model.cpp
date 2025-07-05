@@ -6,12 +6,18 @@
 #include <stdexcept>
 
 namespace Biosim::Engine {
-	VertexModel::VertexModel(Device& device, const std::vector<VertexBase>& verticies) : device{device} {
-		createVertexBuffers(verticies);
+	VertexModel::VertexModel(Device& device, const VertexModel::Builder& builder) : device{device} {
+		createVertexBuffers(builder.verticies);
+		createIndexBuffers(builder.indicies);
 	}
 	VertexModel::~VertexModel() {
 		vkDestroyBuffer(device.device(), vertexBuffer, nullptr);
 		vkFreeMemory(device.device(), vertexMemory, nullptr);
+
+		if (hasIndexBuffer) {
+			vkDestroyBuffer(device.device(), indexBuffer, nullptr);
+			vkFreeMemory(device.device(), indexMemory, nullptr);
+		}
 	}
 
 	void VertexModel::createVertexBuffers(const std::vector<VertexBase>& verticies) {
@@ -35,14 +41,49 @@ namespace Biosim::Engine {
 		vkUnmapMemory(device.device(), vertexMemory);
 	}
 
+	void VertexModel::createIndexBuffers(const std::vector<uint32_t>& indicies) {
+		indexCount = static_cast<uint32_t>(indicies.size());
+		hasIndexBuffer = indexCount > 0;
+
+		if (!hasIndexBuffer) {
+			return;
+		}
+
+		VkDeviceSize buffer_size = sizeof(indicies[0]) * indexCount;
+		device.createBuffer(
+			buffer_size,
+			VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			indexBuffer,
+			indexMemory
+		);
+
+		void* data;
+		if (vkMapMemory(device.device(), indexMemory, 0, buffer_size, 0, &data) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to map vertex buffer and memory !");
+		}
+		memcpy(data, indicies.data(), static_cast<size_t>(buffer_size));
+		vkUnmapMemory(device.device(), indexMemory);
+	}
+
 	void VertexModel::draw(VkCommandBuffer cmd_buffer) {
-		vkCmdDraw(cmd_buffer, vertexCount, 1, 0, 0);
+		if (hasIndexBuffer) {
+			vkCmdDrawIndexed(cmd_buffer, indexCount, 1, 0, 0, 0);
+		}
+		else {
+			vkCmdDraw(cmd_buffer, vertexCount, 1, 0, 0);
+		}
 	}
 
 	void VertexModel::bind(VkCommandBuffer cmd_buffer) {
 		VkBuffer buffers[] = { vertexBuffer };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(cmd_buffer, 0, 1, buffers, offsets);
+
+		if (hasIndexBuffer) {
+			// for small models you can safe memory by using a smaller index type
+			vkCmdBindIndexBuffer(cmd_buffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+		}
 	}
 
 	std::vector<VkVertexInputBindingDescription> VertexModel::Vertex::getBindingDescriptions() {

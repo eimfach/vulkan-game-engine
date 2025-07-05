@@ -145,67 +145,61 @@ namespace Biosim::Engine {
 	}
 
 	std::shared_ptr<Biosim::Engine::VertexModel> Renderer::createVertexModel(const std::vector<VertexBase>& verticies) {
-		auto vertex_model = std::make_shared<VertexModel>(device, verticies);
+		VertexModel::Builder model_builder{};
+		model_builder.verticies = verticies;
+
+		auto vertex_model = std::make_shared<VertexModel>(device, model_builder);
 		return vertex_model;
 	}
 
 	// temporary helper function, creates a 1x1x1 cube centered at offset
 	std::shared_ptr<VertexModel> Renderer::createCubeModel(glm::vec3 offset) {
-		std::vector<Engine::VertexBase> vertices{
+		VertexModel::Builder model_builder{};
 
+		model_builder.verticies = {
 			// left face (white)
 			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
 			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
 			{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
-			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
 			{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
-			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
 
 			// right face (yellow)
 			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
 			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
 			{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
-			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
 			{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
 
 			// top face (orange, remember y axis points down)
 			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
 			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
 			{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
-			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
 			{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
-			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
 
 			// bottom face (red)
 			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
 			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
 			{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
-			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
 			{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
-			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
 
 			// nose face (blue)
 			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
 			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
 			{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
-			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
 			{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
-			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
 
 			// tail face (green)
 			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
 			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
 			{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
 			{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
-			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
-
 		};
-		for (auto& v : vertices) {
+		model_builder.indicies = { 0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
+						12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21 };
+		
+		for (auto& v : model_builder.verticies) {
 			v.position += offset;
 		}
-		return std::make_unique<VertexModel>(device, vertices);
+		return std::make_shared<VertexModel>(device, model_builder);
 	}
 
 	void Renderer::deviceWaitIdle() {

@@ -40,6 +40,7 @@ namespace Biosim {
 			auto new_time = std::chrono::high_resolution_clock::now();
 			float frame_delta_time = std::chrono::duration<float, std::ratio<1>>(new_time - current_time).count();
 			current_time = new_time;
+			//frame_delta_time = glm::min(frame_delta_time, MAX_FRAME_TIME);
 
 			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, camera_state);
 			camera.setViewYXZ(camera_state.transform.translation, camera_state.transform.rotation);

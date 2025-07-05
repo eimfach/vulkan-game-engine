@@ -19,7 +19,7 @@ namespace Biosim::Engine {
             int lookDown = GLFW_KEY_DOWN;
 		};
 
-        void moveInPlaneXZ(GLFWwindow* window, float dt, GameObject& game_obj);
+        void moveInPlaneXZ(GLFWwindow* window, float delta, GameObject& game_obj);
 
         KeyMappings keys{};
         float moveSpeed{ 3.f };
