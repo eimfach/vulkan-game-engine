@@ -1,5 +1,6 @@
 #include "first_app.hpp"
 
+#include "movement.hpp"
 #include "simple_render_system.hpp"
 #include "camera.hpp"
 
@@ -13,6 +14,9 @@
 #include <stdexcept>
 #include <array>
 #include <cassert>
+#include <chrono>
+#include <ratio>
+#include <iostream>
 
 namespace Biosim {
 
@@ -25,20 +29,23 @@ namespace Biosim {
 	void FirstApp::run() {
 		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass() };
 		Engine::Camera camera{};
-		/*camera.setViewDirection(glm::vec3{ 0.f }, glm::vec3(0.5f, 0.f, 1.f));*/
 		camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{0.f, 0.f, 2.5f});
+		auto camera_state = GameObject::createGameObject();
+		Engine::MovementControl camera_control{};
+		auto current_time = std::chrono::high_resolution_clock::now();
 
 		while (!renderer.windowShouldClose()) {
 			glfwPollEvents();
 
-			float aspect = renderer.getAspectRatio();
-			//camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
-			camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 20.f);
+			auto new_time = std::chrono::high_resolution_clock::now();
+			float frame_delta_time = std::chrono::duration<float, std::ratio<1>>(new_time - current_time).count();
+			current_time = new_time;
 
-			for (auto& obj : gameObjects) {
-				obj.transform.rotation.y = glm::mod(obj.transform.rotation.y + 0.01f, glm::two_pi<float>());
-				obj.transform.rotation.x = glm::mod(obj.transform.rotation.x + 0.005f, glm::two_pi<float>());
-			}
+			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, camera_state);
+			camera.setViewYXZ(camera_state.transform.translation, camera_state.transform.rotation);
+
+			float aspect = renderer.getAspectRatio();
+			camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 20.f);
 
 			if (auto cmd_buffer = renderer.beginFrame()) {
 				renderer.beginSwapChainRenderPass(cmd_buffer);

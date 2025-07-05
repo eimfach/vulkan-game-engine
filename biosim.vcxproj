@@ -150,6 +150,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="device.cpp" />
     <ClCompile Include="first_app.cpp" />
+    <ClCompile Include="movement.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="simple_render_system.cpp" />
@@ -162,6 +163,7 @@
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="device.hpp" />
     <ClInclude Include="game_object.hpp" />
+    <ClInclude Include="movement.hpp" />
     <ClInclude Include="pipeline.hpp" />
     <ClInclude Include="renderer.hpp" />
     <ClInclude Include="simple_render_system.hpp" />

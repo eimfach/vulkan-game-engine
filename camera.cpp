@@ -53,7 +53,7 @@ namespace Biosim::Engine {
 		setViewDirection(position, target - position, up);
 	}
 
-	void Camera::setViewRotation(glm::vec3 position, glm::vec3 rotation) {
+	void Camera::setViewYXZ(glm::vec3 position, glm::vec3 rotation) {
 		const float c3 = glm::cos(rotation.z);
 		const float s3 = glm::sin(rotation.z);
 		const float c2 = glm::cos(rotation.x);
