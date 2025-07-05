@@ -25,20 +25,35 @@ namespace Biosim::Engine {
 		assert(vertexCount >= 3 && "Vertex count must be at least 3");
 
 		VkDeviceSize buffer_size = sizeof(verticies[0]) * vertexCount;
+		VkBuffer staging_buffer;
+		VkDeviceMemory staging_memory;
+
 		device.createBuffer(
 			buffer_size,
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			staging_buffer,
+			staging_memory
+		);
+
+		void* data;
+		if (vkMapMemory(device.device(), staging_memory, 0, buffer_size, 0, &data) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to map staging buffer and memory !");
+		}
+		memcpy(data, verticies.data(), static_cast<size_t>(buffer_size));
+		vkUnmapMemory(device.device(), staging_memory);
+
+		device.createBuffer(
+			buffer_size,
+			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			vertexBuffer,
 			vertexMemory
 		);
 
-		void* data;
-		if (vkMapMemory(device.device(), vertexMemory, 0, buffer_size, 0, &data) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to map vertex buffer and memory !");
-		}
-		memcpy(data, verticies.data(), static_cast<size_t>(buffer_size));
-		vkUnmapMemory(device.device(), vertexMemory);
+		device.copyBuffer(staging_buffer, vertexBuffer, buffer_size);
+		vkDestroyBuffer(device.device(), staging_buffer, nullptr);
+		vkFreeMemory(device.device(), staging_memory, nullptr);
 	}
 
 	void VertexModel::createIndexBuffers(const std::vector<uint32_t>& indicies) {
@@ -50,20 +65,35 @@ namespace Biosim::Engine {
 		}
 
 		VkDeviceSize buffer_size = sizeof(indicies[0]) * indexCount;
+		VkBuffer staging_buffer;
+		VkDeviceMemory staging_memory;
+
 		device.createBuffer(
 			buffer_size,
-			VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			staging_buffer,
+			staging_memory
+		);
+
+		void* data;
+		if (vkMapMemory(device.device(), staging_memory, 0, buffer_size, 0, &data) != VK_SUCCESS) {
+			throw std::runtime_error("Failed to map staging buffer and memory !");
+		}
+		memcpy(data, indicies.data(), static_cast<size_t>(buffer_size));
+		vkUnmapMemory(device.device(), staging_memory);
+
+		device.createBuffer(
+			buffer_size,
+			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			indexBuffer,
 			indexMemory
 		);
 
-		void* data;
-		if (vkMapMemory(device.device(), indexMemory, 0, buffer_size, 0, &data) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to map vertex buffer and memory !");
-		}
-		memcpy(data, indicies.data(), static_cast<size_t>(buffer_size));
-		vkUnmapMemory(device.device(), indexMemory);
+		device.copyBuffer(staging_buffer, indexBuffer, buffer_size);
+		vkDestroyBuffer(device.device(), staging_buffer, nullptr);
+		vkFreeMemory(device.device(), staging_memory, nullptr);
 	}
 
 	void VertexModel::draw(VkCommandBuffer cmd_buffer) {
