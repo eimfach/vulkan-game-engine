@@ -56,12 +56,11 @@ namespace Biosim::Engine {
 
 	void SimpleRenderSystem::renderObjects(
 		const std::vector<GameObject>& objects,
-		VkCommandBuffer cmd_buffer,
-		const Camera& camera) {
+		Frame& frame) {
 
-		pipeline->bind(cmd_buffer);
+		pipeline->bind(frame.cmdBuffer);
 
-		auto projection_view = camera.getProjection() * camera.getView();
+		auto projection_view = frame.camera.getProjection() * frame.camera.getView();
 
 		for (auto& obj : objects) {
 			SimplePushConstantData push{};
@@ -70,13 +69,13 @@ namespace Biosim::Engine {
 			//push.normalMatrix = obj.transform.normalMatrix();
 			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
 
-			vkCmdPushConstants(cmd_buffer,
+			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
 				sizeof(SimplePushConstantData),
 				&push);
-			obj.model->bind(cmd_buffer);
-			obj.model->draw(cmd_buffer);
+			obj.model->bind(frame.cmdBuffer);
+			obj.model->draw(frame.cmdBuffer);
 		}
 	}
 }

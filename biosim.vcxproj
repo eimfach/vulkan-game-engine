@@ -165,6 +165,7 @@
     <ClInclude Include="buffer.hpp" />
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="device.hpp" />
+    <ClInclude Include="frame.hpp" />
     <ClInclude Include="game_object.hpp" />
     <ClInclude Include="movement.hpp" />
     <ClInclude Include="pipeline.hpp" />

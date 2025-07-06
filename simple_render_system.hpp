@@ -4,6 +4,7 @@
 #include "device.hpp"
 #include "game_object.hpp"
 #include "pipeline.hpp"
+#include "frame.hpp"
 
 // std
 #include <memory>
@@ -21,8 +22,7 @@ namespace Biosim::Engine {
 
 		void renderObjects(
 			const std::vector<GameObject>& objects,
-			VkCommandBuffer cmd_buffer,
-			const Camera& camera
+			Frame& frame
 			);
 
 	private:

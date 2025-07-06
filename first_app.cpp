@@ -3,6 +3,7 @@
 #include "movement.hpp"
 #include "simple_render_system.hpp"
 #include "camera.hpp"
+#include "buffer.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -19,6 +20,10 @@
 #include <iostream>
 
 namespace Biosim {
+	struct GlobalUniformBufferOutput {
+		glm::mat4 projectionView{ 1.f };
+		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 1.f, -3.f, -1.f });
+	};
 
 	FirstApp::FirstApp() {
 		loadGameObjects();
@@ -27,6 +32,16 @@ namespace Biosim {
 	FirstApp::~FirstApp() {}
 
 	void FirstApp::run() {
+		Engine::Buffer global_ubo_buffer{
+			device,
+			sizeof(GlobalUniformBufferOutput),
+			Engine::SwapChain::MAX_FRAMES_IN_FLIGHT,
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+			device.properties.limits.minUniformBufferOffsetAlignment
+		};
+		global_ubo_buffer.map();
+
 		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass() };
 		Engine::Camera camera{};
 		camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 2.5f });
@@ -49,8 +64,17 @@ namespace Biosim {
 			camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 20.f);
 
 			if (auto cmd_buffer = renderer.beginFrame()) {
+				int frame_index = renderer.getFrameIndex();
+				Engine::Frame frame{frame_index, frame_delta_time, cmd_buffer, camera };
+				// update 
+				GlobalUniformBufferOutput ubo{};
+				ubo.projectionView = camera.getProjection() * camera.getView();
+				global_ubo_buffer.writeToIndex(&ubo, frame_index);
+				global_ubo_buffer.flushIndex(frame_index);
+
+				// render
 				renderer.beginSwapChainRenderPass(cmd_buffer);
-				render_system.renderObjects(gameObjects, cmd_buffer, camera);
+				render_system.renderObjects(gameObjects, frame);
 				renderer.endSwapChainRenderPass(cmd_buffer);
 				renderer.endFrame();
 			}
