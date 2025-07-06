@@ -144,14 +144,6 @@ namespace Biosim::Engine {
 		vkCmdEndRenderPass(cmd_buffer);
 	}
 
-	std::shared_ptr<Biosim::Engine::VertexModel> Renderer::createVertexModel(const std::vector<VertexBase>& verticies) {
-		VertexModel::Builder model_builder{};
-		model_builder.verticies = verticies;
-
-		auto vertex_model = std::make_shared<VertexModel>(device, model_builder);
-		return vertex_model;
-	}
-
 	// temporary helper function, creates a 1x1x1 cube centered at offset
 	std::shared_ptr<VertexModel> Renderer::createCubeModel(glm::vec3 offset) {
 		VertexModel::Builder model_builder{};

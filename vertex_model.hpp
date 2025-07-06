@@ -11,6 +11,7 @@
 
 // std
 #include <vector>
+#include <memory>
 
 namespace Biosim::Engine {
 	class VertexModel {
@@ -24,6 +25,8 @@ namespace Biosim::Engine {
 		struct Builder {
 			std::vector<VertexBase> verticies{};
 			std::vector<uint32_t> indicies{};
+
+			void loadModel(const std::string& filepath);
 		};
 
 		VertexModel(Device& device, const VertexModel::Builder& builder);
@@ -32,6 +35,8 @@ namespace Biosim::Engine {
 		// delete copy constructor and copy operator
 		VertexModel(const VertexModel&) = delete;
 		VertexModel& operator= (const VertexModel&) = delete;
+
+		static std::shared_ptr<VertexModel> createModelFromFile(Device& device, const std::string& filepath);
 
 		void bind(VkCommandBuffer cmd_buffer);
 		void draw(VkCommandBuffer cmd_buffer);

@@ -1,9 +1,29 @@
 #include "vertex_model.hpp"
 
+#include "utils.hpp"
+
+// libs
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <gtx/hash.hpp>
+
 // std
 #include <cassert>
 #include <cstring>
 #include <stdexcept>
+#include <unordered_map>
+
+namespace std {
+	template<>
+	struct hash<Biosim::Engine::VertexBase> {
+		size_t operator()(Biosim::Engine::VertexBase const &vertex) const {
+			size_t seed = 0;
+			Biosim::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+			return seed;
+		}
+	};
+}
 
 namespace Biosim::Engine {
 	VertexModel::VertexModel(Device& device, const VertexModel::Builder& builder) : device{device} {
@@ -18,6 +38,12 @@ namespace Biosim::Engine {
 			vkDestroyBuffer(device.device(), indexBuffer, nullptr);
 			vkFreeMemory(device.device(), indexMemory, nullptr);
 		}
+	}
+
+	std::shared_ptr<VertexModel> VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
+		Builder builder{};
+		builder.loadModel(filepath);
+		return std::make_shared<VertexModel>(device, builder);
 	}
 
 	void VertexModel::createVertexBuffers(const std::vector<VertexBase>& verticies) {
@@ -147,5 +173,66 @@ namespace Biosim::Engine {
 		//	{0,1,VK_FORMAT_R32G32B32_SFLOAT,offsetof(Vertex, color)}
 		//}
 		return attribute_descriptions;
+	}
+
+	void VertexModel::Builder::loadModel(const std::string& filepath) {
+		tinyobj::attrib_t attrib;
+		std::vector<tinyobj::shape_t> shapes;
+		std::vector<tinyobj::material_t> materials;
+		std::string warn;
+		std::string err;
+
+		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
+			throw std::runtime_error(warn + err);
+		}
+
+		verticies.clear();
+		indicies.clear();
+
+		std::unordered_map<VertexBase, uint32_t> unique_verticies{};
+		for (const auto& shape : shapes) {
+			for (const auto& index : shape.mesh.indices) {
+				VertexBase vertex{};
+
+				if (index.vertex_index >= 0) {
+					vertex.position = {
+						attrib.vertices[3 * index.vertex_index + 0],
+						attrib.vertices[3 * index.vertex_index + 1],
+						attrib.vertices[3 * index.vertex_index + 2]
+					};
+
+					auto color_index = 3 * index.vertex_index + 2;
+					if (color_index < attrib.colors.size()) {
+						vertex.color = {
+							attrib.vertices[color_index - 2],
+							attrib.vertices[color_index - 1],
+							attrib.vertices[color_index - 0]
+						};
+					}
+					else {
+						vertex.color = { 1.f, 1.f, 1.f };
+					}
+				}
+				if (index.normal_index >= 0) {
+					vertex.normal = {
+						attrib.normals[3 * index.normal_index + 0],
+						attrib.normals[3 * index.normal_index + 1],
+						attrib.normals[3 * index.normal_index + 2]
+					};
+				}
+				if (index.texcoord_index >= 0) {
+					vertex.uv = {
+						attrib.texcoords[2 * index.vertex_index + 0],
+						attrib.texcoords[2 * index.vertex_index + 1],
+					};
+				}
+
+				if (unique_verticies.count(vertex) == 0) {
+					unique_verticies[vertex] = static_cast<uint32_t>(verticies.size());
+					verticies.push_back(vertex);
+				}
+				indicies.push_back(unique_verticies[vertex]);
+			}
+		}
 	}
 }

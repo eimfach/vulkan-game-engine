@@ -60,11 +60,12 @@ namespace Biosim {
 	}
 
 	void FirstApp::loadGameObjects() {
-		auto cube_model = renderer.createCubeModel({.0f, .0f, .0f});
-		auto cube = GameObject::createGameObject();
-		cube.model = cube_model;
-		cube.transform.translation = { 0.f, 0.f, 2.5f };
-		cube.transform.scale = { .5f, .5f, .5f };
-		gameObjects.push_back(std::move(cube));
+		//auto cube_model = renderer.createCubeModel({.0f, .0f, .0f});
+		auto model = Engine::VertexModel::createModelFromFile(device, "models/smooth_vase.obj");
+		auto obj = GameObject::createGameObject();
+		obj.model = model;
+		obj.transform.translation = { 0.f, 0.f, 2.5f };
+		obj.transform.scale = glm::vec3{ 1.f };
+		gameObjects.push_back(std::move(obj));
 	}
 }
