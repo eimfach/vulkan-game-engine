@@ -1,6 +1,7 @@
 #pragma once
 
 #include "device.hpp"
+#include "buffer.hpp"
 #include "vertex_base.hpp"
 
 // libs
@@ -43,13 +44,12 @@ namespace Biosim::Engine {
 
 	private:
 		Device& device;
-		VkBuffer vertexBuffer;
-		VkDeviceMemory vertexMemory;
+
+		std::unique_ptr<Buffer> vertexBuffer;
 		uint32_t vertexCount;
 
 		bool hasIndexBuffer{ false };
-		VkBuffer indexBuffer;
-		VkDeviceMemory indexMemory;
+		std::unique_ptr<Buffer> indexBuffer;
 		uint32_t indexCount;
 
 		void createVertexBuffers(const std::vector<VertexBase>& verticies);

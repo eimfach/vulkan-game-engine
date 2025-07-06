@@ -30,15 +30,7 @@ namespace Biosim::Engine {
 		createVertexBuffers(builder.verticies);
 		createIndexBuffers(builder.indicies);
 	}
-	VertexModel::~VertexModel() {
-		vkDestroyBuffer(device.device(), vertexBuffer, nullptr);
-		vkFreeMemory(device.device(), vertexMemory, nullptr);
-
-		if (hasIndexBuffer) {
-			vkDestroyBuffer(device.device(), indexBuffer, nullptr);
-			vkFreeMemory(device.device(), indexMemory, nullptr);
-		}
-	}
+	VertexModel::~VertexModel() {}
 
 	std::shared_ptr<VertexModel> VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
 		Builder builder{};
@@ -51,35 +43,27 @@ namespace Biosim::Engine {
 		assert(vertexCount >= 3 && "Vertex count must be at least 3");
 
 		VkDeviceSize buffer_size = sizeof(verticies[0]) * vertexCount;
-		VkBuffer staging_buffer;
-		VkDeviceMemory staging_memory;
+		uint32_t vertex_size = sizeof(verticies[0]);
 
-		device.createBuffer(
-			buffer_size,
+		Buffer staging_buffer{
+			device,
+			vertex_size,
+			vertexCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			staging_buffer,
-			staging_memory
-		);
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+		};
 
-		void* data;
-		if (vkMapMemory(device.device(), staging_memory, 0, buffer_size, 0, &data) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to map staging buffer and memory !");
-		}
-		memcpy(data, verticies.data(), static_cast<size_t>(buffer_size));
-		vkUnmapMemory(device.device(), staging_memory);
+		staging_buffer.map();
+		staging_buffer.writeToBuffer((void *)verticies.data());
 
-		device.createBuffer(
-			buffer_size,
+		vertexBuffer = std::make_unique<Buffer>(
+			device,
+			vertex_size,
+			vertexCount,
 			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			vertexBuffer,
-			vertexMemory
-		);
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		device.copyBuffer(staging_buffer, vertexBuffer, buffer_size);
-		vkDestroyBuffer(device.device(), staging_buffer, nullptr);
-		vkFreeMemory(device.device(), staging_memory, nullptr);
+		device.copyBuffer(staging_buffer.getBuffer(), vertexBuffer->getBuffer(), buffer_size);
 	}
 
 	void VertexModel::createIndexBuffers(const std::vector<uint32_t>& indicies) {
@@ -91,35 +75,27 @@ namespace Biosim::Engine {
 		}
 
 		VkDeviceSize buffer_size = sizeof(indicies[0]) * indexCount;
-		VkBuffer staging_buffer;
-		VkDeviceMemory staging_memory;
+		uint32_t index_size = sizeof(indicies[0]);
 
-		device.createBuffer(
-			buffer_size,
+		Buffer staging_buffer{
+			device,
+			index_size,
+			indexCount,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			staging_buffer,
-			staging_memory
-		);
+		};
 
-		void* data;
-		if (vkMapMemory(device.device(), staging_memory, 0, buffer_size, 0, &data) != VK_SUCCESS) {
-			throw std::runtime_error("Failed to map staging buffer and memory !");
-		}
-		memcpy(data, indicies.data(), static_cast<size_t>(buffer_size));
-		vkUnmapMemory(device.device(), staging_memory);
+		staging_buffer.map();
+		staging_buffer.writeToBuffer((void*)indicies.data());
 
-		device.createBuffer(
-			buffer_size,
+		indexBuffer = std::make_unique<Buffer>(
+			device,
+			index_size,
+			indexCount,
 			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			indexBuffer,
-			indexMemory
-		);
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-		device.copyBuffer(staging_buffer, indexBuffer, buffer_size);
-		vkDestroyBuffer(device.device(), staging_buffer, nullptr);
-		vkFreeMemory(device.device(), staging_memory, nullptr);
+		device.copyBuffer(staging_buffer.getBuffer(), indexBuffer->getBuffer(), buffer_size);
 	}
 
 	void VertexModel::draw(VkCommandBuffer cmd_buffer) {
@@ -132,13 +108,13 @@ namespace Biosim::Engine {
 	}
 
 	void VertexModel::bind(VkCommandBuffer cmd_buffer) {
-		VkBuffer buffers[] = { vertexBuffer };
+		VkBuffer buffers[] = { vertexBuffer->getBuffer()};
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(cmd_buffer, 0, 1, buffers, offsets);
 
 		if (hasIndexBuffer) {
 			// for small models you can safe memory by using a smaller index type
-			vkCmdBindIndexBuffer(cmd_buffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+			vkCmdBindIndexBuffer(cmd_buffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		}
 	}
 
