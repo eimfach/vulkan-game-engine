@@ -3,8 +3,8 @@
 // libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm.hpp>
-#include <gtc/constants.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 #include <array>
 #include <cassert>
@@ -14,8 +14,7 @@ namespace Biosim::Engine {
 
 	struct SimplePushConstantData {
 		glm::mat4 transform{ 1.f };
-		alignas(16) glm::vec3 rotation{};
-		alignas(16) glm::vec3 color;
+		glm::mat4 normalMatrix{ 1.f };
 	};
 
 	SimpleRenderSystem::SimpleRenderSystem(Device& device, VkRenderPass render_pass) : device{device} {
@@ -66,9 +65,10 @@ namespace Biosim::Engine {
 
 		for (auto& obj : objects) {
 			SimplePushConstantData push{};
-			push.color = obj.color;
-			push.transform = projection_view * obj.transform.mat4();
-			push.rotation = obj.transform.rotation;
+			auto model_matrix = obj.transform.mat4();
+			push.transform = projection_view * model_matrix;
+			//push.normalMatrix = obj.transform.normalMatrix();
+			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
 
 			vkCmdPushConstants(cmd_buffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,

@@ -54,6 +54,9 @@
     <ClCompile Include="movement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game_object.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.hpp">
