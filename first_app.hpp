@@ -5,6 +5,7 @@
 #include "renderer.hpp"
 #include "vertex_base.hpp"
 #include "game_object.hpp"
+#include "descriptors.hpp"
 
 // std
 #include <memory>
@@ -30,6 +31,8 @@ namespace Biosim {
 		Engine::Device device{ window };
 		Engine::Renderer renderer{window, device};
 
+		// note: order of declaration matters (not if globalPool gets descructed in ~FirstApp which is the case; the pools need to be destroyed before the device)
+		std::unique_ptr<Engine::DescriptorPool> globalPool{};
 		std::vector<GameObject> gameObjects;
 
 		void loadGameObjects();

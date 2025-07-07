@@ -13,7 +13,7 @@
 namespace Biosim::Engine {
 	class SimpleRenderSystem {
 	public:
-		SimpleRenderSystem(Device& device, VkRenderPass render_pass);
+		SimpleRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);
 		~SimpleRenderSystem();
 
 		// delete copy constructor and copy operator
@@ -31,7 +31,7 @@ namespace Biosim::Engine {
 		VkPipelineLayout pipelineLayout;
 		std::unique_ptr<Engine::Pipeline> pipeline;
 
-		void createPipelineLayout();
+		void createPipelineLayout(VkDescriptorSetLayout global_set_layout);
 		void createPipeline(VkRenderPass render_pass);
 	};
 }

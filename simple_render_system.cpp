@@ -13,12 +13,12 @@
 namespace Biosim::Engine {
 
 	struct SimplePushConstantData {
-		glm::mat4 transform{ 1.f };
+		glm::mat4 modelMatrix{ 1.f };
 		glm::mat4 normalMatrix{ 1.f };
 	};
 
-	SimpleRenderSystem::SimpleRenderSystem(Device& device, VkRenderPass render_pass) : device{device} {
-		createPipelineLayout();
+	SimpleRenderSystem::SimpleRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout) : device{device} {
+		createPipelineLayout(global_set_layout);
 		createPipeline(render_pass);
 	}
 
@@ -26,16 +26,19 @@ namespace Biosim::Engine {
 		vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
 	}
 
-	void SimpleRenderSystem::createPipelineLayout() {
+	void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout global_set_layout) {
 		VkPushConstantRange push_constant_range{};
 		push_constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		push_constant_range.offset = 0;
 		push_constant_range.size = sizeof(SimplePushConstantData);
 
+		// the pipeline can have multiple descriptor set layouts
+		std::vector<VkDescriptorSetLayout> descriptor_set_layouts{ global_set_layout };
+
 		VkPipelineLayoutCreateInfo pipeline_layout_info{};
 		pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipeline_layout_info.setLayoutCount = 0;
-		pipeline_layout_info.pSetLayouts = nullptr;
+		pipeline_layout_info.setLayoutCount = static_cast<uint32_t>(descriptor_set_layouts.size());
+		pipeline_layout_info.pSetLayouts = descriptor_set_layouts.data();
 		pipeline_layout_info.pushConstantRangeCount = 1;
 		pipeline_layout_info.pPushConstantRanges = &push_constant_range;
 
@@ -60,12 +63,18 @@ namespace Biosim::Engine {
 
 		pipeline->bind(frame.cmdBuffer);
 
-		auto projection_view = frame.camera.getProjection() * frame.camera.getView();
+		vkCmdBindDescriptorSets(frame.cmdBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			pipelineLayout,
+			0, 1,
+			&frame.globalDescriptorSet,
+			0, nullptr
+		);
 
 		for (auto& obj : objects) {
 			SimplePushConstantData push{};
 			auto model_matrix = obj.transform.mat4();
-			push.transform = projection_view * model_matrix;
+			push.modelMatrix = model_matrix;
 			//push.normalMatrix = obj.transform.normalMatrix();
 			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
 

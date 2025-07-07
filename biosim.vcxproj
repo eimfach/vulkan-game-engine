@@ -156,6 +156,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="simple_render_system.cpp" />
+    <ClCompile Include="descriptors.cpp" />
     <ClCompile Include="swap_chain.cpp" />
     <ClCompile Include="vertex_model.cpp" />
     <ClCompile Include="window.cpp" />
@@ -164,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="buffer.hpp" />
     <ClInclude Include="camera.hpp" />
+    <ClInclude Include="descriptors.hpp" />
     <ClInclude Include="device.hpp" />
     <ClInclude Include="frame.hpp" />
     <ClInclude Include="game_object.hpp" />

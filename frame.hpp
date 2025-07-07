@@ -9,7 +9,8 @@ namespace Biosim::Engine {
 	struct Frame {
 		int frameIndex;
 		float delta;
-		VkCommandBuffer cmdBuffer;
 		Camera& camera;
+		VkCommandBuffer cmdBuffer;
+		VkDescriptorSet globalDescriptorSet;
 	};
 }
