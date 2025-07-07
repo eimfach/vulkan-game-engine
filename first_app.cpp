@@ -15,9 +15,26 @@
 #include <ratio>
 
 namespace Biosim {
+	// check alignment rules before making changes to buffer object structures
+	// https://www.oreilly.com/library/view/opengl-programming-guide/9780132748445/app09lev1sec2.html
 	struct GlobalUniformBufferOutput {
 		glm::mat4 projectionView{ 1.f };
-		glm::vec3 lightDirection = glm::normalize(glm::vec3{ 4.f, -3.f, -1.f });
+
+		// vec3 and vec4 needs to be aligned to 16 Bytesz
+		// Options: 
+		// 1. Place a padding member inbetween (tight packing by the host, cpu/gpu layout matching)
+		// vec3 A;
+		// uint32_t padding;
+		// vec4 B;
+		// 2. Instead of vec3 use a vec4 ignoring the w component 
+		// (avoiding any bugs in the external implementation; 
+		// Should not be a issue with Vulkan because Shaders are compiled to SPIR-V)
+		// 3. Use alignas(16) to fill up space between vec3 and vec4
+		glm::vec3 directionalLightPosition = { 4.f, -3.f, -1.f };
+		alignas(16) glm::vec4 directionalLightColor = { 0.f, 1.0f, .3f, 1.f }; // w is intensity
+		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .01f }; // w is intensity
+		glm::vec3 positionalLightPosition{ -1.f };
+		alignas(16) glm::vec4 positionalLightColor{ 1.f, 0.f, 0.f, 1.f }; // w is light intensity
 	};
 
 	FirstApp::FirstApp() {
@@ -62,8 +79,9 @@ namespace Biosim {
 		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass(), global_set_layout->getDescriptorSetLayout()};
 		
 		Engine::Camera camera{};
-		camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 2.5f });
+		//camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
 		auto camera_state = GameObject::createGameObject();
+		camera_state.transform.translation.z = -2.5f;
 		Engine::MovementControl camera_control{};
 
 		auto current_time = std::chrono::high_resolution_clock::now();
@@ -79,7 +97,7 @@ namespace Biosim {
 			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, camera_state);
 			camera.setViewYXZ(camera_state.transform.translation, camera_state.transform.rotation);
 			float aspect = renderer.getAspectRatio();
-			camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 20.f);
+			camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 100.f);
 
 			if (auto cmd_buffer = renderer.beginFrame()) {
 				int frame_index = renderer.getFrameIndex();
@@ -107,16 +125,23 @@ namespace Biosim {
 		auto model = Engine::VertexModel::createModelFromFile(device, "models/flat_vase.obj");
 		auto obj = GameObject::createGameObject();
 		obj.model = model;
-		obj.transform.translation = { .5f, .5f, 2.5f };
+		obj.transform.translation = { -.5f, .5f, 0.f };
 		obj.transform.scale = glm::vec3{ 3.f, 1.5f, 3.f };
 
 		auto model1 = Engine::VertexModel::createModelFromFile(device, "models/smooth_vase.obj");
 		auto obj1 = GameObject::createGameObject();
 		obj1.model = model1;
-		obj1.transform.translation = { -.5f, .5f, 2.5f };
+		obj1.transform.translation = { .5f, .5f, 0.f };
 		obj1.transform.scale = glm::vec3{ 3.f, 1.5f, 3.f };
+
+		auto plane_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
+		auto plane_obj = GameObject::createGameObject();
+		plane_obj.model = plane_model;
+		plane_obj.transform.translation = { .0f, .5f, 0.f };
+		plane_obj.transform.scale = glm::vec3{ 3.f, 1.f, 3.f };
 
 		gameObjects.push_back(std::move(obj));
 		gameObjects.push_back(std::move(obj1));
+		gameObjects.push_back(std::move(plane_obj));
 	}
 }
