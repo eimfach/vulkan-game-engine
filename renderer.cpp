@@ -5,7 +5,7 @@
 #include <array>
 #include <iostream>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 
 	Renderer::Renderer(Window& window, Device& device) : window{ window }, device{ device } {
 		std::cout << "Max size of push constants: " << device.properties.limits.maxPushConstantsSize << " Bytes \n";

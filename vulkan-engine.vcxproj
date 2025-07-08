@@ -24,6 +24,7 @@
     <ProjectGuid>{146cfe8e-8ae0-4ae5-a299-a7d4b7a5b6b1}</ProjectGuid>
     <RootNamespace>biosim</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>vulkan-game-engine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -117,7 +118,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\biosim\libs\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\libs\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,7 +136,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\libs\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

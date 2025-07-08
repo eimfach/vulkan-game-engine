@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 
     class DescriptorSetLayout {
     public:

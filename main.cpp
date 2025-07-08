@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 int main() {
-    Biosim::FirstApp app{};
+    SJFGame::FirstApp app{};
 
     try {
         app.run();

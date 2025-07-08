@@ -12,7 +12,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	class Renderer {
 	public:
 		static constexpr int WIDTH = 800;
@@ -46,8 +46,7 @@ namespace Biosim::Engine {
 
 		void deviceWaitIdle();
 		bool windowShouldClose();
-		std::shared_ptr<Biosim::Engine::VertexModel> createVertexModel(const std::vector<VertexBase>& verticies);
-		std::shared_ptr<VertexModel> Renderer::createCubeModel(glm::vec3 offset);
+		std::shared_ptr<VertexModel> createCubeModel(glm::vec3 offset);
 	private:
 		Window& window;
 		Device& device;

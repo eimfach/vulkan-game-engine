@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	struct PipelineConfig {
 		PipelineConfig() = default;
 		PipelineConfig(const PipelineConfig&) = delete;

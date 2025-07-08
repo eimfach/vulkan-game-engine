@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	class SimpleRenderSystem {
 	public:
 		SimpleRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);

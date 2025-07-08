@@ -8,7 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace Biosim {
+namespace SJFGame {
 
 	struct Transform {
 		glm::vec3 translation{}; // position offset

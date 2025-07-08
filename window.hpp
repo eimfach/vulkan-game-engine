@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	class Window {
 	
 	public:

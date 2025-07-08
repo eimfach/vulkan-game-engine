@@ -4,7 +4,7 @@
 #include <cassert>
 #include <limits>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	void Camera::setOrthographicProjection(
 		float left, float right, float top, float bottom, float near, float far) {
 		projectionMatrix = glm::mat4{ 1.0f };

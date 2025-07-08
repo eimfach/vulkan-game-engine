@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	struct VertexBase {
 		glm::vec3 position{};
 		glm::vec3 color{};

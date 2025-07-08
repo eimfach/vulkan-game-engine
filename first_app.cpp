@@ -14,7 +14,7 @@
 #include <chrono>
 #include <ratio>
 
-namespace Biosim {
+namespace SJFGame {
 	// check alignment rules before making changes to buffer object structures
 	// https://www.oreilly.com/library/view/opengl-programming-guide/9780132748445/app09lev1sec2.html
 	struct GlobalUniformBufferOutput {

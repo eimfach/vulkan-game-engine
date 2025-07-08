@@ -14,7 +14,7 @@
 #include <vector>
 #include <memory>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	class VertexModel {
 	public:
 

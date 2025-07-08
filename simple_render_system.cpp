@@ -10,7 +10,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 
 	struct SimplePushConstantData {
 		glm::mat4 modelMatrix{ 1.f };

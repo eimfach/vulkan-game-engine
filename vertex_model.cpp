@@ -15,16 +15,16 @@
 
 namespace std {
 	template<>
-	struct hash<Biosim::Engine::VertexBase> {
-		size_t operator()(Biosim::Engine::VertexBase const &vertex) const {
+	struct hash<SJFGame::Engine::VertexBase> {
+		size_t operator()(SJFGame::Engine::VertexBase const &vertex) const {
 			size_t seed = 0;
-			Biosim::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+			SJFGame::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
 			return seed;
 		}
 	};
 }
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	VertexModel::VertexModel(Device& device, const VertexModel::Builder& builder) : device{device} {
 		createVertexBuffers(builder.verticies);
 		createIndexBuffers(builder.indicies);

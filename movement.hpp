@@ -3,7 +3,7 @@
 #include "game_object.hpp"
 #include "window.hpp"
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	class MovementControl {
 	public:
 		struct KeyMappings {

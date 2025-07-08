@@ -4,7 +4,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 
     // *************** Descriptor Set Layout Builder *********************
 

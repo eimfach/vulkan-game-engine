@@ -2,7 +2,7 @@
 
 #include "device.hpp"
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 
     class Buffer {
     public:

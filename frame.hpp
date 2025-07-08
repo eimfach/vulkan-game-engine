@@ -6,7 +6,7 @@
 // lib
 #include "vulkan/vulkan.h";
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	struct Frame {
 		int frameIndex;
 		float delta;

@@ -10,7 +10,7 @@
 // std
 #include <memory>
 
-namespace Biosim {
+namespace SJFGame {
 	class FirstApp {
 	public:
 		static constexpr int WIDTH = 800;

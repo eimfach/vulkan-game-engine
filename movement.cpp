@@ -1,6 +1,6 @@
 #include "movement.hpp"
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	void MovementControl::moveInPlaneXZ(GLFWwindow* window, float delta, GameObject& game_obj) {
 		glm::vec3 rotate{};
 

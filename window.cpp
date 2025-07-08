@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 	Window::Window(int w, int h, std::string name) : width{ w }, height{ h }, windowName{ name } {
 		initWindow();
 	}

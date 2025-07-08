@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace Biosim::Engine {
+namespace SJFGame::Engine {
 
 struct SwapChainSupportDetails {
   VkSurfaceCapabilitiesKHR capabilities;
