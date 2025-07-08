@@ -8,6 +8,10 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
+
 // std
 #include <cassert>
 #include <stdexcept>
@@ -33,7 +37,7 @@ namespace SJFGame::Engine {
 
 	std::shared_ptr<VertexModel> VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
 		Builder builder{};
-		builder.loadModel(filepath);
+		builder.loadModel(ENGINE_DIR + filepath);
 		return std::make_shared<VertexModel>(device, builder);
 	}
 

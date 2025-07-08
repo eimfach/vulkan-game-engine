@@ -20,7 +20,7 @@ namespace SJFGame {
 	struct GlobalUniformBufferOutput {
 		glm::mat4 projectionView{ 1.f };
 
-		// vec3 and vec4 needs to be aligned to 16 Bytesz
+		// vec3 and vec4 needs to be aligned to 16 Bytes
 		// Options: 
 		// 1. Place a padding member inbetween (tight packing by the host, cpu/gpu layout matching)
 		// vec3 A;

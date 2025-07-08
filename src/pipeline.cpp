@@ -5,6 +5,10 @@
 #include <iostream>
 #include <cassert>
 
+#ifndef ENGINE_DIR
+#define ENGINE_DIR "../"
+#endif
+
 namespace SJFGame::Engine {
 	Pipeline::Pipeline(Device& device, const PipelineConfig& cfg, const std::string& vertex_filepath, const std::string& fragment_filepath) : device{device} {
 		createGraphicsPipeline(cfg, vertex_filepath, fragment_filepath);
@@ -17,10 +21,11 @@ namespace SJFGame::Engine {
 	}
 
 	std::vector<char> Pipeline::read_file(const std::string& filepath) {
-		std::ifstream file{ filepath, std::ios::binary };
+		std::string engine_path = ENGINE_DIR + filepath;
+		std::ifstream file{ engine_path, std::ios::binary };
 
 		if (!file.is_open()) {
-			throw std::runtime_error("Failed to open file: " + filepath);
+			throw std::runtime_error("Failed to open file: " + engine_path);
 		}
 
 		std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});

@@ -22,7 +22,7 @@
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{146cfe8e-8ae0-4ae5-a299-a7d4b7a5b6b1}</ProjectGuid>
-    <RootNamespace>biosim</RootNamespace>
+    <RootNamespace>vulkan-engine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>vulkan-game-engine</ProjectName>
   </PropertyGroup>
@@ -118,7 +118,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\libs\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,7 +136,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\libs\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,38 +148,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="buffer.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="device.cpp" />
-    <ClCompile Include="first_app.cpp" />
-    <ClCompile Include="game_object.cpp" />
-    <ClCompile Include="movement.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="renderer.cpp" />
-    <ClCompile Include="simple_render_system.cpp" />
-    <ClCompile Include="descriptors.cpp" />
-    <ClCompile Include="swap_chain.cpp" />
-    <ClCompile Include="vertex_model.cpp" />
-    <ClCompile Include="window.cpp" />
-    <ClCompile Include="pipeline.cpp" />
+    <ClCompile Include="src\buffer.cpp" />
+    <ClCompile Include="src\camera.cpp" />
+    <ClCompile Include="src\device.cpp" />
+    <ClCompile Include="src\first_app.cpp" />
+    <ClCompile Include="src\game_object.cpp" />
+    <ClCompile Include="src\movement.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\simple_render_system.cpp" />
+    <ClCompile Include="src\descriptors.cpp" />
+    <ClCompile Include="src\swap_chain.cpp" />
+    <ClCompile Include="src\vertex_model.cpp" />
+    <ClCompile Include="src\window.cpp" />
+    <ClCompile Include="src\pipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="buffer.hpp" />
-    <ClInclude Include="camera.hpp" />
-    <ClInclude Include="descriptors.hpp" />
-    <ClInclude Include="device.hpp" />
-    <ClInclude Include="frame.hpp" />
-    <ClInclude Include="game_object.hpp" />
-    <ClInclude Include="movement.hpp" />
-    <ClInclude Include="pipeline.hpp" />
-    <ClInclude Include="renderer.hpp" />
-    <ClInclude Include="simple_render_system.hpp" />
-    <ClInclude Include="swap_chain.hpp" />
-    <ClInclude Include="utils.hpp" />
-    <ClInclude Include="vertex_base.hpp" />
-    <ClInclude Include="vertex_model.hpp" />
-    <ClInclude Include="window.hpp" />
-    <ClInclude Include="first_app.hpp" />
+    <ClInclude Include="src\buffer.hpp" />
+    <ClInclude Include="src\camera.hpp" />
+    <ClInclude Include="src\descriptors.hpp" />
+    <ClInclude Include="src\device.hpp" />
+    <ClInclude Include="src\frame.hpp" />
+    <ClInclude Include="src\game_object.hpp" />
+    <ClInclude Include="src\movement.hpp" />
+    <ClInclude Include="src\pipeline.hpp" />
+    <ClInclude Include="src\renderer.hpp" />
+    <ClInclude Include="src\simple_render_system.hpp" />
+    <ClInclude Include="src\swap_chain.hpp" />
+    <ClInclude Include="src\utils.hpp" />
+    <ClInclude Include="src\vertex_base.hpp" />
+    <ClInclude Include="src\vertex_model.hpp" />
+    <ClInclude Include="src\window.hpp" />
+    <ClInclude Include="src\first_app.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
