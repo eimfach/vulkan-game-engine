@@ -57,9 +57,7 @@ namespace Biosim::Engine {
 		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv");
 	}
 
-	void SimpleRenderSystem::renderObjects(
-		const std::vector<GameObject>& objects,
-		Frame& frame) {
+	void SimpleRenderSystem::renderObjects(Frame& frame) {
 
 		pipeline->bind(frame.cmdBuffer);
 
@@ -71,7 +69,10 @@ namespace Biosim::Engine {
 			0, nullptr
 		);
 
-		for (auto& obj : objects) {
+		for (auto& kv_pair : frame.gameObjects) {
+			auto& obj = kv_pair.second;
+			if (obj.model == nullptr) continue;
+
 			SimplePushConstantData push{};
 			auto model_matrix = obj.transform.mat4();
 			push.modelMatrix = model_matrix;

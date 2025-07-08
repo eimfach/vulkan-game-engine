@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 //std
 #include <memory>
+#include <unordered_map>
 
 namespace Biosim {
 
@@ -37,6 +38,7 @@ namespace Biosim {
 	class GameObject {
 	public:
 		using id_t = unsigned int;
+		using Map = std::unordered_map<id_t, GameObject>;
 
 		std::shared_ptr<Engine::VertexModel> model{};
 		glm::vec3 color{};
@@ -58,9 +60,10 @@ namespace Biosim {
 		id_t const getId() { return id; }
 
 	private:
+		id_t id;
+
 		GameObject(id_t obj_id) : id{ obj_id } {}
 
-		id_t id;
 
 	};
 }

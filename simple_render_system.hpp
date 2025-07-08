@@ -20,10 +20,7 @@ namespace Biosim::Engine {
 		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
 		SimpleRenderSystem& operator= (const SimpleRenderSystem&) = delete;
 
-		void renderObjects(
-			const std::vector<GameObject>& objects,
-			Frame& frame
-			);
+		void renderObjects(Frame& frame);
 
 	private:
 		Device& device;

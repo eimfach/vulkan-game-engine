@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.hpp"
+#include "game_object.hpp"
 
 // lib
 #include "vulkan/vulkan.h";
@@ -12,5 +13,6 @@ namespace Biosim::Engine {
 		Camera& camera;
 		VkCommandBuffer cmdBuffer;
 		VkDescriptorSet globalDescriptorSet;
+		const GameObject::Map& gameObjects;
 	};
 }

@@ -9,7 +9,6 @@
 
 // std
 #include <memory>
-#include <vector>
 
 namespace Biosim {
 	class FirstApp {
@@ -33,7 +32,7 @@ namespace Biosim {
 
 		// note: order of declaration matters (not if globalPool gets descructed in ~FirstApp which is the case; the pools need to be destroyed before the device)
 		std::unique_ptr<Engine::DescriptorPool> globalPool{};
-		std::vector<GameObject> gameObjects;
+		GameObject::Map gameObjects;
 
 		void loadGameObjects();
 	};

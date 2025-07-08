@@ -31,8 +31,8 @@ namespace Biosim {
 		// Should not be a issue with Vulkan because Shaders are compiled to SPIR-V)
 		// 3. Use alignas(16) to fill up space between vec3 and vec4
 		glm::vec3 directionalLightPosition = { 4.f, -3.f, -1.f };
-		alignas(16) glm::vec4 directionalLightColor = { 0.f, 1.0f, .3f, 1.f }; // w is intensity
-		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .01f }; // w is intensity
+		alignas(16) glm::vec4 directionalLightColor = { 0.f, 1.0f, .3f, 0.f }; // w is intensity
+		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .05f }; // w is intensity
 		glm::vec3 positionalLightPosition{ -1.f };
 		alignas(16) glm::vec4 positionalLightColor{ 1.f, 0.f, 0.f, 1.f }; // w is light intensity
 	};
@@ -64,7 +64,7 @@ namespace Biosim {
 		}
 
 		auto global_set_layout = Engine::DescriptorSetLayout::Builder(device)
-			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
 			.build();
 
 		std::vector<VkDescriptorSet> global_descriptor_sets(Engine::SwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -101,7 +101,7 @@ namespace Biosim {
 
 			if (auto cmd_buffer = renderer.beginFrame()) {
 				int frame_index = renderer.getFrameIndex();
-				Engine::Frame frame{frame_index, frame_delta_time, camera, cmd_buffer, global_descriptor_sets[frame_index]};
+				Engine::Frame frame{frame_index, frame_delta_time, camera, cmd_buffer, global_descriptor_sets[frame_index], gameObjects};
 
 				// update 
 				GlobalUniformBufferOutput ubo{};
@@ -111,7 +111,7 @@ namespace Biosim {
 
 				// render
 				renderer.beginSwapChainRenderPass(cmd_buffer);
-				render_system.renderObjects(gameObjects, frame);
+				render_system.renderObjects(frame);
 				renderer.endSwapChainRenderPass(cmd_buffer);
 				renderer.endFrame();
 			}
@@ -140,8 +140,8 @@ namespace Biosim {
 		plane_obj.transform.translation = { .0f, .5f, 0.f };
 		plane_obj.transform.scale = glm::vec3{ 3.f, 1.f, 3.f };
 
-		gameObjects.push_back(std::move(obj));
-		gameObjects.push_back(std::move(obj1));
-		gameObjects.push_back(std::move(plane_obj));
+		gameObjects.emplace(obj.getId(), std::move(obj));
+		gameObjects.emplace(obj1.getId(), std::move(obj1));
+		gameObjects.emplace(plane_obj.getId(), std::move(plane_obj));
 	}
 }
