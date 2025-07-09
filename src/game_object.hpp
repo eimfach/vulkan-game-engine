@@ -35,14 +35,21 @@ namespace SJFGame {
 		glm::mat3 normalMatrix() const;
 	};
 
+	struct PointLightComponent {
+		float lightIntensity{1.0f};
+	};
+
 	class GameObject {
 	public:
 		using id_t = unsigned int;
 		using Map = std::unordered_map<id_t, GameObject>;
 
-		std::shared_ptr<Engine::VertexModel> model{};
 		glm::vec3 color{};
 		Transform transform{};
+
+		// Optional pointer components
+		std::shared_ptr<Engine::VertexModel> model{};
+		std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
 		// delete copy constructor and copy operator
 		GameObject(const GameObject&) = delete;
@@ -57,7 +64,11 @@ namespace SJFGame {
 			return GameObject(current_id++);
 		}
 
+		static GameObject createPointLight(float intensity = 5.f, float radius = .1f, glm::vec3 color = glm::vec3{ 1.f });
+
+
 		id_t const getId() { return id; }
+
 
 	private:
 		id_t id;

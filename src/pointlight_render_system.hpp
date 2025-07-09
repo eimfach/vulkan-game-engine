@@ -20,7 +20,8 @@ namespace SJFGame::Engine {
 		PointLightRenderSystem(const PointLightRenderSystem&) = delete;
 		PointLightRenderSystem& operator= (const PointLightRenderSystem&) = delete;
 
-		void render(Frame& frame);
+		void update(Frame& frame, GlobalUniformBufferOutput& ubo);
+		void render(const Frame& frame);
 
 	private:
 		Device& device;

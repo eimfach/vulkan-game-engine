@@ -12,14 +12,19 @@ layout (location = 1) out vec3 fragment_position_world_space;
 layout (location = 2) out vec3 fragment_normal_world_space;
 
 // Uniform Buffer Sets (per Frame)
+struct PointLight {
+	vec4 position; // ignore w | in world space
+	vec4 color; // w is intensity
+};
+
 layout(set = 0, binding = 0) uniform Uniform {
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
 	vec3 directionalLightPosition;  // in world space
-	vec4 directionalLightColor;
-	vec4 ambientLightColor;
-	vec3 positionalLightPosition; // in world space
-	vec4 positionalLightColor;
+	vec4 directionalLightColor; // w is intensity
+	vec4 ambientLightColor; // w is intensity
+	PointLight pointLights[10];
+	int numLights;
 } uniform_0;
 
 // ... more sets
