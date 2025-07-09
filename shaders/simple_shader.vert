@@ -13,7 +13,8 @@ layout (location = 2) out vec3 fragment_normal_world_space;
 
 // Uniform Buffer Sets (per Frame)
 layout(set = 0, binding = 0) uniform Uniform {
-	mat4 projectionViewMatrix;
+	mat4 projectionMatrix;
+	mat4 viewMatrix;
 	vec3 directionalLightPosition;  // in world space
 	vec4 directionalLightColor;
 	vec4 ambientLightColor;
@@ -36,5 +37,5 @@ void main() {
 	fragment_position_world_space = vertex_position_world_space.xyz;
 	fragment_color = vertex_color;
 
-	gl_Position = uniform_0.projectionViewMatrix * vertex_position_world_space;
+	gl_Position = uniform_0.projectionMatrix * uniform_0.viewMatrix * vertex_position_world_space;
 }

@@ -4,6 +4,7 @@
 #include "camera.hpp"
 #include "movement.hpp"
 #include "simple_render_system.hpp"
+#include "pointlight_render_system.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -18,8 +19,8 @@ namespace SJFGame {
 	// check alignment rules before making changes to buffer object structures
 	// https://www.oreilly.com/library/view/opengl-programming-guide/9780132748445/app09lev1sec2.html
 	struct GlobalUniformBufferOutput {
-		glm::mat4 projectionView{ 1.f };
-
+		glm::mat4 projectionMatrix{ 1.f };
+		glm::mat4 viewMatrix{ 1.f };
 		// vec3 and vec4 needs to be aligned to 16 Bytes
 		// Options: 
 		// 1. Place a padding member inbetween (tight packing by the host, cpu/gpu layout matching)
@@ -77,7 +78,8 @@ namespace SJFGame {
 		// -> uniform buffers and descriptors could be managed in a Master Render System
 
 		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass(), global_set_layout->getDescriptorSetLayout()};
-		
+		Engine::PointLightRenderSystem point_light_render_system{ device, renderer.getSwapChainRenderPass(), global_set_layout->getDescriptorSetLayout() };
+
 		Engine::Camera camera{};
 		//camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
 		auto camera_state = GameObject::createGameObject();
@@ -105,13 +107,16 @@ namespace SJFGame {
 
 				// update 
 				GlobalUniformBufferOutput ubo{};
-				ubo.projectionView = camera.getProjection() * camera.getView();
+				ubo.projectionMatrix = camera.getProjection();
+				ubo.viewMatrix = camera.getView();
 				ubo_buffers[frame_index]->writeToBuffer(&ubo);
 				ubo_buffers[frame_index]->flush();
 
 				// render
 				renderer.beginSwapChainRenderPass(cmd_buffer);
 				render_system.renderObjects(frame);
+				point_light_render_system.render(frame);
+
 				renderer.endSwapChainRenderPass(cmd_buffer);
 				renderer.endFrame();
 			}

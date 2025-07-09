@@ -11,6 +11,8 @@ namespace SJFGame::Engine {
 		PipelineConfig(const PipelineConfig&) = delete;
 		PipelineConfig& operator=(const PipelineConfig&) = delete;
 
+		std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
 		VkPipelineViewportStateCreateInfo viewportInfo;
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 		VkPipelineRasterizationStateCreateInfo rasterizationInfo;

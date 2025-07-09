@@ -155,6 +155,7 @@
     <ClCompile Include="src\game_object.cpp" />
     <ClCompile Include="src\movement.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\pointlight_render_system.cpp" />
     <ClCompile Include="src\renderer.cpp" />
     <ClCompile Include="src\simple_render_system.cpp" />
     <ClCompile Include="src\descriptors.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="src\game_object.hpp" />
     <ClInclude Include="src\movement.hpp" />
     <ClInclude Include="src\pipeline.hpp" />
+    <ClInclude Include="src\pointlight_render_system.hpp" />
     <ClInclude Include="src\renderer.hpp" />
     <ClInclude Include="src\simple_render_system.hpp" />
     <ClInclude Include="src\swap_chain.hpp" />
@@ -183,9 +185,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="shaders\point_light.frag" />
+    <None Include="shaders\point_light.vert" />
     <None Include="shaders\simple_shader.frag" />
     <None Include="shaders\simple_shader.vert" />
     <None Include="task\compile_shaders.bat" />
+    <None Include="task\unix_build.sh" />
+    <None Include="task\windows_build.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -204,6 +210,22 @@
       <Outputs>$(ProjectDir)\shaders\simple_shader.frag.spv</Outputs>
       <Inputs>$(ProjectDir)\shaders\simple_shader.frag</Inputs>
       <Message>Compiled simple_shader.frag</Message>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <CustomBuildStep>
+      <Command>glslc.exe --target-env=vulkan1.0 --target-spv=spv1.0 $(ProjectDir)shaders\point_light.vert -o $(ProjectDir)\shaders\point_light.vert.spv</Command>
+      <Outputs>$(ProjectDir)\shaders\point_light.vert.spv</Outputs>
+      <Inputs>$(ProjectDir)\shaders\point_light.vert</Inputs>
+      <Message>Compiled point_light.vert</Message>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <CustomBuildStep>
+      <Command>glslc.exe --target-env=vulkan1.0 --target-spv=spv1.0 $(ProjectDir)shaders\point_light.frag -o $(ProjectDir)\shaders\point_light.frag.spv</Command>
+      <Outputs>$(ProjectDir)\shaders\point_light.frag.spv</Outputs>
+      <Inputs>$(ProjectDir)\shaders\point_light.frag</Inputs>
+      <Message>Compiled point_light.frag</Message>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup>

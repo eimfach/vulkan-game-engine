@@ -10,7 +10,8 @@ layout (location = 0) out vec4 out_color;
 
 // Uniform Buffer Sets (per Frame)
 layout(set = 0, binding = 0) uniform Uniform {
-	mat4 projectionViewMatrix;
+	mat4 projectionMatrix;
+	mat4 viewMatrix;
 	vec3 directionalLightPosition;  // in world space
 	vec4 directionalLightColor;
 	vec4 ambientLightColor;

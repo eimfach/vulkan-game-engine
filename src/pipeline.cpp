@@ -5,8 +5,9 @@
 #include <iostream>
 #include <cassert>
 
+// TODO: need better solution
 #ifndef ENGINE_DIR
-#define ENGINE_DIR "../"
+#define ENGINE_DIR "./"
 #endif
 
 namespace SJFGame::Engine {
@@ -80,15 +81,15 @@ namespace SJFGame::Engine {
 		shader_stages[1].pNext = nullptr;
 		shader_stages[1].pSpecializationInfo = nullptr;
 
-		auto v_bindings = VertexModel::Vertex::getBindingDescriptions();
-		auto v_attributes = VertexModel::Vertex::getAttributeDescriptions();
+		auto& vertex_bindings = cfg.bindingDescriptions;
+		auto& vertex_attributes = cfg.attributeDescriptions;
 
 		VkPipelineVertexInputStateCreateInfo vertex_input{};
 		vertex_input.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertex_input.vertexAttributeDescriptionCount = static_cast<uint32_t>(v_attributes.size());
-		vertex_input.vertexBindingDescriptionCount = static_cast<uint32_t>(v_bindings.size());;
-		vertex_input.pVertexAttributeDescriptions = v_attributes.data();
-		vertex_input.pVertexBindingDescriptions = v_bindings.data();
+		vertex_input.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertex_attributes.size());
+		vertex_input.vertexBindingDescriptionCount = static_cast<uint32_t>(vertex_bindings.size());;
+		vertex_input.pVertexAttributeDescriptions = vertex_attributes.data();
+		vertex_input.pVertexBindingDescriptions = vertex_bindings.data();
 
 		VkPipelineColorBlendStateCreateInfo color_blend_info{};
 		color_blend_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -190,6 +191,9 @@ namespace SJFGame::Engine {
 		cfg.dynamicStateInfo.pDynamicStates = cfg.dynamicStateEnables.data();
 		cfg.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(cfg.dynamicStateEnables.size());
 		cfg.dynamicStateInfo.flags = 0;
+
+		cfg.bindingDescriptions = VertexModel::Vertex::getBindingDescriptions();
+		cfg.attributeDescriptions = VertexModel::Vertex::getAttributeDescriptions();
 	}
 	
 }
