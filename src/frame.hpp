@@ -21,6 +21,7 @@ namespace SJFGame::Engine {
 	struct GlobalUniformBufferOutput {
 		glm::mat4 projectionMatrix{ 1.f };
 		glm::mat4 viewMatrix{ 1.f };
+		glm::mat4 inverseViewMatrix{ 1.f }; // camera position in last column (also provides camera space to world space)
 		// vec3 and vec4 needs to be aligned to 16 Bytes
 		// Options: 
 		// 1. Place a padding member inbetween (tight packing by the host, cpu/gpu layout matching)

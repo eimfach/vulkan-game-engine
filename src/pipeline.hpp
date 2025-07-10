@@ -37,6 +37,7 @@ namespace SJFGame::Engine {
 		Pipeline& operator=(const Pipeline&) = delete;
 
 		static void defaultCfg(PipelineConfig& cfg);
+		static void enableAlphaBlending(PipelineConfig& cfg);
 		void bind(VkCommandBuffer command_buffer);
 
 	private:

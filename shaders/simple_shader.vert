@@ -20,12 +20,13 @@ struct PointLight {
 layout(set = 0, binding = 0) uniform Uniform {
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
+	mat4 inverseViewMatrix;
 	vec3 directionalLightPosition;  // in world space
 	vec4 directionalLightColor; // w is intensity
 	vec4 ambientLightColor; // w is intensity
 	PointLight pointLights[10];
 	int numLights;
-} uniform_0;
+} ubo_0;
 
 // ... more sets
 
@@ -42,5 +43,5 @@ void main() {
 	fragment_position_world_space = vertex_position_world_space.xyz;
 	fragment_color = vertex_color;
 
-	gl_Position = uniform_0.projectionMatrix * uniform_0.viewMatrix * vertex_position_world_space;
+	gl_Position = ubo_0.projectionMatrix * ubo_0.viewMatrix * vertex_position_world_space;
 }

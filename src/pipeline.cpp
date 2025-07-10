@@ -195,5 +195,19 @@ namespace SJFGame::Engine {
 		cfg.bindingDescriptions = VertexModel::Vertex::getBindingDescriptions();
 		cfg.attributeDescriptions = VertexModel::Vertex::getAttributeDescriptions();
 	}
+
+	void Pipeline::enableAlphaBlending(PipelineConfig& cfg) {
+		cfg.colorBlendAttachment.blendEnable = VK_TRUE;
+
+		cfg.colorBlendAttachment.colorWriteMask =
+			VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+			VK_COLOR_COMPONENT_A_BIT;
+		cfg.colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		cfg.colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		cfg.colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		cfg.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   
+		cfg.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		cfg.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+	}
 	
 }

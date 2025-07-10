@@ -9,6 +9,7 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
+#include <map>
 
 namespace SJFGame::Engine {
 
@@ -59,6 +60,8 @@ namespace SJFGame::Engine {
 
 		Engine::PipelineConfig pipeline_config{};
 		Engine::Pipeline::defaultCfg(pipeline_config);
+		Engine::Pipeline::enableAlphaBlending(pipeline_config);
+
 		pipeline_config.attributeDescriptions.clear();
 		pipeline_config.attributeDescriptions.clear();
 		pipeline_config.renderPass = render_pass;
@@ -91,6 +94,16 @@ namespace SJFGame::Engine {
 	}
 
 	void PointLightRenderSystem::render(const Frame& frame) {
+		// sort ligghts
+		std::map<float, GameObject::id_t>sorted{};
+		for (auto& kv : frame.gameObjects) {
+			auto& obj = kv.second;
+			if (obj.pointLight == nullptr) continue;
+
+			auto offset = frame.camera.getPosition() - obj.transform.translation;
+			float distance_squared = glm::dot(offset, offset);
+			sorted[distance_squared] = obj.getId();
+		}
 
 		pipeline->bind(frame.cmdBuffer);
 
@@ -102,9 +115,9 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		for (auto& kv : frame.gameObjects) {
-			auto& obj = kv.second;
-			if (obj.pointLight == nullptr) continue;
+		// iterate through sorted lights in reverse order
+		for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
+			auto& obj = frame.gameObjects.at(it->second);
 
 			// copy light to push constants
 			PointLightPushConstants push{};

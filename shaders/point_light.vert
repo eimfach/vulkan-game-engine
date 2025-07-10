@@ -22,12 +22,13 @@ struct PointLight {
 layout(set = 0, binding = 0) uniform Uniform {
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
+	mat4 inverseViewMatrix;
 	vec3 directionalLightPosition;  // in world space
 	vec4 directionalLightColor; // w is intensity
 	vec4 ambientLightColor; // w is intensity
 	PointLight pointLights[10];
 	int numLights;
-} uniform_0;
+} ubo_0;
 
 // Push Constants (per Vertex) (128 Bytes guaranteed)
 layout(push_constant) uniform Push {
@@ -44,8 +45,8 @@ void main() {
 	fragment_offset = vertex_offset;
 
 	// light in camera space
-	vec4 light_position_camera_space = uniform_0.viewMatrix * push.position;
+	vec4 light_position_camera_space = ubo_0.viewMatrix * push.position;
 	// vertex offset to the camera position
 	vec4 vertex_position_camera_space = light_position_camera_space + push.radius * vec4(vertex_offset.x, vertex_offset.y, 0.0, 0.0);
-	gl_Position = uniform_0.projectionMatrix * vertex_position_camera_space;
+	gl_Position = ubo_0.projectionMatrix * vertex_position_camera_space;
 }

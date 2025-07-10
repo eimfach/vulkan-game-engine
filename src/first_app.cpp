@@ -62,8 +62,8 @@ namespace SJFGame {
 
 		Engine::Camera camera{};
 		//camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
-		auto camera_state = GameObject::createGameObject();
-		camera_state.transform.translation.z = -2.5f;
+		auto viewer = GameObject::createGameObject();
+		viewer.transform.translation.z = -2.5f;
 		Engine::MovementControl camera_control{};
 
 		auto current_time = std::chrono::high_resolution_clock::now();
@@ -76,8 +76,8 @@ namespace SJFGame {
 			current_time = new_time;
 			//frame_delta_time = glm::min(frame_delta_time, MAX_FRAME_TIME);
 
-			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, camera_state);
-			camera.setViewYXZ(camera_state.transform.translation, camera_state.transform.rotation);
+			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, viewer);
+			camera.setViewYXZ(viewer.transform.translation, viewer.transform.rotation);
 			float aspect = renderer.getAspectRatio();
 			camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 100.f);
 
@@ -89,12 +89,15 @@ namespace SJFGame {
 				Engine::GlobalUniformBufferOutput ubo{};
 				ubo.projectionMatrix = camera.getProjection();
 				ubo.viewMatrix = camera.getView();
+				ubo.inverseViewMatrix = camera.getInverseView();
 				point_light_render_system.update(frame, ubo);
 				ubo_buffers[frame_index]->writeToBuffer(&ubo);
 				ubo_buffers[frame_index]->flush();
 
 				// render
 				renderer.beginSwapChainRenderPass(cmd_buffer);
+
+				// order here matters
 				render_system.renderObjects(frame);
 				point_light_render_system.render(frame);
 
@@ -136,7 +139,7 @@ namespace SJFGame {
 		};
 
 		for (size_t i{}; i < light_colors.size(); i++) {
-			auto point_light = GameObject::createPointLight(.2f, .1f, light_colors[i]);
+			auto point_light = GameObject::createPointLight(.5f, .1f, light_colors[i]);
 			auto rotate_transform_matrix = glm::rotate(
 				glm::mat4{ 1.f },
 				(i * glm::two_pi<float>()) / light_colors.size(),
