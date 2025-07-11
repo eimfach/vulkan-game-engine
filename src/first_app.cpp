@@ -5,6 +5,8 @@
 #include "movement.hpp"
 #include "simple_render_system.hpp"
 #include "pointlight_render_system.hpp"
+#include "texture.hpp"
+#include "main_render_system.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -19,11 +21,6 @@ namespace SJFGame {
 
 
 	FirstApp::FirstApp() {
-		globalPool = Engine::DescriptorPool::Builder(device)
-			.setMaxSets(Engine::SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, Engine::SwapChain::MAX_FRAMES_IN_FLIGHT)
-			.build();
-
 		loadGameObjects();
 	}
 
@@ -32,33 +29,12 @@ namespace SJFGame {
 	}
 
 	void FirstApp::run() {
-		std::vector<std::unique_ptr<Engine::Buffer>> ubo_buffers(Engine::SwapChain::MAX_FRAMES_IN_FLIGHT);
-		for (size_t i = 0; i < ubo_buffers.size(); i++)
-		{
-			ubo_buffers[i] = std::make_unique<Engine::Buffer>(
-				device,
-				sizeof(Engine::GlobalUniformBufferOutput),
-				1,
-				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-			ubo_buffers[i]->map();
-		}
 
-		auto global_set_layout = Engine::DescriptorSetLayout::Builder(device)
-			.addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
-			.build();
-
-		std::vector<VkDescriptorSet> global_descriptor_sets(Engine::SwapChain::MAX_FRAMES_IN_FLIGHT);
-		for (size_t i = 0; i < global_descriptor_sets.size(); i++) {
-			auto buffer_info = ubo_buffers[i]->descriptorInfo();
-			Engine::DescriptorWriter(*global_set_layout, *globalPool)
-				.writeBuffer(0, &buffer_info)
-				.build(global_descriptor_sets[i]);
-		}
-		// -> uniform buffers and descriptors could be managed in a Master Render System
-
-		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass(), global_set_layout->getDescriptorSetLayout()};
-		Engine::PointLightRenderSystem point_light_render_system{ device, renderer.getSwapChainRenderPass(), global_set_layout->getDescriptorSetLayout() };
+		Engine::MainRenderSystem main_render_sys{ device };
+		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass(), 
+			main_render_sys.getGobalSetLayout()};
+		Engine::PointLightRenderSystem point_light_render_system{ device, renderer.getSwapChainRenderPass(), 
+			main_render_sys.getGobalSetLayout() };
 
 		Engine::Camera camera{};
 		//camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
@@ -83,7 +59,8 @@ namespace SJFGame {
 
 			if (auto cmd_buffer = renderer.beginFrame()) {
 				int frame_index = renderer.getFrameIndex();
-				Engine::Frame frame{frame_index, frame_delta_time, camera, cmd_buffer, global_descriptor_sets[frame_index], gameObjects};
+				Engine::Frame frame{frame_index, frame_delta_time, camera, 
+					cmd_buffer, main_render_sys.getGlobalDiscriptorSet(frame_index), gameObjects};
 
 				// update 
 				Engine::GlobalUniformBufferOutput ubo{};
@@ -91,8 +68,8 @@ namespace SJFGame {
 				ubo.viewMatrix = camera.getView();
 				ubo.inverseViewMatrix = camera.getInverseView();
 				point_light_render_system.update(frame, ubo);
-				ubo_buffers[frame_index]->writeToBuffer(&ubo);
-				ubo_buffers[frame_index]->flush();
+				main_render_sys.getUboBuffer(frame_index)->writeToBuffer(&ubo);
+				main_render_sys.getUboBuffer(frame_index)->flush();
 
 				// render
 				renderer.beginSwapChainRenderPass(cmd_buffer);

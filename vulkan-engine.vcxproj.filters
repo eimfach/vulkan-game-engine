@@ -114,6 +114,12 @@
     <ClCompile Include="src\simple_render_system.cpp">
       <Filter>Source Files\RenderSystems</Filter>
     </ClCompile>
+    <ClCompile Include="src\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main_render_system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.hpp">
@@ -213,6 +219,12 @@
       <Filter>Header Files\RenderSystems</Filter>
     </ClInclude>
     <ClInclude Include="src\pointlight_render_system.hpp">
+      <Filter>Header Files\RenderSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\main_render_system.hpp">
       <Filter>Header Files\RenderSystems</Filter>
     </ClInclude>
   </ItemGroup>

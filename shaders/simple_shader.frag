@@ -1,9 +1,10 @@
 #version 450
 
 // Input from Vertex Shader (Per Fragment)
-layout(location = 0) in vec3 fragment_color;
-layout(location = 1) in vec3 fragment_position_world_space;
-layout(location = 2) in vec3 fragment_normal_world_space; // needs to be normalized again
+layout (location=0) in vec3 fragment_color;
+layout (location=1) in vec3 fragment_position_world_space;
+layout (location=2) in vec3 fragment_normal_world_space; // needs to be normalized again
+layout (location=3) in vec2 fragment_uv_coordinates;
 
 // Output declaration from this shader
 layout (location = 0) out vec4 out_color;
@@ -14,7 +15,7 @@ struct PointLight {
 	vec4 color; // w is intensity
 };
 
-layout(set = 0, binding = 0) uniform Uniform {
+layout(set = 0, binding = 0) uniform GlobalUBO {
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
 	mat4 inverseViewMatrix;
@@ -24,6 +25,8 @@ layout(set = 0, binding = 0) uniform Uniform {
 	PointLight pointLights[10];
 	int numLights;
 } ubo_0;
+
+layout(set = 0, binding = 1) uniform sampler2D image;
 
 // Push Constants (per Fragment / Pixel) (128 Bytes guaranteed)
 layout(push_constant) uniform Push {
@@ -67,11 +70,13 @@ void main() {
 		specular_light += positional_light_color_scaled * blinn_term;
 	}
 
+	vec3 image_color = texture(image, fragment_uv_coordinates).rgb;
+
 	// ********** Create directional light
 	vec3 normal_directional_light = normalize(ubo_0.directionalLightPosition);
 	vec3 directional_light_color_scaled = ubo_0.directionalLightColor.xyz * ubo_0.directionalLightColor.w;
 	
 	vec3 directional_light = directional_light_color_scaled * max(dot(normalize(fragment_normal_world_space), normal_directional_light), 0);
 
-	out_color = vec4(directional_light + ambient_light_color_scaled + diffuse_light * fragment_color + specular_light * fragment_color, 1.0);
+	out_color = vec4(directional_light + ambient_light_color_scaled + diffuse_light * image_color + specular_light * image_color, 1.0);
 }

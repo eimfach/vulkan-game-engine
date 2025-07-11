@@ -1,15 +1,16 @@
 #version 450
 
 // Vertex attributes input from buffer
-layout(location=0) in vec3 vertex_position;
-layout(location=1) in vec3 vertex_color;
-layout(location=2) in vec3 vertex_normal;
-layout(location=3) in vec3 vertex_uv;
+layout (location=0) in vec3 vertex_position;
+layout (location=1) in vec3 vertex_color;
+layout (location=2) in vec3 vertex_normal;
+layout (location=3) in vec2 vertex_uv;
 
 // Output declaration from this shader for the next (fragment shader)
-layout(location=0) out vec3 fragment_color;
-layout (location = 1) out vec3 fragment_position_world_space;
-layout (location = 2) out vec3 fragment_normal_world_space;
+layout (location=0) out vec3 fragment_color;
+layout (location=1) out vec3 fragment_position_world_space;
+layout (location=2) out vec3 fragment_normal_world_space;
+layout (location=3) out vec2 fragment_uv_coordinates;
 
 // Uniform Buffer Sets (per Frame)
 struct PointLight {
@@ -17,7 +18,7 @@ struct PointLight {
 	vec4 color; // w is intensity
 };
 
-layout(set = 0, binding = 0) uniform Uniform {
+layout(set = 0, binding = 0) uniform GlobalUBO {
 	mat4 projectionMatrix;
 	mat4 viewMatrix;
 	mat4 inverseViewMatrix;
@@ -42,6 +43,7 @@ void main() {
 	fragment_normal_world_space = vertex_normal_world_space;
 	fragment_position_world_space = vertex_position_world_space.xyz;
 	fragment_color = vertex_color;
+	fragment_uv_coordinates = vertex_uv;
 
 	gl_Position = ubo_0.projectionMatrix * ubo_0.viewMatrix * vertex_position_world_space;
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -118,7 +118,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\stb;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,7 +136,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\stb;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +153,7 @@
     <ClCompile Include="src\device.cpp" />
     <ClCompile Include="src\first_app.cpp" />
     <ClCompile Include="src\game_object.cpp" />
+    <ClCompile Include="src\main_render_system.cpp" />
     <ClCompile Include="src\movement.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\pointlight_render_system.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="src\vertex_model.cpp" />
     <ClCompile Include="src\window.cpp" />
     <ClCompile Include="src\pipeline.cpp" />
+    <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\buffer.hpp" />
@@ -171,6 +173,7 @@
     <ClInclude Include="src\device.hpp" />
     <ClInclude Include="src\frame.hpp" />
     <ClInclude Include="src\game_object.hpp" />
+    <ClInclude Include="src\main_render_system.hpp" />
     <ClInclude Include="src\movement.hpp" />
     <ClInclude Include="src\pipeline.hpp" />
     <ClInclude Include="src\pointlight_render_system.hpp" />
@@ -182,6 +185,7 @@
     <ClInclude Include="src\vertex_model.hpp" />
     <ClInclude Include="src\window.hpp" />
     <ClInclude Include="src\first_app.hpp" />
+    <ClInclude Include="src\texture.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
