@@ -118,7 +118,7 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\stb;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\imgui-1.92.1;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinygltf2;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,7 +136,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\stb;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\imgui-1.92.1;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinygltf2;C:\Users\Robin\Documents\workspaces\vulkan-game-engine\external\tinyobjloader;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glfw-3.4.bin.WIN64\include;C:\Users\Robin\Documents\Visual Studio 2022\Libraries\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +148,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_vulkan.cpp" />
+    <ClCompile Include="external\imgui-1.92.1\imgui.cpp" />
+    <ClCompile Include="external\imgui-1.92.1\imgui_demo.cpp" />
+    <ClCompile Include="external\imgui-1.92.1\imgui_draw.cpp" />
+    <ClCompile Include="external\imgui-1.92.1\imgui_tables.cpp" />
+    <ClCompile Include="external\imgui-1.92.1\imgui_widgets.cpp" />
+    <ClCompile Include="src\gui_render_system.cpp" />
     <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\device.cpp" />
@@ -167,6 +175,8 @@
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\gui_render_system.hpp" />
+    <ClInclude Include="src\settings.hpp" />
     <ClInclude Include="src\buffer.hpp" />
     <ClInclude Include="src\camera.hpp" />
     <ClInclude Include="src\descriptors.hpp" />
@@ -196,6 +206,32 @@
     <None Include="task\compile_shaders.bat" />
     <None Include="task\unix_build.sh" />
     <None Include="task\windows_build.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\blender_cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\colored_cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\cube.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\flat_vase.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\quad.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="models\smooth_vase.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,10 +3,15 @@
 #include "buffer.hpp"
 #include "camera.hpp"
 #include "movement.hpp"
+
 #include "simple_render_system.hpp"
+#include "main_render_system.hpp"
+#include "gui_render_system.hpp"
+
 #include "pointlight_render_system.hpp"
 #include "texture.hpp"
-#include "main_render_system.hpp"
+#include "vertex_model.hpp"
+//#include "settings.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -25,16 +30,17 @@ namespace SJFGame {
 	}
 
 	FirstApp::~FirstApp() {
-		globalPool = nullptr;
+		
 	}
 
 	void FirstApp::run() {
 
 		Engine::MainRenderSystem main_render_sys{ device };
-		Engine::SimpleRenderSystem render_system{ device, renderer.getSwapChainRenderPass(), 
+		Engine::SimpleRenderSystem simple_render_system{ device, renderer.getSwapChainRenderPass(), 
 			main_render_sys.getGobalSetLayout()};
 		Engine::PointLightRenderSystem point_light_render_system{ device, renderer.getSwapChainRenderPass(), 
 			main_render_sys.getGobalSetLayout() };
+		Engine::GuiRenderSystem gui_render_sys{ device, window.getGLFWwindow(), renderer.getSwapChainRenderPass() };
 
 		Engine::Camera camera{};
 		//camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
@@ -75,8 +81,10 @@ namespace SJFGame {
 				renderer.beginSwapChainRenderPass(cmd_buffer);
 
 				// order here matters
-				render_system.renderObjects(frame);
+				simple_render_system.renderObjects(frame);
 				point_light_render_system.render(frame);
+
+				gui_render_sys.render(frame);
 
 				renderer.endSwapChainRenderPass(cmd_buffer);
 				renderer.endFrame();
@@ -124,6 +132,14 @@ namespace SJFGame {
 			point_light.transform.translation = glm::vec3{ rotate_transform_matrix * glm::vec4{-1.f, -1.f, -1.f, 1.f} };
 			gameObjects.emplace(point_light.getId(), std::move(point_light));
 		}
+
+
+		//auto room = Engine::VertexModel::createModelFromFile(device, "models/rooms.obj");
+		//auto obj1 = GameObject::createGameObject();
+		//obj1.model = room;
+		//obj1.transform.translation = { .5f, .5f, 0.f };
+		//obj1.transform.scale = glm::vec3{ 1.f };
+		//gameObjects.emplace(obj1.getId(), std::move(obj1));
 
 		gameObjects.emplace(obj.getId(), std::move(obj));
 		gameObjects.emplace(obj1.getId(), std::move(obj1));

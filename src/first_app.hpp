@@ -30,8 +30,6 @@ namespace SJFGame {
 		Engine::Device device{ window };
 		Engine::Renderer renderer{window, device};
 
-		// note: order of declaration matters (not if globalPool gets descructed in ~FirstApp which is the case; the pools need to be destroyed before the device)
-		std::unique_ptr<Engine::DescriptorPool> globalPool{};
 		GameObject::Map gameObjects;
 
 		void loadGameObjects();

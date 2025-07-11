@@ -25,6 +25,12 @@
     <Filter Include="Source Files\RenderSystems">
       <UniqueIdentifier>{995d096a-b448-4142-9de2-bc4d428b4a3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Model Files">
+      <UniqueIdentifier>{d14760ae-0ebe-48c3-9d62-b0236ff56782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies">
+      <UniqueIdentifier>{1df77059-1e91-42c7-b578-1693909d6a9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\camera.cpp">
@@ -117,8 +123,32 @@
     <ClCompile Include="src\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\imgui_widgets.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\imgui.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\imgui_draw.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\imgui_tables.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_glfw.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_vulkan.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
     <ClCompile Include="src\main_render_system.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\RenderSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui_render_system.cpp">
+      <Filter>Source Files\RenderSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\imgui_demo.cpp">
+      <Filter>Dependencies</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +257,12 @@
     <ClInclude Include="src\main_render_system.hpp">
       <Filter>Header Files\RenderSystems</Filter>
     </ClInclude>
+    <ClInclude Include="src\settings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui_render_system.hpp">
+      <Filter>Header Files\RenderSystems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple_shader.vert">
@@ -254,5 +290,25 @@
     <None Include="task\windows_build.bat">
       <Filter>Task Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\blender_cube.obj">
+      <Filter>Model Files</Filter>
+    </Object>
+    <Object Include="models\colored_cube.obj">
+      <Filter>Model Files</Filter>
+    </Object>
+    <Object Include="models\cube.obj">
+      <Filter>Model Files</Filter>
+    </Object>
+    <Object Include="models\flat_vase.obj">
+      <Filter>Model Files</Filter>
+    </Object>
+    <Object Include="models\quad.obj">
+      <Filter>Model Files</Filter>
+    </Object>
+    <Object Include="models\smooth_vase.obj">
+      <Filter>Model Files</Filter>
+    </Object>
   </ItemGroup>
 </Project>
