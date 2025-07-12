@@ -150,6 +150,9 @@
     <ClCompile Include="external\imgui-1.92.1\imgui_demo.cpp">
       <Filter>Dependencies</Filter>
     </ClCompile>
+    <ClCompile Include="src\line_render_system.cpp">
+      <Filter>Source Files\RenderSystems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.hpp">
@@ -263,6 +266,9 @@
     <ClInclude Include="src\gui_render_system.hpp">
       <Filter>Header Files\RenderSystems</Filter>
     </ClInclude>
+    <ClInclude Include="src\line_render_system.hpp">
+      <Filter>Header Files\RenderSystems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple_shader.vert">
@@ -289,6 +295,12 @@
     </None>
     <None Include="task\windows_build.bat">
       <Filter>Task Files</Filter>
+    </None>
+    <None Include="shaders\line.vert">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shaders\line.frag">
+      <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

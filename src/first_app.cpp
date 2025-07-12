@@ -7,6 +7,7 @@
 #include "simple_render_system.hpp"
 #include "main_render_system.hpp"
 #include "gui_render_system.hpp"
+#include "line_render_system.hpp"
 
 #include "pointlight_render_system.hpp"
 #include "texture.hpp"
@@ -35,12 +36,14 @@ namespace SJFGame {
 
 	void FirstApp::run() {
 
-		Engine::MainRenderSystem main_render_sys{ device };
-		Engine::SimpleRenderSystem simple_render_system{ device, renderer.getSwapChainRenderPass(), 
-			main_render_sys.getGobalSetLayout()};
-		Engine::PointLightRenderSystem point_light_render_system{ device, renderer.getSwapChainRenderPass(), 
-			main_render_sys.getGobalSetLayout() };
+		Engine::MainRenderSystem main_render{ device };
+		Engine::SimpleRenderSystem simple_render{ device, renderer.getSwapChainRenderPass(), 
+			main_render.getGobalSetLayout()};
+		Engine::PointLightRenderSystem point_light_render{ device, renderer.getSwapChainRenderPass(), 
+			main_render.getGobalSetLayout() };
 		Engine::GuiRenderSystem gui_render_sys{ device, window.getGLFWwindow(), renderer.getSwapChainRenderPass() };
+		Engine::LineRenderSystem line_render{ device, renderer.getSwapChainRenderPass(),
+			main_render.getGobalSetLayout() };
 
 		Engine::Camera camera{};
 		//camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
@@ -66,25 +69,25 @@ namespace SJFGame {
 			if (auto cmd_buffer = renderer.beginFrame()) {
 				int frame_index = renderer.getFrameIndex();
 				Engine::Frame frame{frame_index, frame_delta_time, camera, 
-					cmd_buffer, main_render_sys.getGlobalDiscriptorSet(frame_index), gameObjects};
+					cmd_buffer, main_render.getGlobalDiscriptorSet(frame_index), gameObjects};
 
 				// update 
 				Engine::GlobalUniformBufferOutput ubo{};
 				ubo.projectionMatrix = camera.getProjection();
 				ubo.viewMatrix = camera.getView();
 				ubo.inverseViewMatrix = camera.getInverseView();
-				point_light_render_system.update(frame, ubo);
-				main_render_sys.getUboBuffer(frame_index)->writeToBuffer(&ubo);
-				main_render_sys.getUboBuffer(frame_index)->flush();
+				point_light_render.update(frame, ubo);
+				main_render.getUboBuffer(frame_index)->writeToBuffer(&ubo);
+				main_render.getUboBuffer(frame_index)->flush();
 
 				// render
 				renderer.beginSwapChainRenderPass(cmd_buffer);
 
 				// order here matters
-				simple_render_system.renderObjects(frame);
-				point_light_render_system.render(frame);
-
+				simple_render.render(frame);
+				point_light_render.render(frame);
 				gui_render_sys.render(frame);
+				line_render.render(frame);
 
 				renderer.endSwapChainRenderPass(cmd_buffer);
 				renderer.endFrame();
@@ -133,6 +136,13 @@ namespace SJFGame {
 			gameObjects.emplace(point_light.getId(), std::move(point_light));
 		}
 
+		auto cube_model = renderer.createLine(glm::vec3{0.f});
+		auto cube = GameObject::createGameObject();
+		cube.model = cube_model;
+		cube.transform.translation = { -.5f, -1.5f, .3f };
+		cube.color = { .3f, .1f, .6f };
+		cube.drawMode = RENDER_AS_LINES;
+		gameObjects.emplace(cube.getId(), std::move(cube));
 
 		//auto room = Engine::VertexModel::createModelFromFile(device, "models/rooms.obj");
 		//auto obj1 = GameObject::createGameObject();

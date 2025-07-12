@@ -11,14 +11,14 @@
 #include <vector>
 
 namespace SJFGame::Engine {
-	class SimpleRenderSystem {
+	class LineRenderSystem {
 	public:
-		SimpleRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);
-		~SimpleRenderSystem();
+		LineRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);
+		~LineRenderSystem();
 
 		// delete copy constructor and copy operator
-		SimpleRenderSystem(const SimpleRenderSystem&) = delete;
-		SimpleRenderSystem& operator= (const SimpleRenderSystem&) = delete;
+		LineRenderSystem(const LineRenderSystem&) = delete;
+		LineRenderSystem& operator= (const LineRenderSystem&) = delete;
 
 		void render(Frame& frame);
 

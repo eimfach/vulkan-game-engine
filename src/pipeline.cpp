@@ -130,7 +130,6 @@ namespace SJFGame::Engine {
 
 	void Pipeline::defaultCfg(PipelineConfig& cfg) {
 		// INPUT ASSEMBLY STAGE
-
 		cfg.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		cfg.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		cfg.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
@@ -208,6 +207,11 @@ namespace SJFGame::Engine {
 		cfg.colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   
 		cfg.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 		cfg.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+	}
+
+	void Pipeline::setTopology(PipelineConfig& cfg, VkPrimitiveTopology topology, VkPolygonMode polygon_mode) {
+		cfg.inputAssemblyInfo.topology = topology;
+		cfg.rasterizationInfo.polygonMode = polygon_mode;
 	}
 	
 }

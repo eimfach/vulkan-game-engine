@@ -26,7 +26,7 @@ namespace SJFGame::Engine {
 			.addBinding(1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 			.build();
 
-		std::shared_ptr<Texture> texture = std::make_shared<Texture>( device, "textures/meme.png" );
+		std::shared_ptr<Texture> texture = std::make_shared<Texture>( device, "textures/missing.png" );
 
 		VkDescriptorImageInfo image_info{};
 		image_info.sampler = texture->getSampler();

@@ -47,6 +47,7 @@ namespace SJFGame::Engine {
 		void deviceWaitIdle();
 		bool windowShouldClose();
 		std::shared_ptr<VertexModel> createCubeModel(glm::vec3 offset);
+		std::shared_ptr<VertexModel> createLine(glm::vec3 offset);
 	private:
 		Window& window;
 		Device& device;

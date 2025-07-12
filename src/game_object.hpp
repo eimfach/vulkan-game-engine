@@ -39,6 +39,11 @@ namespace SJFGame {
 		float lightIntensity{1.0f};
 	};
 
+	enum RenderProperty {
+		RENDER_DEFAULT = 0,
+		RENDER_AS_LINES = 1,
+	};
+
 	class GameObject {
 	public:
 		using id_t = unsigned int;
@@ -46,6 +51,7 @@ namespace SJFGame {
 
 		glm::vec3 color{};
 		Transform transform{};
+		RenderProperty drawMode = RENDER_DEFAULT;
 
 		// Optional pointer components
 		std::shared_ptr<Engine::VertexModel> model{};
@@ -66,15 +72,13 @@ namespace SJFGame {
 
 		static GameObject createPointLight(float intensity = 5.f, float radius = .1f, glm::vec3 color = glm::vec3{ 1.f });
 
-
 		id_t const getId() { return id; }
 
 
 	private:
 		id_t id;
-
 		GameObject(id_t obj_id) : id{ obj_id } {}
-
-
 	};
+
+
 }

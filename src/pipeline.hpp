@@ -38,6 +38,7 @@ namespace SJFGame::Engine {
 
 		static void defaultCfg(PipelineConfig& cfg);
 		static void enableAlphaBlending(PipelineConfig& cfg);
+		static void setTopology(PipelineConfig& cfg, VkPrimitiveTopology topology, VkPolygonMode polygon_mode = VK_POLYGON_MODE_FILL);
 		void bind(VkCommandBuffer command_buffer);
 
 	private:

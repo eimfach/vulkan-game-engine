@@ -161,6 +161,7 @@
     <ClCompile Include="src\device.cpp" />
     <ClCompile Include="src\first_app.cpp" />
     <ClCompile Include="src\game_object.cpp" />
+    <ClCompile Include="src\line_render_system.cpp" />
     <ClCompile Include="src\main_render_system.cpp" />
     <ClCompile Include="src\movement.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -175,6 +176,7 @@
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\line_render_system.hpp" />
     <ClInclude Include="src\gui_render_system.hpp" />
     <ClInclude Include="src\settings.hpp" />
     <ClInclude Include="src\buffer.hpp" />
@@ -203,6 +205,8 @@
     <None Include="shaders\point_light.vert" />
     <None Include="shaders\simple_shader.frag" />
     <None Include="shaders\simple_shader.vert" />
+    <None Include="shaders\line.frag" />
+    <None Include="shaders\line.vert" />
     <None Include="task\compile_shaders.bat" />
     <None Include="task\unix_build.sh" />
     <None Include="task\windows_build.bat" />

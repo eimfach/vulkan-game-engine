@@ -1,4 +1,4 @@
-#include "simple_render_system.hpp"
+#include "line_render_system.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -12,25 +12,25 @@
 
 namespace SJFGame::Engine {
 
-	struct SimplePushConstantData {
+	struct LinePushConstantData {
 		glm::mat4 modelMatrix{ 1.f };
-		glm::mat4 normalMatrix{ 1.f };
+		glm::vec3 color{1.f, 1.f, 1.f};
 	};
 
-	SimpleRenderSystem::SimpleRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout) : device{device} {
+	LineRenderSystem::LineRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout) : device{ device } {
 		createPipelineLayout(global_set_layout);
 		createPipeline(render_pass);
 	}
 
-	SimpleRenderSystem::~SimpleRenderSystem() {
+	LineRenderSystem::~LineRenderSystem() {
 		vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
 	}
 
-	void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout global_set_layout) {
+	void LineRenderSystem::createPipelineLayout(VkDescriptorSetLayout global_set_layout) {
 		VkPushConstantRange push_constant_range{};
 		push_constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		push_constant_range.offset = 0;
-		push_constant_range.size = sizeof(SimplePushConstantData);
+		push_constant_range.size = sizeof(LinePushConstantData);
 
 		// the pipeline can have multiple descriptor set layouts
 		std::vector<VkDescriptorSetLayout> descriptor_set_layouts{ global_set_layout };
@@ -47,17 +47,18 @@ namespace SJFGame::Engine {
 		}
 	}
 
-	void SimpleRenderSystem::createPipeline(VkRenderPass render_pass) {
+	void LineRenderSystem::createPipeline(VkRenderPass render_pass) {
 		assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
-		Engine::PipelineConfig pipeline_config{};
-		Engine::Pipeline::defaultCfg(pipeline_config);
+		PipelineConfig pipeline_config{};
+		Pipeline::defaultCfg(pipeline_config);
+		Pipeline::setTopology(pipeline_config, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP, VK_POLYGON_MODE_LINE);
 		pipeline_config.renderPass = render_pass;
 		pipeline_config.pipelineLayout = pipelineLayout;
-		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv");
+		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/line.vert.spv", "shaders/line.frag.spv");
 	}
 
-	void SimpleRenderSystem::render(Frame& frame) {
+	void LineRenderSystem::render(Frame& frame) {
 
 		pipeline->bind(frame.cmdBuffer);
 
@@ -72,18 +73,19 @@ namespace SJFGame::Engine {
 		for (auto& kv_pair : frame.gameObjects) {
 			auto& obj = kv_pair.second;
 			if (obj.model == nullptr) continue;
-			if (obj.drawMode > RENDER_DEFAULT) continue;
+			if (obj.drawMode != RENDER_AS_LINES) {
+				continue;
+			}
 
-			SimplePushConstantData push{};
+			LinePushConstantData push{};
 			auto model_matrix = obj.transform.mat4();
 			push.modelMatrix = model_matrix;
-			//push.normalMatrix = obj.transform.normalMatrix();
-			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
+			push.color = obj.color;
 
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
-				sizeof(SimplePushConstantData),
+				sizeof(LinePushConstantData),
 				&push);
 			obj.model->bind(frame.cmdBuffer);
 			obj.model->draw(frame.cmdBuffer);

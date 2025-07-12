@@ -150,7 +150,7 @@ namespace SJFGame::Engine {
 
 		model_builder.verticies = {
 			// left face (white)
-			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, -.5f, -.5f},{.9f, .9f, .9f}},
 			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
 			{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
 			{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
@@ -193,7 +193,23 @@ namespace SJFGame::Engine {
 		}
 		return std::make_shared<VertexModel>(device, model_builder);
 	}
+	// temporary helper function, creates a 1x1x1 cube centered at offset
+	std::shared_ptr<VertexModel> Renderer::createLine(glm::vec3 offset) {
+		VertexModel::Builder model_builder{};
 
+		model_builder.verticies = {
+			// left face (white)
+			{{-.5f, -.5f, -.5f},{.9f, .9f, .9f}},
+			{{-.5f, .5f, .5f}, {.1f, .8f, .1f}},
+			{{-.5f, -.5f, .5f}, {.8f, .1f, .1f}},
+			{{-.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+		};
+
+		for (auto& v : model_builder.verticies) {
+			v.position += offset;
+		}
+		return std::make_shared<VertexModel>(device, model_builder);
+	}
 	void Renderer::deviceWaitIdle() {
 		auto result = vkDeviceWaitIdle(device.device());
 		if (result != VK_SUCCESS) {
