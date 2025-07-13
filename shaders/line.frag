@@ -31,5 +31,5 @@ layout(push_constant) uniform Push {
 
 
 void main() {
-	out_color = vec4(vertex_color, 1.0);
+	out_color = vec4(push.color, 1.0);
 }

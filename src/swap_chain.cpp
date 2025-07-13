@@ -1,5 +1,7 @@
 #include "swap_chain.hpp"
 
+#include "settings.hpp"
+
 // std
 #include <array>
 #include <cstdlib>
@@ -372,37 +374,45 @@ void SwapChain::createSyncObjects() {
   }
 }
 
-VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(
-    const std::vector<VkSurfaceFormatKHR> &availableFormats) {
+VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) {
+  
   for (const auto &availableFormat : availableFormats) {
-    if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
-        availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-        std::cout << "Gamma correction inactive \n"; // VK_FORMAT_B8G8R8A8_UNORM vs VK_FORMAT_B8G8R8A8_SRGB
-      return availableFormat;
-    }
+      if (!Settings::GAMMA_CORRECTION && availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM &&
+          availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+
+          std::cout << "Gamma correction inactive \n"; // VK_FORMAT_B8G8R8A8_UNORM vs VK_FORMAT_B8G8R8A8_SRGB
+          return availableFormat;
+      }
+      else if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
+          availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+
+          std::cout << "Gamma correction active \n";
+          return availableFormat;
+      }
   }
 
   return availableFormats[0];
 }
 
-VkPresentModeKHR SwapChain::chooseSwapPresentMode(
-    const std::vector<VkPresentModeKHR> &availablePresentModes) {
-  for (const auto &availablePresentMode : availablePresentModes) {
-    if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-      std::cout << "Present mode: Mailbox" << std::endl;
-      return availablePresentMode;
-    }
-  }
+VkPresentModeKHR SwapChain::chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) {
+  if (!Settings::VSYNC) {
+      for (const auto &availablePresentMode : availablePresentModes) {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+          std::cout << "Present mode: Mailbox" << std::endl;
+          return availablePresentMode;
+        }
+      }
 
-    //vsync off:
-   for (const auto &availablePresentMode : availablePresentModes) {
-     if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-       std::cout << "Present mode: Immediate" << std::endl;
-       return availablePresentMode;
-     }
+  
+      for (const auto& availablePresentMode : availablePresentModes) {
+          if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+              std::cout << "Present mode: Immediate" << std::endl;
+              return availablePresentMode;
+          }
+      }
    }
 
-  std::cout << "Present mode: V-Sync" << std::endl;
+  // vsync
   return VK_PRESENT_MODE_FIFO_KHR;
 }
 

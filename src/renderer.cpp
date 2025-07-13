@@ -199,10 +199,11 @@ namespace SJFGame::Engine {
 
 		model_builder.verticies = {
 			// left face (white)
-			{{-.5f, -.5f, -.5f},{.9f, .9f, .9f}},
-			{{-.5f, .5f, .5f}, {.1f, .8f, .1f}},
-			{{-.5f, -.5f, .5f}, {.8f, .1f, .1f}},
+			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+			{{.5f, -.5f, -.5f}, {.1f, .8f, .1f}},
+			{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
 			{{-.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+			{{-.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
 		};
 
 		for (auto& v : model_builder.verticies) {
