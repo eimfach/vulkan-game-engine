@@ -2,6 +2,7 @@
 
 #include "device.hpp"
 #include "frame.hpp"
+#include "settings.hpp"
 
 // libs
 #include <imgui.h>
@@ -23,7 +24,13 @@ namespace SJFGame::Engine {
 		Device& device;
 		bool showDemoWindow{true};
 		bool showAnotherWindow{false};
+		bool showMetrics{Settings::SHOW_DETAILED_METRICS };
+		bool showSettings{ true };
+		bool gammaCorrection{ Settings::GAMMA_CORRECTION };
+		bool vsync{ Settings::VSYNC };
 		ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+		void showDebugWindow(ImGuiIO& io, bool* open, const Frame& frame);
 
 	};
 }

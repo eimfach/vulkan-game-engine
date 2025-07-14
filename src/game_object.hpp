@@ -49,6 +49,9 @@ namespace SJFGame {
 		using id_t = unsigned int;
 		using Map = std::unordered_map<id_t, GameObject>;
 
+		std::string name = "name_not_set";
+		bool visible = true;
+
 		glm::vec3 color{};
 		Transform transform{};
 		RenderProperty drawMode = RENDER_DEFAULT;
@@ -78,6 +81,7 @@ namespace SJFGame {
 	private:
 		id_t id;
 		GameObject(id_t obj_id) : id{ obj_id } {}
+
 	};
 
 

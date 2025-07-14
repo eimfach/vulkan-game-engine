@@ -86,8 +86,8 @@ namespace SJFGame {
 				// order here matters
 				simple_render.render(frame);
 				point_light_render.render(frame);
-				gui_render_sys.render(frame);
 				line_render.render(frame);
+				gui_render_sys.render(frame);
 
 				renderer.endSwapChainRenderPass(cmd_buffer);
 				renderer.endFrame();
