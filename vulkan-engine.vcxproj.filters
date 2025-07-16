@@ -29,7 +29,7 @@
       <UniqueIdentifier>{d14760ae-0ebe-48c3-9d62-b0236ff56782}</UniqueIdentifier>
     </Filter>
     <Filter Include="Dependencies">
-      <UniqueIdentifier>{1df77059-1e91-42c7-b578-1693909d6a9d}</UniqueIdentifier>
+      <UniqueIdentifier>{7495dace-631c-4a86-9acb-48de0c0427b0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,10 +123,28 @@
     <ClCompile Include="src\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui-1.92.1\imgui_widgets.cpp">
+    <ClCompile Include="src\main_render_system.cpp">
+      <Filter>Source Files\RenderSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui_render_system.cpp">
+      <Filter>Source Files\RenderSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\line_render_system.cpp">
+      <Filter>Source Files\RenderSystems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\assets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_glfw.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_vulkan.cpp">
       <Filter>Dependencies</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui-1.92.1\imgui.cpp">
+      <Filter>Dependencies</Filter>
+    </ClCompile>
+    <ClCompile Include="external\imgui-1.92.1\imgui_demo.cpp">
       <Filter>Dependencies</Filter>
     </ClCompile>
     <ClCompile Include="external\imgui-1.92.1\imgui_draw.cpp">
@@ -135,23 +153,8 @@
     <ClCompile Include="external\imgui-1.92.1\imgui_tables.cpp">
       <Filter>Dependencies</Filter>
     </ClCompile>
-    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_glfw.cpp">
+    <ClCompile Include="external\imgui-1.92.1\imgui_widgets.cpp">
       <Filter>Dependencies</Filter>
-    </ClCompile>
-    <ClCompile Include="external\imgui-1.92.1\backends\imgui_impl_vulkan.cpp">
-      <Filter>Dependencies</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main_render_system.cpp">
-      <Filter>Source Files\RenderSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gui_render_system.cpp">
-      <Filter>Source Files\RenderSystems</Filter>
-    </ClCompile>
-    <ClCompile Include="external\imgui-1.92.1\imgui_demo.cpp">
-      <Filter>Dependencies</Filter>
-    </ClCompile>
-    <ClCompile Include="src\line_render_system.cpp">
-      <Filter>Source Files\RenderSystems</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="src\line_render_system.hpp">
       <Filter>Header Files\RenderSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\assets.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
