@@ -12,6 +12,7 @@
 #include "pointlight_render_system.hpp"
 #include "texture.hpp"
 #include "vertex_model.hpp"
+#include "assets.hpp"
 //#include "settings.hpp"
 
 // libs
@@ -136,13 +137,15 @@ namespace SJFGame {
 			gameObjects.emplace(point_light.getId(), std::move(point_light));
 		}
 
-		auto cube_model = renderer.createLine(glm::vec3{0.f});
-		auto cube = GameObject::createGameObject();
-		cube.model = cube_model;
-		cube.transform.translation = { -.5f, -1.5f, .3f };
-		cube.color = { .3f, .1f, .6f };
-		cube.drawMode = RENDER_AS_LINES;
-		gameObjects.emplace(cube.getId(), std::move(cube));
+		auto line_model = renderer.createLine(glm::vec3{0.f});
+		auto lines = GameObject::createGameObject();
+		lines.model = line_model;
+		lines.transform.translation = { -.5f, -1.5f, .3f };
+		lines.color = { .3f, .1f, .6f };
+		lines.drawMode = RENDER_AS_LINES;
+		gameObjects.emplace(lines.getId(), std::move(lines));
+
+		auto cube_model = Assets::import_model("models/blender_cube.glb");
 
 		//auto room = Engine::VertexModel::createModelFromFile(device, "models/rooms.obj");
 		//auto obj1 = GameObject::createGameObject();

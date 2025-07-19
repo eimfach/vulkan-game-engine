@@ -118,13 +118,13 @@
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)external\assimp-master\include;$(ProjectDir)external\imgui-1.92.1;$(ProjectDir)\external\tinygltf2;$(ProjectDir)\external\tinyobjloader;$(ProjectDir)external\glfw\include;$(ProjectDir)\external\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)external\fastgltf\include;$(ProjectDir)external\imgui-1.92.1;$(ProjectDir)\external\tinygltf2;$(ProjectDir)\external\tinyobjloader;$(ProjectDir)external\glfw\include;$(ProjectDir)\external\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)external\assimp-master\lib\Debug;$(ProjectDir)external\glfw\lib\x64\Debug;C:\VulkanSDK\1.4.313.2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3_mtd.lib;assimp-vc143-mtd.lib;zlibstatic-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)external\fastgltf\lib\x64\Debug;$(ProjectDir)external\glfw\lib\x64\Debug;C:\VulkanSDK\1.4.313.2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3_mtd.lib;fastgltf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -277,12 +277,12 @@
       <Message>Compiled Shaders</Message>
     </CustomBuildStep>
     <ClCompile>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)external\assimp-master\include;$(ProjectDir)external\imgui-1.92.1;$(ProjectDir)external\tinygltf2;$(ProjectDir)external\tinyobjloader;$(ProjectDir)external\glfw\include;$(ProjectDir)external\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)external\fastgltf\include;$(ProjectDir)external\imgui-1.92.1;$(ProjectDir)external\tinygltf2;$(ProjectDir)external\tinyobjloader;$(ProjectDir)external\glfw\include;$(ProjectDir)external\glm;C:\VulkanSDK\1.4.313.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)external\assimp-master\lib\Release;$(ProjectDir)external\glfw\lib\x64\Release;C:\VulkanSDK\1.4.313.2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">vulkan-1.lib;glfw3_mt.lib;assimp-vc143-mt.lib;zlibstatic-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)external\fastgltf\lib\x64\Release;$(ProjectDir)external\glfw\lib\x64\Release;C:\VulkanSDK\1.4.313.2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">vulkan-1.lib;glfw3_mt.lib;fastgltf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MultiThreadedDebug</RuntimeLibrary>
