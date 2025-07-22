@@ -13,6 +13,7 @@
 #include "texture.hpp"
 #include "vertex_model.hpp"
 #include "assets.hpp"
+#include "entity_manager.hpp"
 //#include "settings.hpp"
 
 // libs
@@ -38,16 +39,16 @@ namespace SJFGame {
 	void FirstApp::run() {
 
 		Engine::MainRenderSystem main_render{ device };
-		Engine::SimpleRenderSystem simple_render{ device, renderer.getSwapChainRenderPass(), 
-			main_render.getGobalSetLayout()};
-		Engine::PointLightRenderSystem point_light_render{ device, renderer.getSwapChainRenderPass(), 
+		Engine::SimpleRenderSystem simple_render{ device, renderer.getSwapChainRenderPass(),
+			main_render.getGobalSetLayout() };
+		Engine::PointLightRenderSystem point_light_render{ device, renderer.getSwapChainRenderPass(),
 			main_render.getGobalSetLayout() };
 		Engine::GuiRenderSystem gui_render_sys{ device, window.getGLFWwindow(), renderer.getSwapChainRenderPass() };
 		Engine::LineRenderSystem line_render{ device, renderer.getSwapChainRenderPass(),
 			main_render.getGobalSetLayout() };
 
 		Engine::Camera camera{};
-		//camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
+		camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
 		auto viewer = GameObject::createGameObject();
 		viewer.transform.translation.z = -2.5f;
 		Engine::MovementControl camera_control{};
@@ -70,7 +71,7 @@ namespace SJFGame {
 			if (auto cmd_buffer = renderer.beginFrame()) {
 				int frame_index = renderer.getFrameIndex();
 				Engine::Frame frame{frame_index, frame_delta_time, camera, 
-					cmd_buffer, main_render.getGlobalDiscriptorSet(frame_index), gameObjects};
+					cmd_buffer, main_render.getGlobalDiscriptorSet(frame_index), gameObjects, ecsManager };
 
 				// update 
 				Engine::GlobalUniformBufferOutput ubo{};
@@ -99,7 +100,7 @@ namespace SJFGame {
 	}
 
 	void FirstApp::loadGameObjects() {
-		//auto cube_model = renderer.createCubeModel({.0f, .0f, .0f});
+		auto cube_model = renderer.createCubeModel({.0f, .0f, .0f});
 		auto model = Engine::VertexModel::createModelFromFile(device, "models/flat_vase.obj");
 		auto obj = GameObject::createGameObject();
 		obj.model = model;
@@ -137,25 +138,42 @@ namespace SJFGame {
 			gameObjects.emplace(point_light.getId(), std::move(point_light));
 		}
 
-		auto line_model = renderer.createLine(glm::vec3{0.f});
-		auto lines = GameObject::createGameObject();
-		lines.model = line_model;
-		lines.transform.translation = { -.5f, -1.5f, .3f };
-		lines.color = { .3f, .1f, .6f };
-		lines.drawMode = RENDER_AS_LINES;
-		gameObjects.emplace(lines.getId(), std::move(lines));
+		//auto lines = GameObject::createGameObject();
+		//lines.model = line_model;
+		//lines.transform.translation = { -.5f, -1.5f, .3f };
+		//lines.color = { .3f, .1f, .6f };
+		//lines.drawMode = RENDER_AS_LINES;
+		//gameObjects.emplace(lines.getId(), std::move(lines));
 
 		auto cube_model = Assets::import_model("models/blender_cube.glb");
 
-		//auto room = Engine::VertexModel::createModelFromFile(device, "models/rooms.obj");
-		//auto obj1 = GameObject::createGameObject();
-		//obj1.model = room;
-		//obj1.transform.translation = { .5f, .5f, 0.f };
-		//obj1.transform.scale = glm::vec3{ 1.f };
-		//gameObjects.emplace(obj1.getId(), std::move(obj1));
+		auto room = Engine::VertexModel::createModelFromFile(device, "models/rooms.obj");
+		auto obj1 = GameObject::createGameObject();
+		obj1.model = room;
+		obj1.transform.translation = { .5f, .5f, 0.f };
+		obj1.transform.scale = glm::vec3{ 1.f };
+		gameObjects.emplace(obj1.getId(), std::move(obj1));
 
 		gameObjects.emplace(obj.getId(), std::move(obj));
 		gameObjects.emplace(obj1.getId(), std::move(obj1));
 		gameObjects.emplace(plane_obj.getId(), std::move(plane_obj));
+
+		///////////////////////////////////////////
+		// new ECS System                        //
+		///////////////////////////////////////////
+		auto line_model = renderer.createLine(glm::vec3{0.f});
+		auto e = ecsManager.createEntity();
+		ECS::Mesh mesh{ line_model };
+		ecsManager.addComponent(e, mesh);
+		ECS::Transform transform{};
+		transform.translation = { -.5f, -1.5f, .3f };
+		ecsManager.addComponent(e, transform);
+		ECS::RenderProperties props{true, ECS::RENDER_AS_LINES};
+		ecsManager.addComponent(e, props);
+		ECS::Color color{ { .3f, .1f, .6f } };
+		ecsManager.addComponent(e, color);
+		ecsManager.commit(e);
+
+
 	}
 }

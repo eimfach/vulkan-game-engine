@@ -124,7 +124,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)external\fastgltf\lib\x64\Debug;$(ProjectDir)external\glfw\lib\x64\Debug;C:\VulkanSDK\1.4.313.2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3_mtd.lib;fastgltf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib;glfw3_mtd.lib;fastgltf_mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -153,6 +153,7 @@
     <ClCompile Include="external\imgui-1.92.1\imgui_tables.cpp" />
     <ClCompile Include="external\imgui-1.92.1\imgui_widgets.cpp" />
     <ClCompile Include="src\assets.cpp" />
+    <ClCompile Include="src\entity_manager.cpp" />
     <ClCompile Include="src\gui_render_system.cpp" />
     <ClCompile Include="src\buffer.cpp" />
     <ClCompile Include="src\camera.cpp" />
@@ -172,9 +173,11 @@
     <ClCompile Include="src\window.cpp" />
     <ClCompile Include="src\pipeline.cpp" />
     <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\assets.hpp" />
+    <ClInclude Include="src\entity_manager.hpp" />
     <ClInclude Include="src\line_render_system.hpp" />
     <ClInclude Include="src\gui_render_system.hpp" />
     <ClInclude Include="src\settings.hpp" />
@@ -282,7 +285,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)external\fastgltf\lib\x64\Release;$(ProjectDir)external\glfw\lib\x64\Release;C:\VulkanSDK\1.4.313.2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">vulkan-1.lib;glfw3_mt.lib;fastgltf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">vulkan-1.lib;glfw3_mt.lib;fastgltf_mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MultiThreadedDebug</RuntimeLibrary>

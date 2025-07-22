@@ -5,6 +5,7 @@
 #include "game_object.hpp"
 #include "pipeline.hpp"
 #include "frame.hpp"
+#include "entity_manager.hpp"
 
 // std
 #include <memory>
@@ -27,6 +28,7 @@ namespace SJFGame::Engine {
 
 		VkPipelineLayout pipelineLayout;
 		std::unique_ptr<Engine::Pipeline> pipeline;
+
 
 		void createPipelineLayout(VkDescriptorSetLayout global_set_layout);
 		void createPipeline(VkRenderPass render_pass);

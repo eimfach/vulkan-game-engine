@@ -2,9 +2,10 @@
 
 #include "camera.hpp"
 #include "game_object.hpp"
+#include "entity_manager.hpp"
 
 // lib
-#include "vulkan/vulkan.h";
+#include "vulkan/vulkan.h"
 
 namespace SJFGame::Engine {
 
@@ -47,5 +48,6 @@ namespace SJFGame::Engine {
 		VkCommandBuffer cmdBuffer;
 		VkDescriptorSet globalDescriptorSet;
 		GameObject::Map& gameObjects;
+		ECS::Manager& ecsManager;
 	};
 }

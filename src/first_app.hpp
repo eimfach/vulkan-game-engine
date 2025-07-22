@@ -6,6 +6,7 @@
 #include "vertex_base.hpp"
 #include "game_object.hpp"
 #include "descriptors.hpp"
+#include "entity_manager.hpp"
 
 // std
 #include <memory>
@@ -31,6 +32,7 @@ namespace SJFGame {
 		Engine::Renderer renderer{window, device};
 
 		GameObject::Map gameObjects;
+		ECS::Manager ecsManager{};
 
 		void loadGameObjects();
 	};

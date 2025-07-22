@@ -1,5 +1,7 @@
 #include "pipeline.hpp"
+
 #include "vertex_model.hpp"
+#include "utils.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -19,20 +21,6 @@ namespace SJFGame::Engine {
 		vkDestroyShaderModule(device.device(), vertexShaderModule, nullptr);
 		vkDestroyShaderModule(device.device(), fragmentShaderModule, nullptr);
 		vkDestroyPipeline(device.device(), gpuPipeline, nullptr);
-	}
-
-	std::vector<char> Pipeline::read_file(const std::string& filepath) {
-		std::string engine_path = ENGINE_DIR + filepath;
-		std::ifstream file{ engine_path, std::ios::binary };
-
-		if (!file.is_open()) {
-			throw std::runtime_error("Failed to open file: " + engine_path);
-		}
-
-		std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
-
-		file.close();
-		return buffer;
 	}
 
 	void Pipeline::createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule) {
@@ -55,8 +43,8 @@ namespace SJFGame::Engine {
 		assert(cfg.pipelineLayout != VK_NULL_HANDLE && "Cannot create graphics pipeline: no pipeline layout provided in config");
 		assert(cfg.renderPass != VK_NULL_HANDLE && "Cannot create graphics pipeline: no pipeline layout provided in config");
 
-		auto vertex_code = read_file(vertex_filepath);
-		auto fragment_code = read_file(fragment_filepath);
+		auto vertex_code = Utils::read_file(vertex_filepath);
+		auto fragment_code = Utils::read_file(fragment_filepath);
 
 		std::cout << "Vertex Shader Code size is: " << vertex_code.size() << "\n";
 		std::cout << "Fragment Shader Code size is: " << fragment_code.size() << "\n";

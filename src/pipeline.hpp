@@ -47,7 +47,6 @@ namespace SJFGame::Engine {
 		VkShaderModule vertexShaderModule;
 		VkShaderModule fragmentShaderModule;
 
-		static std::vector<char> read_file(const std::string& filepath);
 		void createGraphicsPipeline(const PipelineConfig& cfg, const std::string& vertex_filepath, const std::string& fragment_filepath);
 		void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 	};

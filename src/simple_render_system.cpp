@@ -1,5 +1,7 @@
 #include "simple_render_system.hpp"
 
+#include "entity_manager.hpp"
+
 // libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -68,6 +70,28 @@ namespace SJFGame::Engine {
 			&frame.globalDescriptorSet,
 			0, nullptr
 		);
+
+		//auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
+		//auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
+
+		//ECS::ComponentsMask mask = frame.ecsManager.createComponentsMask<ECS::Transform, ECS::Mesh>();
+		//for (ECS::EntityId id : frame.ecsManager.getGroup(mask)) {
+		//	SimplePushConstantData push{};
+		//	auto model_matrix = transforms[id].mat4();
+		//	push.modelMatrix = model_matrix;
+		//	//push.normalMatrix = obj.transform.normalMatrix();
+		//	push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
+
+		//	auto& model = meshes[id].model;
+
+		//	vkCmdPushConstants(frame.cmdBuffer,
+		//		pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+		//		0,
+		//		sizeof(SimplePushConstantData),
+		//		&push);
+		//	model->bind(frame.cmdBuffer);
+		//	model->draw(frame.cmdBuffer);
+		//}
 
 		for (auto& kv_pair : frame.gameObjects) {
 			auto& obj = kv_pair.second;

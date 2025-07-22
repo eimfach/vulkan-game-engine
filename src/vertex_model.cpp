@@ -23,7 +23,7 @@ namespace std {
 	struct hash<SJFGame::Engine::VertexBase> {
 		size_t operator()(SJFGame::Engine::VertexBase const &vertex) const {
 			size_t seed = 0;
-			SJFGame::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+			SJFGame::Utils::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
 			return seed;
 		}
 	};

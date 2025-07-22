@@ -156,6 +156,12 @@
     <ClCompile Include="external\imgui-1.92.1\imgui_widgets.cpp">
       <Filter>Dependencies</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.hpp">
@@ -273,6 +279,9 @@
       <Filter>Header Files\RenderSystems</Filter>
     </ClInclude>
     <ClInclude Include="src\assets.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
