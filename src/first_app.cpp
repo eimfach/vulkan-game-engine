@@ -145,15 +145,6 @@ namespace SJFGame {
 		//lines.drawMode = RENDER_AS_LINES;
 		//gameObjects.emplace(lines.getId(), std::move(lines));
 
-		auto cube_model = Assets::import_model("models/blender_cube.glb");
-
-		auto room = Engine::VertexModel::createModelFromFile(device, "models/rooms.obj");
-		auto obj1 = GameObject::createGameObject();
-		obj1.model = room;
-		obj1.transform.translation = { .5f, .5f, 0.f };
-		obj1.transform.scale = glm::vec3{ 1.f };
-		gameObjects.emplace(obj1.getId(), std::move(obj1));
-
 		gameObjects.emplace(obj.getId(), std::move(obj));
 		gameObjects.emplace(obj1.getId(), std::move(obj1));
 		gameObjects.emplace(plane_obj.getId(), std::move(plane_obj));
@@ -168,7 +159,7 @@ namespace SJFGame {
 		ECS::Transform transform{};
 		transform.translation = { -.5f, -1.5f, .3f };
 		ecsManager.addComponent(e, transform);
-		ECS::RenderProperties props{true, ECS::RENDER_AS_LINES};
+		ECS::RenderProperties props{ECS::RENDER_AS_LINES};
 		ecsManager.addComponent(e, props);
 		ECS::Color color{ { .3f, .1f, .6f } };
 		ecsManager.addComponent(e, color);

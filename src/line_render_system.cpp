@@ -70,25 +70,47 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		for (auto& kv_pair : frame.gameObjects) {
-			auto& obj = kv_pair.second;
-			if (obj.model == nullptr) continue;
-			if (obj.drawMode != RENDER_AS_LINES) {
-				continue;
-			}
+		auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
+		auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
+		auto& colors = frame.ecsManager.getComponents<ECS::Color>();
+		auto& props = frame.ecsManager.getComponents<ECS::RenderProperties>();
 
+		for (ECS::EntityId id : frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Color, ECS::RenderProperties>()) {
 			LinePushConstantData push{};
-			auto model_matrix = obj.transform.mat4();
+			auto model_matrix = transforms[id].mat4();
 			push.modelMatrix = model_matrix;
-			push.color = obj.color;
+			push.color = colors[id].rgb;
+			auto& model = meshes[id].model;
 
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
 				sizeof(LinePushConstantData),
 				&push);
-			obj.model->bind(frame.cmdBuffer);
-			obj.model->draw(frame.cmdBuffer);
+
+			model->bind(frame.cmdBuffer);
+			model->draw(frame.cmdBuffer);
 		}
+
+		//for (auto& kv_pair : frame.gameObjects) {
+		//	auto& obj = kv_pair.second;
+		//	if (obj.model == nullptr) continue;
+		//	if (obj.drawMode != RENDER_AS_LINES) {
+		//		continue;
+		//	}
+
+		//	LinePushConstantData push{};
+		//	auto model_matrix = obj.transform.mat4();
+		//	push.modelMatrix = model_matrix;
+		//	push.color = obj.color;
+
+		//	vkCmdPushConstants(frame.cmdBuffer,
+		//		pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+		//		0,
+		//		sizeof(LinePushConstantData),
+		//		&push);
+		//	obj.model->bind(frame.cmdBuffer);
+		//	obj.model->draw(frame.cmdBuffer);
+		//}
 	}
 }

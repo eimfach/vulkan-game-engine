@@ -28,8 +28,8 @@ namespace SJFGame::ECS {
 	};
 
 	struct RenderProperties {
-		uint8_t drawMode = RENDER_DEFAULT;
-		bool visible = true;
+		std::uint8_t drawMode{RENDER_DEFAULT};
+		bool visible{true};
 	};
 
 	struct Transform {
@@ -62,11 +62,11 @@ namespace SJFGame::ECS {
 	};
 
 	struct Mesh {
-		std::shared_ptr<Engine::VertexModel> model{};
+		std::shared_ptr<Engine::VertexModel> model = nullptr;
 	};
 
 	struct Color {
-		glm::vec3 rgb = { 1.f, 1.f, 1.f };
+		glm::vec3 rgb{ 1.f, 1.f, 1.f };
 	};
 
 	using EntityId = std::uint16_t;
@@ -74,7 +74,7 @@ namespace SJFGame::ECS {
 
 	struct Entity {
 		EntityId id{};
-		ComponentsMask has_components_in{};
+		ComponentsMask has_components_bitmask{};
 	};
 
 	using ComponentStorage = std::tuple<
@@ -92,31 +92,25 @@ namespace SJFGame::ECS {
 		std::pair<Transform, EntityId>,
 		std::pair<PointLight, EntityId>,
 		std::pair<Mesh, EntityId>,
-		std::vector<Color, EntityId>
+		std::pair<Color, EntityId>
 	>;
 
 	class Manager {
 	public:
 		Entity createEntity();
 		void commit(Entity e);
-		std::vector<EntityId>& getGroup(ComponentsMask components_mask);
+
+		template <typename... T> std::vector<EntityId>& getEntityGroup() {
+			ComponentsMask mask = createComponentsMask<T...>();
+			assert(entityGroups.contains(mask) && "Requested Component Group does not exist!");
+			return entityGroups.at(mask);
+		}
 
 		template<typename T> void addComponent(Entity& entity, T component) {
 			std::vector<T>& t_components = std::get<std::vector<T>>(components);
 			t_components.push_back(component);
 			
-			EntityId index = std::get<std::pair<T, EntityId>>(componentIndex).second;
-			entity.has_components_in |= 1 << index;
-		}
-
-		template<typename T> EntityId entity_type_get_tuple_index() {
-			return std::get<std::pair<T, EntityId>>(componentIndex).second;
-		}
-
-		template<typename... T> ComponentsMask createComponentsMask() {
-			ComponentsMask mask{};
-			((mask |= 1 << entity_type_get_tuple_index<T>()), ...);
-			return mask;
+			entity.has_components_bitmask |= 1 << entity_type_get_tuple_index<T>();
 		}
 
 		template<typename T> std::vector<T>& getComponents() {
@@ -136,7 +130,7 @@ namespace SJFGame::ECS {
 		bool commitStage{false};
 		std::unordered_map<ComponentsMask, std::vector<EntityId>> entityGroups{};
 		ComponentStorage components{};
-		const ComponentStorageIndex componentIndex{ 
+		ComponentStorageIndex componentIndex{ 
 			{{}, 0},
 			{{}, 1},
 			{{}, 2},
@@ -145,5 +139,14 @@ namespace SJFGame::ECS {
 			{{}, 5}
 		};
 
+		template<typename T> EntityId entity_type_get_tuple_index() {
+			return std::get<std::pair<T, EntityId>>(componentIndex).second;
+		}
+
+		template<typename... T> ComponentsMask createComponentsMask() {
+			ComponentsMask mask{};
+			((mask |= 1 << entity_type_get_tuple_index<T>()), ...);
+			return mask;
+		}
 	};
 }
