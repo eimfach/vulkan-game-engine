@@ -4,21 +4,23 @@ namespace SJFGame::ECS {
 	Manager::Manager() {};
 	Manager::~Manager() {};
 
-	Entity Manager::createEntity() {
+	Entity Manager::createEntity(bool set_default_components) {
 		assert(!commitStage && "Cannot create new entity, because another is uncommited");
 		commitStage = true;
 		assert(counter < MAX_ENTITIES && "MAX Entities reached!");
 
-		return { ++counter, {} };
+		Entity e{ counter++, {} };
+		return e;
 	}
 
 	void Manager::commit(Entity e) {
-		if (!entityGroups.contains(e.has_components_bitmask)) {
-			entityGroups.emplace(e.has_components_bitmask, e.id);
+		if (entityGroups.count(e.hasComponentsBitmask) == 0) {
+			entityGroups.emplace(e.hasComponentsBitmask, std::vector<EntityId>{e.id});
 		}
 		else {
-			entityGroups.at(e.has_components_bitmask).push_back(e.id);
+			entityGroups.at(e.hasComponentsBitmask).push_back(e.id);
 		}
+		entities.push_back(e);
 		commitStage = false;
 	}
 

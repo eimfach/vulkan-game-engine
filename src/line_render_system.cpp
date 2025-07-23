@@ -1,5 +1,7 @@
 #include "line_render_system.hpp"
 
+#include "settings.hpp"
+
 // libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -73,9 +75,14 @@ namespace SJFGame::Engine {
 		auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
 		auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
 		auto& colors = frame.ecsManager.getComponents<ECS::Color>();
-		auto& props = frame.ecsManager.getComponents<ECS::RenderProperties>();
+		auto& props = frame.ecsManager.getComponents<ECS::Visibility>();
+		for (ECS::EntityId id : frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Color, ECS::Visibility, ECS::RenderLines>()) {
+			glm::vec3 direction_to_camera{transforms[id].translation - frame.camera.getPosition()};
+			float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
+			if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
+				continue;
+			}
 
-		for (ECS::EntityId id : frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Color, ECS::RenderProperties>()) {
 			LinePushConstantData push{};
 			auto model_matrix = transforms[id].mat4();
 			push.modelMatrix = model_matrix;
@@ -98,12 +105,10 @@ namespace SJFGame::Engine {
 		//	if (obj.drawMode != RENDER_AS_LINES) {
 		//		continue;
 		//	}
-
 		//	LinePushConstantData push{};
 		//	auto model_matrix = obj.transform.mat4();
 		//	push.modelMatrix = model_matrix;
 		//	push.color = obj.color;
-
 		//	vkCmdPushConstants(frame.cmdBuffer,
 		//		pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 		//		0,

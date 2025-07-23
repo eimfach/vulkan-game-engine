@@ -27,10 +27,11 @@ namespace SJFGame::ECS {
 		RENDER_AS_LINES = 1,
 	};
 
-	struct RenderProperties {
-		std::uint8_t drawMode{RENDER_DEFAULT};
+	struct Visibility {
 		bool visible{true};
 	};
+
+	struct RenderLines {};
 
 	struct Transform {
 		glm::vec3 translation{}; // position offset
@@ -74,47 +75,58 @@ namespace SJFGame::ECS {
 
 	struct Entity {
 		EntityId id{};
-		ComponentsMask has_components_bitmask{};
+		ComponentsMask hasComponentsBitmask{};
 	};
 
-	using ComponentStorage = std::tuple<
+	using GeneralComponentStorage = std::tuple<
 		std::vector<Identification>,
-		std::vector<RenderProperties>,
+		std::vector<Visibility>,
 		std::vector<Transform>,
 		std::vector<PointLight>,
 		std::vector<Mesh>,
-		std::vector<Color>
+		std::vector<Color>,
+		std::vector<RenderLines>
 	>;
 
-	using ComponentStorageIndex = std::tuple<
+	using GeneralComponentStorageIndex = std::tuple<
 		std::pair<Identification, EntityId>,
-		std::pair<RenderProperties, EntityId>,
+		std::pair<Visibility, EntityId>,
 		std::pair<Transform, EntityId>,
 		std::pair<PointLight, EntityId>,
 		std::pair<Mesh, EntityId>,
-		std::pair<Color, EntityId>
+		std::pair<Color, EntityId>,
+		std::pair<RenderLines, EntityId>
 	>;
 
 	class Manager {
 	public:
-		Entity createEntity();
+		Entity createEntity(bool set_default_components = true);
 		void commit(Entity e);
-
-		template <typename... T> std::vector<EntityId>& getEntityGroup() {
-			ComponentsMask mask = createComponentsMask<T...>();
-			assert(entityGroups.contains(mask) && "Requested Component Group does not exist!");
-			return entityGroups.at(mask);
-		}
 
 		template<typename T> void addComponent(Entity& entity, T component) {
 			std::vector<T>& t_components = std::get<std::vector<T>>(components);
 			t_components.push_back(component);
 			
-			entity.has_components_bitmask |= 1 << entity_type_get_tuple_index<T>();
+			entity.hasComponentsBitmask |= 1 << entity_type_get_tuple_index<T>();
 		}
 
 		template<typename T> std::vector<T>& getComponents() {
 			return std::get<std::vector<T>>(components);
+		}
+
+		template<typename T> T& getEntityComponent(EntityId id) {
+			return getComponents<T>().at(id);
+		}
+
+		template<typename... T> bool hasEntityComponents(EntityId id) {
+			ComponentsMask requested_mask = createComponentsMask<T...>();
+			return ((requested_mask & entities[id].hasComponentsBitmask) == requested_mask);
+		}
+
+		template <typename... T> std::vector<EntityId>& getEntityGroup() {
+			ComponentsMask mask = createComponentsMask<T...>();
+			assert((entityGroups.count(mask) > 0) && "Requested Component Group does not exist!");
+			return entityGroups.at(mask);
 		}
 
 		// delete copy constructor and copy operator
@@ -128,15 +140,18 @@ namespace SJFGame::ECS {
 		const EntityId MAX_ENTITIES{65000};
 		EntityId counter{};
 		bool commitStage{false};
+		std::vector<Entity> entities{};
+		// TODO: Entity can be in multiple groups ?
 		std::unordered_map<ComponentsMask, std::vector<EntityId>> entityGroups{};
-		ComponentStorage components{};
-		ComponentStorageIndex componentIndex{ 
+		GeneralComponentStorage components{};
+		GeneralComponentStorageIndex componentIndex{ 
 			{{}, 0},
 			{{}, 1},
 			{{}, 2},
 			{{}, 3},
 			{{}, 4},
-			{{}, 5}
+			{{}, 5},
+			{{}, 6}
 		};
 
 		template<typename T> EntityId entity_type_get_tuple_index() {

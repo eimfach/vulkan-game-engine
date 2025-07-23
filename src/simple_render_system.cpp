@@ -73,17 +73,15 @@ namespace SJFGame::Engine {
 
 		//auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
 		//auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
-
-		//ECS::ComponentsMask mask = frame.ecsManager.createComponentsMask<ECS::Transform, ECS::Mesh>();
-		//for (ECS::EntityId id : frame.ecsManager.getGroup(mask)) {
+		//auto& colors = frame.ecsManager.getComponents<ECS::Color>();
+		//auto& props = frame.ecsManager.getComponents<ECS::Visibility>();
+		//for (ECS::EntityId id : frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Visibility>()) {
 		//	SimplePushConstantData push{};
 		//	auto model_matrix = transforms[id].mat4();
 		//	push.modelMatrix = model_matrix;
 		//	//push.normalMatrix = obj.transform.normalMatrix();
 		//	push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
-
 		//	auto& model = meshes[id].model;
-
 		//	vkCmdPushConstants(frame.cmdBuffer,
 		//		pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 		//		0,
@@ -97,13 +95,11 @@ namespace SJFGame::Engine {
 			auto& obj = kv_pair.second;
 			if (obj.model == nullptr) continue;
 			if (obj.drawMode > RENDER_DEFAULT) continue;
-
 			SimplePushConstantData push{};
 			auto model_matrix = obj.transform.mat4();
 			push.modelMatrix = model_matrix;
 			//push.normalMatrix = obj.transform.normalMatrix();
 			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
-
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,

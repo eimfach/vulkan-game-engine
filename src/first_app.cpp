@@ -14,7 +14,7 @@
 #include "vertex_model.hpp"
 #include "assets.hpp"
 #include "entity_manager.hpp"
-//#include "settings.hpp"
+#include "settings.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -66,7 +66,7 @@ namespace SJFGame {
 			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, viewer);
 			camera.setViewYXZ(viewer.transform.translation, viewer.transform.rotation);
 			float aspect = renderer.getAspectRatio();
-			camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 100.f);
+			camera.setPerspectiveProjection(glm::radians(Settings::FOV_DEGREES), aspect, Settings::NEAR_PLANE, Settings::FAR_PLANE);
 
 			if (auto cmd_buffer = renderer.beginFrame()) {
 				int frame_index = renderer.getFrameIndex();
@@ -86,8 +86,8 @@ namespace SJFGame {
 				renderer.beginSwapChainRenderPass(cmd_buffer);
 
 				// order here matters
-				simple_render.render(frame);
-				point_light_render.render(frame);
+				//simple_render.render(frame);
+				//point_light_render.render(frame);
 				line_render.render(frame);
 				gui_render_sys.render(frame);
 
@@ -152,19 +152,34 @@ namespace SJFGame {
 		///////////////////////////////////////////
 		// new ECS System                        //
 		///////////////////////////////////////////
-		auto line_model = renderer.createLine(glm::vec3{0.f});
-		auto e = ecsManager.createEntity();
-		ECS::Mesh mesh{ line_model };
-		ecsManager.addComponent(e, mesh);
-		ECS::Transform transform{};
-		transform.translation = { -.5f, -1.5f, .3f };
-		ecsManager.addComponent(e, transform);
-		ECS::RenderProperties props{ECS::RENDER_AS_LINES};
-		ecsManager.addComponent(e, props);
-		ECS::Color color{ { .3f, .1f, .6f } };
-		ecsManager.addComponent(e, color);
-		ecsManager.commit(e);
+		auto line_model = renderer.createLine(glm::vec3{ 0.f });
 
+		for (int i = 0; i < 30000; i++)
+		{
+			auto e = ecsManager.createEntity();
+			ecsManager.addComponent(e, ECS::RenderLines{});
+			ECS::Transform transform{};
+			const float z{ float(i) * .025f };
+			transform.translation = { -.5f, -1.5f, z };
+			ECS::Mesh mesh{ line_model };
+			ecsManager.addComponent(e, mesh);
+
+			ecsManager.addComponent(e, transform);
+			ecsManager.addComponent(e, ECS::Visibility{});
+			ECS::Color color{ { .3f, .1f, .6f } };
+			ecsManager.addComponent(e, color);
+			ecsManager.commit(e);
+		}
+		//for (int i = 0; i < 30000; i++)
+		//{
+		//	auto lines = GameObject::createGameObject();
+		//	lines.model = line_model;
+		//	const float z{ float(i) * .025f };
+		//	lines.transform.translation = { -.5f, -1.5f, z };
+		//	lines.color = { .3f, .1f, .6f };
+		//	lines.drawMode = RENDER_AS_LINES;
+		//	gameObjects.emplace(lines.getId(), std::move(lines));
+		//}
 
 	}
 }
