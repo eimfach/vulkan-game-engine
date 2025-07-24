@@ -1,6 +1,7 @@
 #include "simple_render_system.hpp"
 
 #include "entity_manager.hpp"
+#include "settings.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -71,42 +72,33 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		//auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
-		//auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
-		//auto& colors = frame.ecsManager.getComponents<ECS::Color>();
-		//auto& props = frame.ecsManager.getComponents<ECS::Visibility>();
-		//for (ECS::EntityId id : frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Visibility>()) {
-		//	SimplePushConstantData push{};
-		//	auto model_matrix = transforms[id].mat4();
-		//	push.modelMatrix = model_matrix;
-		//	//push.normalMatrix = obj.transform.normalMatrix();
-		//	push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
-		//	auto& model = meshes[id].model;
-		//	vkCmdPushConstants(frame.cmdBuffer,
-		//		pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-		//		0,
-		//		sizeof(SimplePushConstantData),
-		//		&push);
-		//	model->bind(frame.cmdBuffer);
-		//	model->draw(frame.cmdBuffer);
-		//}
+		auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
+		auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
+		auto& props = frame.ecsManager.getComponents<ECS::Visibility>();
+		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Visibility>();
+		for (ECS::EntityId id : group) {
+			// cull near and far plane (just for testing)
+			glm::vec3 direction_to_camera{ transforms[id].translation - frame.camera.getPosition() };
+			float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
+			if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
+				continue;
+			}
 
-		for (auto& kv_pair : frame.gameObjects) {
-			auto& obj = kv_pair.second;
-			if (obj.model == nullptr) continue;
-			if (obj.drawMode > RENDER_DEFAULT) continue;
 			SimplePushConstantData push{};
-			auto model_matrix = obj.transform.mat4();
+			auto model_matrix = transforms[id].mat4();
 			push.modelMatrix = model_matrix;
 			//push.normalMatrix = obj.transform.normalMatrix();
 			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
+
+			auto& model = meshes[id].model;
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
 				sizeof(SimplePushConstantData),
 				&push);
-			obj.model->bind(frame.cmdBuffer);
-			obj.model->draw(frame.cmdBuffer);
+
+			model->bind(frame.cmdBuffer);
+			model->draw(frame.cmdBuffer);
 		}
 	}
 }

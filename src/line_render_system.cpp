@@ -60,6 +60,32 @@ namespace SJFGame::Engine {
 		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/line.vert.spv", "shaders/line.frag.spv");
 	}
 
+	void LineRenderSystem::render(Frame& frame, std::vector<ECS::AABB> boxes) {
+		pipeline->bind(frame.cmdBuffer);
+
+		vkCmdBindDescriptorSets(frame.cmdBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			pipelineLayout,
+			0, 1,
+			&frame.globalDescriptorSet,
+			0, nullptr
+		);
+
+		for (ECS::AABB aabb: boxes) {
+			LinePushConstantData push{};
+			//auto& model = meshes[id].model;
+
+			//vkCmdPushConstants(frame.cmdBuffer,
+			//	pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+			//	0,
+			//	sizeof(LinePushConstantData),
+			//	&push);
+
+			//model->bind(frame.cmdBuffer);
+			//model->draw(frame.cmdBuffer);
+		}
+	}
+
 	void LineRenderSystem::render(Frame& frame) {
 
 		pipeline->bind(frame.cmdBuffer);
@@ -76,7 +102,10 @@ namespace SJFGame::Engine {
 		auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
 		auto& colors = frame.ecsManager.getComponents<ECS::Color>();
 		auto& props = frame.ecsManager.getComponents<ECS::Visibility>();
-		for (ECS::EntityId id : frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Color, ECS::Visibility, ECS::RenderLines>()) {
+		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Color, ECS::Visibility, ECS::RenderLines>();
+		for (ECS::EntityId id : group) {
+
+			// cull near and far plane (just for testing)
 			glm::vec3 direction_to_camera{transforms[id].translation - frame.camera.getPosition()};
 			float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
 			if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
@@ -86,7 +115,7 @@ namespace SJFGame::Engine {
 			LinePushConstantData push{};
 			auto model_matrix = transforms[id].mat4();
 			push.modelMatrix = model_matrix;
-			push.color = colors[id].rgb;
+			push.color = colors[id].rgb; //TODO: crashes because indicies are disjoint
 			auto& model = meshes[id].model;
 
 			vkCmdPushConstants(frame.cmdBuffer,
@@ -98,24 +127,5 @@ namespace SJFGame::Engine {
 			model->bind(frame.cmdBuffer);
 			model->draw(frame.cmdBuffer);
 		}
-
-		//for (auto& kv_pair : frame.gameObjects) {
-		//	auto& obj = kv_pair.second;
-		//	if (obj.model == nullptr) continue;
-		//	if (obj.drawMode != RENDER_AS_LINES) {
-		//		continue;
-		//	}
-		//	LinePushConstantData push{};
-		//	auto model_matrix = obj.transform.mat4();
-		//	push.modelMatrix = model_matrix;
-		//	push.color = obj.color;
-		//	vkCmdPushConstants(frame.cmdBuffer,
-		//		pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-		//		0,
-		//		sizeof(LinePushConstantData),
-		//		&push);
-		//	obj.model->bind(frame.cmdBuffer);
-		//	obj.model->draw(frame.cmdBuffer);
-		//}
 	}
 }

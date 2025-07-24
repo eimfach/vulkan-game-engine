@@ -29,7 +29,7 @@ namespace SJFGame {
 
 
 	FirstApp::FirstApp() {
-		loadGameObjects();
+		loadGameEntities();
 	}
 
 	FirstApp::~FirstApp() {
@@ -86,7 +86,7 @@ namespace SJFGame {
 				renderer.beginSwapChainRenderPass(cmd_buffer);
 
 				// order here matters
-				//simple_render.render(frame);
+				simple_render.render(frame);
 				//point_light_render.render(frame);
 				line_render.render(frame);
 				gui_render_sys.render(frame);
@@ -99,25 +99,17 @@ namespace SJFGame {
 		renderer.deviceWaitIdle();
 	}
 
-	void FirstApp::loadGameObjects() {
-		auto cube_model = renderer.createCubeModel({.0f, .0f, .0f});
-		auto model = Engine::VertexModel::createModelFromFile(device, "models/flat_vase.obj");
-		auto obj = GameObject::createGameObject();
-		obj.model = model;
-		obj.transform.translation = { -.5f, .5f, 0.f };
-		obj.transform.scale = glm::vec3{ 3.f, 1.5f, 3.f };
+	ECS::Entity FirstApp::createMeshEntity(std::string modelpath, ECS::Transform transform) {
+		auto model = Engine::VertexModel::createModelFromFile(device, modelpath);
+		auto e = ecsManager.createEntity();
+		ECS::Mesh mesh{ model };
+		ecsManager.addComponent(e, mesh);
+		ecsManager.addComponent(e, transform);
+		ecsManager.addComponent(e, ECS::Visibility{});
+		return e;
+	}
 
-		auto model1 = Engine::VertexModel::createModelFromFile(device, "models/smooth_vase.obj");
-		auto obj1 = GameObject::createGameObject();
-		obj1.model = model1;
-		obj1.transform.translation = { .5f, .5f, 0.f };
-		obj1.transform.scale = glm::vec3{ 3.f, 1.5f, 3.f };
-
-		auto plane_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
-		auto plane_obj = GameObject::createGameObject();
-		plane_obj.model = plane_model;
-		plane_obj.transform.translation = { .0f, .5f, 0.f };
-		plane_obj.transform.scale = glm::vec3{ 3.f, 1.f, 3.f };
+	void FirstApp::loadGameEntities() {
 
 		std::vector<glm::vec3> light_colors{
 		 {1.f, .1f, .1f},
@@ -138,23 +130,18 @@ namespace SJFGame {
 			gameObjects.emplace(point_light.getId(), std::move(point_light));
 		}
 
-		//auto lines = GameObject::createGameObject();
-		//lines.model = line_model;
-		//lines.transform.translation = { -.5f, -1.5f, .3f };
-		//lines.color = { .3f, .1f, .6f };
-		//lines.drawMode = RENDER_AS_LINES;
-		//gameObjects.emplace(lines.getId(), std::move(lines));
-
-		gameObjects.emplace(obj.getId(), std::move(obj));
-		gameObjects.emplace(obj1.getId(), std::move(obj1));
-		gameObjects.emplace(plane_obj.getId(), std::move(plane_obj));
-
 		///////////////////////////////////////////
 		// new ECS System                        //
 		///////////////////////////////////////////
+
+		ecsManager.commit(createMeshEntity("models/flat_vase.obj", ECS::Transform{ { -.5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("models/smooth_vase.obj", ECS::Transform{ { .5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("models/quad.obj", ECS::Transform{ { .5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("models/flat_vase.obj", ECS::Transform{ { -.5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+
 		auto line_model = renderer.createLine(glm::vec3{ 0.f });
 
-		for (int i = 0; i < 30000; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			auto e = ecsManager.createEntity();
 			ecsManager.addComponent(e, ECS::RenderLines{});
@@ -170,16 +157,7 @@ namespace SJFGame {
 			ecsManager.addComponent(e, color);
 			ecsManager.commit(e);
 		}
-		//for (int i = 0; i < 30000; i++)
-		//{
-		//	auto lines = GameObject::createGameObject();
-		//	lines.model = line_model;
-		//	const float z{ float(i) * .025f };
-		//	lines.transform.translation = { -.5f, -1.5f, z };
-		//	lines.color = { .3f, .1f, .6f };
-		//	lines.drawMode = RENDER_AS_LINES;
-		//	gameObjects.emplace(lines.getId(), std::move(lines));
-		//}
 
+		void;
 	}
 }

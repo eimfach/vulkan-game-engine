@@ -119,7 +119,7 @@ namespace SJFGame::Engine {
 	void Pipeline::defaultCfg(PipelineConfig& cfg) {
 		// INPUT ASSEMBLY STAGE
 		cfg.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		cfg.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		cfg.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; // Relevant
 		cfg.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
 
 		// combine viewport and scissor
@@ -134,10 +134,10 @@ namespace SJFGame::Engine {
 		cfg.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		cfg.rasterizationInfo.depthClampEnable = VK_FALSE;
 		cfg.rasterizationInfo.rasterizerDiscardEnable = VK_FALSE;
-		cfg.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+		cfg.rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL; // Relevant
 		cfg.rasterizationInfo.lineWidth = 1.0f;
-		cfg.rasterizationInfo.cullMode = VK_CULL_MODE_NONE;
-		cfg.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		cfg.rasterizationInfo.cullMode = VK_CULL_MODE_NONE; // Relevant
+		cfg.rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE; // Relevant
 		cfg.rasterizationInfo.depthBiasEnable = VK_FALSE;
 		cfg.rasterizationInfo.depthBiasConstantFactor = 0.0f;  // Optional
 		cfg.rasterizationInfo.depthBiasClamp = 0.0f;           // Optional

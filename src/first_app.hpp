@@ -34,6 +34,7 @@ namespace SJFGame {
 		GameObject::Map gameObjects;
 		ECS::Manager ecsManager{};
 
-		void loadGameObjects();
+		void loadGameEntities();
+		ECS::Entity createMeshEntity(std::string modelpath, ECS::Transform transform);
 	};
 }

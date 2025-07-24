@@ -86,4 +86,15 @@ namespace SJFGame::ECS {
 			},
 		};
 	}
+
+	AABB::AABB(std::vector<glm::vec3> verticies) {
+		for (auto& vec : verticies) {
+			if (vec.z > min.z && vec.y > min.y) {
+				min = vec;
+			}
+			else if (vec.z < max.z && vec.y < max.y) {
+				max = vec;
+			}
+		}
+	}
 }

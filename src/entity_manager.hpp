@@ -18,6 +18,10 @@
 
 namespace SJFGame::ECS {
 
+	///////////////////////////////////////////
+	// Components							 //
+	///////////////////////////////////////////
+
 	struct Identification {
 		std::string name = "name_not_set";
 	};
@@ -70,6 +74,18 @@ namespace SJFGame::ECS {
 		glm::vec3 rgb{ 1.f, 1.f, 1.f };
 	};
 
+	struct AABB {
+		glm::vec3 min{};
+		glm::vec3 max{};
+
+		AABB(std::vector<glm::vec3> verticies);
+		AABB() = default;
+	};
+
+	///////////////////////////////////////////
+	// Entity Managment					     //
+	///////////////////////////////////////////
+
 	using EntityId = std::uint16_t;
 	using ComponentsMask = std::uint16_t;
 
@@ -85,7 +101,8 @@ namespace SJFGame::ECS {
 		std::vector<PointLight>,
 		std::vector<Mesh>,
 		std::vector<Color>,
-		std::vector<RenderLines>
+		std::vector<RenderLines>,
+		std::vector<AABB>
 	>;
 
 	using GeneralComponentStorageIndex = std::tuple<
@@ -95,7 +112,8 @@ namespace SJFGame::ECS {
 		std::pair<PointLight, EntityId>,
 		std::pair<Mesh, EntityId>,
 		std::pair<Color, EntityId>,
-		std::pair<RenderLines, EntityId>
+		std::pair<RenderLines, EntityId>,
+		std::pair<AABB, EntityId>
 	>;
 
 	class Manager {
@@ -151,7 +169,8 @@ namespace SJFGame::ECS {
 			{{}, 3},
 			{{}, 4},
 			{{}, 5},
-			{{}, 6}
+			{{}, 6},
+			{{}, 7},
 		};
 
 		template<typename T> EntityId entity_type_get_tuple_index() {

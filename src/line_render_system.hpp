@@ -20,6 +20,7 @@ namespace SJFGame::Engine {
 		LineRenderSystem(const LineRenderSystem&) = delete;
 		LineRenderSystem& operator= (const LineRenderSystem&) = delete;
 
+		void render(Frame& frame, std::vector<ECS::AABB> boxes);
 		void render(Frame& frame);
 
 	private:
