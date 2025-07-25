@@ -1,6 +1,5 @@
-#include "simple_render_system.hpp"
+#include "aabb_render_system.hpp"
 
-#include "entity_manager.hpp"
 #include "settings.hpp"
 
 // libs
@@ -15,25 +14,25 @@
 
 namespace SJFGame::Engine {
 
-	struct SimplePushConstantData {
-		glm::mat4 modelMatrix{ 1.f };
-		glm::mat4 normalMatrix{ 1.f };
+	struct AABBPushConstantData {
+		glm::mat4 transformMatrix{};
+		glm::vec3 color{ .1f, .9f, .05f };
 	};
 
-	SimpleRenderSystem::SimpleRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout) : device{device} {
+	AABBRenderSystem::AABBRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout) : device{ device } {
 		createPipelineLayout(global_set_layout);
 		createPipeline(render_pass);
 	}
 
-	SimpleRenderSystem::~SimpleRenderSystem() {
+	AABBRenderSystem::~AABBRenderSystem() {
 		vkDestroyPipelineLayout(device.device(), pipelineLayout, nullptr);
 	}
 
-	void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout global_set_layout) {
+	void AABBRenderSystem::createPipelineLayout(VkDescriptorSetLayout global_set_layout) {
 		VkPushConstantRange push_constant_range{};
 		push_constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 		push_constant_range.offset = 0;
-		push_constant_range.size = sizeof(SimplePushConstantData);
+		push_constant_range.size = sizeof(AABBPushConstantData);
 
 		// the pipeline can have multiple descriptor set layouts
 		std::vector<VkDescriptorSetLayout> descriptor_set_layouts{ global_set_layout };
@@ -50,17 +49,20 @@ namespace SJFGame::Engine {
 		}
 	}
 
-	void SimpleRenderSystem::createPipeline(VkRenderPass render_pass) {
+	void AABBRenderSystem::createPipeline(VkRenderPass render_pass) {
 		assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
-		Engine::PipelineConfig pipeline_config{};
-		Engine::Pipeline::defaultCfg(pipeline_config);
+		PipelineConfig pipeline_config{};
+		Pipeline::defaultCfg(pipeline_config);
+		//Pipeline::setTopology(pipeline_config, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL);
+		Pipeline::setTopology(pipeline_config, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_LINE);
+		//Pipeline::setTopology(pipeline_config, VK_PRIMITIVE_TOPOLOGY_POINT_LIST, VK_POLYGON_MODE_POINT);
 		pipeline_config.renderPass = render_pass;
 		pipeline_config.pipelineLayout = pipelineLayout;
-		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/simple_shader.vert.spv", "shaders/simple_shader.frag.spv");
+		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/aabb.vert.spv", "shaders/aabb.frag.spv");
 	}
 
-	void SimpleRenderSystem::render(Frame& frame) {
+	void AABBRenderSystem::render(Frame& frame, std::vector<ECS::AABB>& boxes) {
 
 		pipeline->bind(frame.cmdBuffer);
 
@@ -72,29 +74,27 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
-		for (ECS::EntityId id : group) {
-			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
-			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
-
+		for (ECS::EntityId id = 0; id < boxes.size(); id++) {
 			// cull near and far plane (just for testing)
-			glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition() };
-			float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
-			if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
-				continue;
-			}
+			//glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition() };
+			//float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
+			//if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
+			//	continue;
+			//}
 
-			SimplePushConstantData push{};
-			auto& model_matrix = transform.mat4();
-			push.modelMatrix = model_matrix;
-			//push.normalMatrix = obj.transform.normalMatrix();
-			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
+			ECS::AABB& aabb = boxes[id];
+			assert(frame.ecsManager.hasEntityComponents<ECS::Transform>(id) && "An Entity with AABB Component should have also a Transform Component");
+			auto& entity_transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
 
-			auto& model = mesh.model;
+			AABBPushConstantData push{};
+			push.transformMatrix = entity_transform.transformMatrixCache;
+			push.color = glm::vec3{ .1f, .9f, .05f };
+
+			auto& model = aabb.debugModel;
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
-				sizeof(SimplePushConstantData),
+				sizeof(AABBPushConstantData),
 				&push);
 
 			model->bind(frame.cmdBuffer);

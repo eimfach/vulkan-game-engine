@@ -11,16 +11,16 @@
 #include <vector>
 
 namespace SJFGame::Engine {
-	class LineRenderSystem {
+	class AABBRenderSystem {
 	public:
-		LineRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);
-		~LineRenderSystem();
+		AABBRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);
+		~AABBRenderSystem();
 
 		// delete copy constructor and copy operator
-		LineRenderSystem(const LineRenderSystem&) = delete;
-		LineRenderSystem& operator= (const LineRenderSystem&) = delete;
+		AABBRenderSystem(const AABBRenderSystem&) = delete;
+		AABBRenderSystem& operator= (const AABBRenderSystem&) = delete;
 
-		void render(Frame& frame);
+		void render(Frame& frame, std::vector<ECS::AABB>& boxes);
 
 	private:
 		Device& device;

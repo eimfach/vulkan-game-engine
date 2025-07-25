@@ -36,10 +36,10 @@ namespace SJFGame::Engine {
 	}
 	VertexModel::~VertexModel() {}
 
-	std::shared_ptr<VertexModel> VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
+	std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder> VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
 		Builder builder{};
 		builder.loadModel(ENGINE_DIR + filepath);
-		return std::make_shared<VertexModel>(device, builder);
+		return { std::make_shared<VertexModel>(device, builder), builder};
 	}
 
 	void VertexModel::createVertexBuffers(const std::vector<VertexBase>& verticies) {

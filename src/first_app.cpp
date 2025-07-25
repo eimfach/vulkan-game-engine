@@ -8,6 +8,7 @@
 #include "main_render_system.hpp"
 #include "gui_render_system.hpp"
 #include "line_render_system.hpp"
+#include "aabb_render_system.hpp"
 
 #include "pointlight_render_system.hpp"
 #include "texture.hpp"
@@ -46,6 +47,8 @@ namespace SJFGame {
 		Engine::GuiRenderSystem gui_render_sys{ device, window.getGLFWwindow(), renderer.getSwapChainRenderPass() };
 		Engine::LineRenderSystem line_render{ device, renderer.getSwapChainRenderPass(),
 			main_render.getGobalSetLayout() };
+		Engine::AABBRenderSystem aabb_render{ device, renderer.getSwapChainRenderPass(),
+		main_render.getGobalSetLayout() };
 
 		Engine::Camera camera{};
 		camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
@@ -89,6 +92,7 @@ namespace SJFGame {
 				simple_render.render(frame);
 				//point_light_render.render(frame);
 				line_render.render(frame);
+				aabb_render.render(frame, ecsManager.getComponents<ECS::AABB>());
 				gui_render_sys.render(frame);
 
 				renderer.endSwapChainRenderPass(cmd_buffer);
@@ -100,10 +104,12 @@ namespace SJFGame {
 	}
 
 	ECS::Entity FirstApp::createMeshEntity(std::string modelpath, ECS::Transform transform) {
-		auto model = Engine::VertexModel::createModelFromFile(device, modelpath);
+		auto& model = Engine::VertexModel::createModelFromFile(device, modelpath);
 		auto e = ecsManager.createEntity();
-		ECS::Mesh mesh{ model };
+		ECS::Mesh mesh{ model.first };
+		ECS::AABB aabb{ model.second.verticies, device };
 		ecsManager.addComponent(e, mesh);
+		ecsManager.addComponent(e, aabb);
 		ecsManager.addComponent(e, transform);
 		ecsManager.addComponent(e, ECS::Visibility{});
 		return e;
@@ -134,22 +140,22 @@ namespace SJFGame {
 		// new ECS System                        //
 		///////////////////////////////////////////
 
-		ecsManager.reserve_size_entities(5004);
-		ecsManager.reserve_size_components<ECS::Transform>(5004);
-		ecsManager.reserve_size_components<ECS::Mesh>(5004);
-		ecsManager.reserve_size_components<ECS::Visibility>(5004);
+		ecsManager.reserve_size_entities(50004);
+		ecsManager.reserve_size_components<ECS::AABB>(4);
+		ecsManager.reserve_size_components<ECS::Transform>(50004);
+		ecsManager.reserve_size_components<ECS::Mesh>(50004);
+		ecsManager.reserve_size_components<ECS::Visibility>(50004);
 
-		ecsManager.reserve_size_components<ECS::Color>(5000);
-		ecsManager.reserve_size_components<ECS::RenderLines>(5000);
+		ecsManager.reserve_size_components<ECS::Color>(50000);
+		ecsManager.reserve_size_components<ECS::RenderLines>(50000);
 
-		ecsManager.commit(createMeshEntity("models/flat_vase.obj", ECS::Transform{ { -.5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("models/smooth_vase.obj", ECS::Transform{ { .5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("models/flat_vase.obj", ECS::Transform{ { -1.f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("models/smooth_vase.obj", ECS::Transform{ { 1.f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
 		ecsManager.commit(createMeshEntity("models/quad.obj", ECS::Transform{ { .5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("models/flat_vase.obj", ECS::Transform{ { -.5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
 
 		auto line_model = renderer.createLine(glm::vec3{ 0.f });
 
-		for (int i = 0; i < 5000; i++)
+		for (int i = 0; i < 50000; i++)
 		{
 			auto e = ecsManager.createEntity();
 			ecsManager.addComponent(e, ECS::RenderLines{});

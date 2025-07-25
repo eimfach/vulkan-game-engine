@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vertex_model.hpp"
-
+#include "device.hpp"
 // libs
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -16,6 +16,7 @@
 #include <vector>
 #include <unordered_map>
 #include <array>
+
 
 namespace SJFGame::ECS {
 
@@ -43,6 +44,7 @@ namespace SJFGame::ECS {
 		glm::vec3 scale{ 1.f, 1.f, 1.f };
 		glm::vec3 rotation{};
 
+		glm::mat4 transformMatrixCache{};
 		// Matrix corresponds to: translate * Ry * Rx * Rz * scale transformation.
 		// Rotation convention uses trait-bryan angles with axis order Y(1), X(2), Z(3)
 		//glm::mat4 mat4() const {
@@ -57,7 +59,7 @@ namespace SJFGame::ECS {
 		// Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
 		// Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
 		// https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
-		glm::mat4 mat4() const;
+		glm::mat4& mat4();
 
 		// this may be slow with a lot if game objects (can use glm to calculate inverse transpose of the model matrix)
 		glm::mat3 normalMatrix() const;
@@ -78,8 +80,8 @@ namespace SJFGame::ECS {
 	struct AABB {
 		glm::vec3 min{};
 		glm::vec3 max{};
-
-		AABB(std::vector<glm::vec3> verticies);
+		std::shared_ptr<Engine::VertexModel> debugModel = nullptr;
+		AABB(const std::vector<Engine::VertexBase>& verticies, Engine::Device& device);
 		AABB() = default;
 	};
 
@@ -199,7 +201,7 @@ namespace SJFGame::ECS {
 			{{}, 7},
 		};
 
-		template<typename T> EntityId component_type_get_tuple_index() {
+		template<typename T> inline EntityId component_type_get_tuple_index() {
 			return std::get<std::pair<T, EntityId>>(componentIndex).second;
 		}
 

@@ -60,32 +60,6 @@ namespace SJFGame::Engine {
 		pipeline = std::make_unique<Engine::Pipeline>(device, pipeline_config, "shaders/line.vert.spv", "shaders/line.frag.spv");
 	}
 
-	void LineRenderSystem::render(Frame& frame, std::vector<ECS::AABB> boxes) {
-		pipeline->bind(frame.cmdBuffer);
-
-		vkCmdBindDescriptorSets(frame.cmdBuffer,
-			VK_PIPELINE_BIND_POINT_GRAPHICS,
-			pipelineLayout,
-			0, 1,
-			&frame.globalDescriptorSet,
-			0, nullptr
-		);
-
-		for (ECS::AABB aabb: boxes) {
-			LinePushConstantData push{};
-			//auto& model = meshes[id].model;
-
-			//vkCmdPushConstants(frame.cmdBuffer,
-			//	pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-			//	0,
-			//	sizeof(LinePushConstantData),
-			//	&push);
-
-			//model->bind(frame.cmdBuffer);
-			//model->draw(frame.cmdBuffer);
-		}
-	}
-
 	void LineRenderSystem::render(Frame& frame) {
 
 		pipeline->bind(frame.cmdBuffer);
@@ -113,9 +87,9 @@ namespace SJFGame::Engine {
 			}
 
 			LinePushConstantData push{};
-			auto model_matrix = transform.mat4();
+			auto& model_matrix = transform.mat4();
 			push.modelMatrix = model_matrix;
-			push.color = color.rgb; //TODO: crashes because indicies are disjoint
+			push.color = color.rgb;
 			auto& model = mesh.model;
 
 			vkCmdPushConstants(frame.cmdBuffer,

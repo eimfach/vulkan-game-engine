@@ -162,6 +162,9 @@
     <ClCompile Include="src\entity_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\aabb_render_system.cpp">
+      <Filter>Source Files\RenderSystems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.hpp">
@@ -284,6 +287,9 @@
     <ClInclude Include="src\entity_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\aabb_render_system.hpp">
+      <Filter>Header Files\RenderSystems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple_shader.vert">
@@ -315,6 +321,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="shaders\line.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shaders\aabb.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shaders\aabb.vert">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
