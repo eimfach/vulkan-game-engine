@@ -134,6 +134,14 @@ namespace SJFGame {
 		// new ECS System                        //
 		///////////////////////////////////////////
 
+		ecsManager.reserve_size_entities(5004);
+		ecsManager.reserve_size_components<ECS::Transform>(5004);
+		ecsManager.reserve_size_components<ECS::Mesh>(5004);
+		ecsManager.reserve_size_components<ECS::Visibility>(5004);
+
+		ecsManager.reserve_size_components<ECS::Color>(5000);
+		ecsManager.reserve_size_components<ECS::RenderLines>(5000);
+
 		ecsManager.commit(createMeshEntity("models/flat_vase.obj", ECS::Transform{ { -.5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
 		ecsManager.commit(createMeshEntity("models/smooth_vase.obj", ECS::Transform{ { .5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
 		ecsManager.commit(createMeshEntity("models/quad.obj", ECS::Transform{ { .5f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
@@ -141,7 +149,7 @@ namespace SJFGame {
 
 		auto line_model = renderer.createLine(glm::vec3{ 0.f });
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 5000; i++)
 		{
 			auto e = ecsManager.createEntity();
 			ecsManager.addComponent(e, ECS::RenderLines{});
@@ -157,7 +165,5 @@ namespace SJFGame {
 			ecsManager.addComponent(e, color);
 			ecsManager.commit(e);
 		}
-
-		void;
 	}
 }

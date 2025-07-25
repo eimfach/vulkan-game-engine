@@ -98,25 +98,25 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
-		auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
-		auto& colors = frame.ecsManager.getComponents<ECS::Color>();
-		auto& props = frame.ecsManager.getComponents<ECS::Visibility>();
 		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Color, ECS::Visibility, ECS::RenderLines>();
 		for (ECS::EntityId id : group) {
 
+			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
+			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
+			auto& color = frame.ecsManager.getEntityComponent<ECS::Color>(id);
+
 			// cull near and far plane (just for testing)
-			glm::vec3 direction_to_camera{transforms[id].translation - frame.camera.getPosition()};
+			glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition()};
 			float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
 			if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
 				continue;
 			}
 
 			LinePushConstantData push{};
-			auto model_matrix = transforms[id].mat4();
+			auto model_matrix = transform.mat4();
 			push.modelMatrix = model_matrix;
-			push.color = colors[id].rgb; //TODO: crashes because indicies are disjoint
-			auto& model = meshes[id].model;
+			push.color = color.rgb; //TODO: crashes because indicies are disjoint
+			auto& model = mesh.model;
 
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,

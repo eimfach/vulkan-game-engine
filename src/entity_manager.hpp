@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 #include <unordered_map>
+#include <array>
 
 namespace SJFGame::ECS {
 
@@ -92,6 +93,7 @@ namespace SJFGame::ECS {
 	struct Entity {
 		EntityId id{};
 		ComponentsMask hasComponentsBitmask{};
+		EntityId blockId{};
 	};
 
 	using GeneralComponentStorage = std::tuple<
@@ -116,16 +118,36 @@ namespace SJFGame::ECS {
 		std::pair<AABB, EntityId>
 	>;
 
+	/*
+	* A ContigiuousComponentsBlock is a block that is determined by its components bitmask (hasComponentsBitmask) and collected in a vector.
+	* The entityCount determines how many entites belong to that block which share a component bitmask (exactly the same component types) and where contigiuously added.
+	* The offsets determines how each component of an entity is retrieved over all component vectors of GeneralComponentStorage (they have fragmented indicies).
+	* The offsets looks at the next_offsets from the previous block and is relavant for retrieving the actual access offsets.
+	*/
+	struct ContigiuousComponentsBlock {
+		EntityId entityCount{};
+		ComponentsMask hasComponentsBitmask{};
+		ComponentsMask unusedComponentsBitMask{};
+		std::array<EntityId, std::tuple_size_v<GeneralComponentStorage>> offsets = { 0, 0, 0, 0, 0, 0, 0, 0 }; // no offsets can be changed at the moment (copy), after the block was connected with another block 
+		std::array<EntityId, std::tuple_size_v<GeneralComponentStorage>> next_offsets = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	};
+
 	class Manager {
 	public:
 		Entity createEntity(bool set_default_components = true);
 		void commit(Entity e);
 
+		void reserve_size_entities(size_t size);
+
+		template<typename T> void reserve_size_components(size_t s_components) {
+			getComponents<T>().reserve(s_components);
+		}
+
 		template<typename T> void addComponent(Entity& entity, T component) {
 			std::vector<T>& t_components = std::get<std::vector<T>>(components);
 			t_components.push_back(component);
 			
-			entity.hasComponentsBitmask |= 1 << entity_type_get_tuple_index<T>();
+			entity.hasComponentsBitmask |= 1 << component_type_get_tuple_index<T>();
 		}
 
 		template<typename T> std::vector<T>& getComponents() {
@@ -133,7 +155,10 @@ namespace SJFGame::ECS {
 		}
 
 		template<typename T> T& getEntityComponent(EntityId id) {
-			return getComponents<T>().at(id);
+			auto& entity = entities[id];
+			auto& block = contigiousComponentsBlocks[entity.blockId];
+			auto& offset = block.offsets[component_type_get_tuple_index<T>()];
+			return getComponents<T>().at(id - offset);
 		}
 
 		template<typename... T> bool hasEntityComponents(EntityId id) {
@@ -159,6 +184,7 @@ namespace SJFGame::ECS {
 		EntityId counter{};
 		bool commitStage{false};
 		std::vector<Entity> entities{};
+		std::vector<ContigiuousComponentsBlock> contigiousComponentsBlocks{};
 		// TODO: Entity can be in multiple groups ?
 		std::unordered_map<ComponentsMask, std::vector<EntityId>> entityGroups{};
 		GeneralComponentStorage components{};
@@ -173,13 +199,13 @@ namespace SJFGame::ECS {
 			{{}, 7},
 		};
 
-		template<typename T> EntityId entity_type_get_tuple_index() {
+		template<typename T> EntityId component_type_get_tuple_index() {
 			return std::get<std::pair<T, EntityId>>(componentIndex).second;
 		}
 
 		template<typename... T> ComponentsMask createComponentsMask() {
 			ComponentsMask mask{};
-			((mask |= 1 << entity_type_get_tuple_index<T>()), ...);
+			((mask |= 1 << component_type_get_tuple_index<T>()), ...);
 			return mask;
 		}
 	};

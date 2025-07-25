@@ -72,25 +72,25 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		auto& transforms = frame.ecsManager.getComponents<ECS::Transform>();
-		auto& meshes = frame.ecsManager.getComponents<ECS::Mesh>();
-		auto& props = frame.ecsManager.getComponents<ECS::Visibility>();
 		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Visibility>();
 		for (ECS::EntityId id : group) {
+			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
+			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
+
 			// cull near and far plane (just for testing)
-			glm::vec3 direction_to_camera{ transforms[id].translation - frame.camera.getPosition() };
+			glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition() };
 			float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
 			if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
 				continue;
 			}
 
 			SimplePushConstantData push{};
-			auto model_matrix = transforms[id].mat4();
+			auto model_matrix = transform.mat4();
 			push.modelMatrix = model_matrix;
 			//push.normalMatrix = obj.transform.normalMatrix();
 			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
 
-			auto& model = meshes[id].model;
+			auto& model = mesh.model;
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,

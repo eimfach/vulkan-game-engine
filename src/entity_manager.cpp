@@ -20,8 +20,40 @@ namespace SJFGame::ECS {
 		else {
 			entityGroups.at(e.hasComponentsBitmask).push_back(e.id);
 		}
+
+		constexpr EntityId components_size = std::tuple_size_v<GeneralComponentStorage>;
+		constexpr EntityId inverter_mask = (1 << components_size) - 1; // 2 to the power of 8 (or currrent components_size) - 1 = all bits set to 1
+
+		if (contigiousComponentsBlocks.size() == 0) {
+			// example: 00010100 (used components) ^ 11111111 (xor inverter) -> components that weren't used
+			EntityId unused_components_mask = e.hasComponentsBitmask ^ inverter_mask;
+			contigiousComponentsBlocks.push_back(ContigiuousComponentsBlock{ 1, e.hasComponentsBitmask,  unused_components_mask });
+		}
+		else if (contigiousComponentsBlocks.back().hasComponentsBitmask != e.hasComponentsBitmask) {
+			EntityId unused_components_mask = e.hasComponentsBitmask ^ inverter_mask;
+			contigiousComponentsBlocks.push_back(ContigiuousComponentsBlock{ 1, e.hasComponentsBitmask,  unused_components_mask, contigiousComponentsBlocks.back().next_offsets});
+		}
+
+		auto& current_block = contigiousComponentsBlocks.back();
+		current_block.entityCount += 1; // unused, faulty at this place and maybe use for offset (so just calculated once)
+
+		for (EntityId component_index = 0; component_index < components_size; component_index++) {
+
+			// example: 00010100 (unused components) & 00000100 (and component index) > 0 -> component index was not used, add offset
+			if ((current_block.unusedComponentsBitMask & (0 | 1 << component_index)) > 0) {
+				current_block.next_offsets[component_index] += 1;
+			}
+				
+		}
+			
+
+		e.blockId = contigiousComponentsBlocks.size() - 1;
 		entities.push_back(e);
 		commitStage = false;
+	}
+
+	void Manager::reserve_size_entities(size_t size) {
+		entities.reserve(size);
 	}
 
 	glm::mat4 Transform::mat4() const {
