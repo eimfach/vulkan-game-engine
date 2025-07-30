@@ -31,6 +31,12 @@
     <Filter Include="Dependencies">
       <UniqueIdentifier>{7495dace-631c-4a86-9acb-48de0c0427b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{32e39e59-d409-417a-a91c-e77938dabfca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{024da1fc-68d7-4c4e-905c-ea8759939880}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\camera.cpp">
@@ -165,6 +171,9 @@
     <ClCompile Include="src\aabb_render_system.cpp">
       <Filter>Source Files\RenderSystems</Filter>
     </ClCompile>
+    <ClCompile Include="src\aabb.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.hpp">
@@ -289,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="src\aabb_render_system.hpp">
       <Filter>Header Files\RenderSystems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\aabb.hpp">
+      <Filter>Header Files\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

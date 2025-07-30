@@ -90,7 +90,7 @@ namespace SJFGame::Engine {
 			push.transformMatrix = entity_transform.transformMatrixCache;
 			push.color = glm::vec3{ .1f, .9f, .05f };
 
-			auto& model = aabb.debugModel;
+			auto& model = aabb.model;
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,

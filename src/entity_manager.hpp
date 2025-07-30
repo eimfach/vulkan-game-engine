@@ -2,6 +2,8 @@
 
 #include "vertex_model.hpp"
 #include "device.hpp"
+#include "aabb.hpp"
+
 // libs
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -77,13 +79,6 @@ namespace SJFGame::ECS {
 		glm::vec3 rgb{ 1.f, 1.f, 1.f };
 	};
 
-	struct AABB {
-		glm::vec3 min{};
-		glm::vec3 max{};
-		std::shared_ptr<Engine::VertexModel> debugModel = nullptr;
-		AABB(const std::vector<Engine::VertexBase>& verticies, Engine::Device& device);
-		AABB() = default;
-	};
 
 	///////////////////////////////////////////
 	// Entity Managment					     //

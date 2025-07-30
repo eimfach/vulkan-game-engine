@@ -152,6 +152,7 @@
     <ClCompile Include="external\imgui-1.92.1\imgui_draw.cpp" />
     <ClCompile Include="external\imgui-1.92.1\imgui_tables.cpp" />
     <ClCompile Include="external\imgui-1.92.1\imgui_widgets.cpp" />
+    <ClCompile Include="src\aabb.cpp" />
     <ClCompile Include="src\aabb_render_system.cpp" />
     <ClCompile Include="src\assets.cpp" />
     <ClCompile Include="src\entity_manager.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\aabb.hpp" />
     <ClInclude Include="src\aabb_render_system.hpp" />
     <ClInclude Include="src\assets.hpp" />
     <ClInclude Include="src\entity_manager.hpp" />
