@@ -11,11 +11,11 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
+#include <iostream>
 
 namespace SJFGame::Engine {
 
 	struct AABBPushConstantData {
-		glm::mat4 transformMatrix{};
 		glm::vec3 color{ .1f, .9f, .05f };
 	};
 
@@ -74,7 +74,58 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		for (ECS::EntityId id = 0; id < boxes.size(); id++) {
+		auto& voxels = frame.ecsManager.getComponents<ECS::Voxel>();
+		std::unordered_map<ECS::EntityId, std::vector<ECS::EntityId>> active_voxels{};
+
+		for (ECS::EntityId aabb_id = 0; aabb_id < boxes.size(); aabb_id++) {
+			ECS::AABB& aabb = boxes[aabb_id];
+			for (ECS::EntityId voxel = 0; voxel < voxels.size(); voxel++) {
+				auto& v = voxels[voxel];
+				if (aabb.intersects(voxels[voxel])) {
+					if (active_voxels.count(voxel) == 0) {
+						active_voxels.emplace(voxel, std::vector<ECS::EntityId>{aabb_id});
+					}
+					else {
+						active_voxels.at(voxel).push_back(aabb_id);
+					}
+				}
+			}
+		}
+
+
+		for (std::pair<ECS::EntityId, std::vector<ECS::EntityId>> kv : active_voxels) {
+			std::vector<ECS::EntityId>& aabbs_in_voxel = kv.second;
+
+			for (ECS::EntityId aabb_id : aabbs_in_voxel) {
+				assert(frame.ecsManager.hasEntityComponents<ECS::Transform>(aabb_id) && "An Entity with AABB Component should have also a Transform Component");
+				auto& entity_transform = frame.ecsManager.getEntityComponent<ECS::Transform>(aabb_id);
+				glm::vec3 draw_color{ .1f, .9f, .3f };
+
+				ECS::AABB& aabb = boxes[aabb_id];
+				auto& aabb_name = frame.ecsManager.getEntityComponent<ECS::Identification>(aabb_id);
+				for (ECS::EntityId other_aabb_id : aabbs_in_voxel) {
+					if (other_aabb_id == aabb_id) continue;
+					auto& other_box = boxes[other_aabb_id];
+
+					if (aabb.intersects(other_box)) {
+						draw_color = { .9f, .1f, .3f };
+						//std::cout << aabb_name.name << " intersects: " << frame.ecsManager.getEntityComponent<ECS::Identification>(other_aabb_id).name << "\n";
+					}
+				}
+
+				AABBPushConstantData push{};
+				push.color = draw_color;
+
+				auto& model = aabb.model;
+				vkCmdPushConstants(frame.cmdBuffer,
+					pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+					0,
+					sizeof(AABBPushConstantData),
+					&push);
+
+				model->bind(frame.cmdBuffer);
+				model->draw(frame.cmdBuffer);
+			}
 			// cull near and far plane (just for testing)
 			//glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition() };
 			//float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
@@ -82,23 +133,8 @@ namespace SJFGame::Engine {
 			//	continue;
 			//}
 
-			ECS::AABB& aabb = boxes[id];
-			assert(frame.ecsManager.hasEntityComponents<ECS::Transform>(id) && "An Entity with AABB Component should have also a Transform Component");
-			auto& entity_transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
 
-			AABBPushConstantData push{};
-			push.transformMatrix = entity_transform.transformMatrixCache;
-			push.color = glm::vec3{ .1f, .9f, .05f };
 
-			auto& model = aabb.model;
-			vkCmdPushConstants(frame.cmdBuffer,
-				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-				0,
-				sizeof(AABBPushConstantData),
-				&push);
-
-			model->bind(frame.cmdBuffer);
-			model->draw(frame.cmdBuffer);
 		}
 	}
 }

@@ -30,11 +30,10 @@ layout(set = 0, binding = 0) uniform GlobalUBO {
 
 // Push Constants (per Vertex) (128 Bytes guaranteed)
 layout(push_constant) uniform Push {
-  mat4 transformMatrix;
   vec3 color;
 } push;
 
 void main() {
 	fragment_color = vertex_color;
-	gl_Position = ubo_0.projectionMatrix * ubo_0.viewMatrix * push.transformMatrix * vec4(vertex_position, 1.0);
+	gl_Position = ubo_0.projectionMatrix * ubo_0.viewMatrix * vec4(vertex_position, 1.0);
 }

@@ -35,6 +35,6 @@ namespace SJFGame {
 		ECS::Manager ecsManager{};
 
 		void loadGameEntities();
-		ECS::Entity createMeshEntity(std::string modelpath, ECS::Transform transform);
+		ECS::Entity createMeshEntity(std::string name, std::string modelpath, ECS::Transform transform);
 	};
 }

@@ -25,6 +25,7 @@
 //std
 #include <chrono>
 #include <ratio>
+#include <memory>
 
 namespace SJFGame {
 
@@ -91,7 +92,7 @@ namespace SJFGame {
 				// order here matters
 				simple_render.render(frame);
 				//point_light_render.render(frame);
-				line_render.render(frame);
+				//line_render.render(frame);
 				aabb_render.render(frame, ecsManager.getComponents<ECS::AABB>());
 				gui_render_sys.render(frame);
 
@@ -103,11 +104,13 @@ namespace SJFGame {
 		renderer.deviceWaitIdle();
 	}
 
-	ECS::Entity FirstApp::createMeshEntity(std::string modelpath, ECS::Transform transform) {
+	ECS::Entity FirstApp::createMeshEntity(std::string name, std::string modelpath, ECS::Transform transform) {
 		auto& model = Engine::VertexModel::createModelFromFile(device, modelpath);
 		auto e = ecsManager.createEntity();
+		ECS::Identification id{ name };
+		ecsManager.addComponent(e, id);
 		ECS::Mesh mesh{ model.first };
-		ECS::AABB aabb{ model.second.verticies, device };
+		ECS::AABB aabb{ device, model.second.verticies, transform.mat4() };
 		ecsManager.addComponent(e, mesh);
 		ecsManager.addComponent(e, aabb);
 		ecsManager.addComponent(e, transform);
@@ -149,28 +152,39 @@ namespace SJFGame {
 		ecsManager.reserve_size_components<ECS::Color>(50000);
 		ecsManager.reserve_size_components<ECS::RenderLines>(50000);
 
-		ecsManager.commit(createMeshEntity("models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("models/smooth_vase.obj", ECS::Transform{ { -1.f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
 
-		auto line_model = renderer.createLine(glm::vec3{ 0.f });
-
-		for (int i = 0; i < 50000; i++)
-		{
-			auto e = ecsManager.createEntity();
-			ecsManager.addComponent(e, ECS::RenderLines{});
-			ECS::Transform transform{};
-			const float z{ float(i) * .025f };
-			transform.translation = { -.5f, -1.5f, z };
-			ECS::Mesh mesh{ line_model };
-			ecsManager.addComponent(e, mesh);
-
-			ecsManager.addComponent(e, transform);
-			ecsManager.addComponent(e, ECS::Visibility{});
-			ECS::Color color{ { .3f, .1f, .6f } };
-			ecsManager.addComponent(e, color);
-			ecsManager.commit(e);
+		const int ext = Settings::VOXEL_GRID_EXTENT;
+		for (int x = -ext; x < ext; x++) {
+			for (int y = -ext; y < ext; y++) {
+				for (int z = -ext; z < ext; z++) {
+					ECS::Transform transform{ {float(x), float(y), float(z)} };
+					ECS::Voxel voxel{ transform.mat4() };
+					auto e = ecsManager.createEntity();
+					ecsManager.addComponent(e, voxel);
+					ecsManager.commit(e);
+				}
+			}
 		}
+
+		//auto line_model = renderer.createLine(glm::vec3{ 0.f });
+		//for (int i = 0; i < 50000; i++)
+		//{
+		//	auto e = ecsManager.createEntity();
+		//	ecsManager.addComponent(e, ECS::RenderLines{});
+		//	ECS::Transform transform{};
+		//	const float z{ float(i) * .025f };
+		//	transform.translation = { -.5f, -1.5f, z };
+		//	ECS::Mesh mesh{ line_model };
+		//	ecsManager.addComponent(e, mesh);
+		//	ecsManager.addComponent(e, transform);
+		//	ecsManager.addComponent(e, ECS::Visibility{});
+		//	ECS::Color color{ { .3f, .1f, .6f } };
+		//	ecsManager.addComponent(e, color);
+		//	ecsManager.commit(e);
+		//}
 	}
 }

@@ -36,6 +36,7 @@ namespace SJFGame::ECS {
 
 		auto& current_block = contigiousComponentsBlocks.back();
 		current_block.entityCount += 1; // unused, faulty at this place and maybe use for offset (so just calculated once)
+		// TODO: refactor to use entityCount once
 
 		for (EntityId component_index = 0; component_index < components_size; component_index++) {
 

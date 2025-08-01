@@ -25,7 +25,6 @@ layout(set = 0, binding = 0) uniform GlobalUBO {
 
 // Push Constants (per Fragment / Pixel) (128 Bytes guaranteed)
 layout(push_constant) uniform Push {
-  mat4 transformMatrix;
   vec3 color;
 } push;
 

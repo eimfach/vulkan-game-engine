@@ -61,7 +61,7 @@ namespace SJFGame::Engine {
 	}
 
 	void LineRenderSystem::render(Frame& frame) {
-
+		
 		pipeline->bind(frame.cmdBuffer);
 
 		vkCmdBindDescriptorSets(frame.cmdBuffer,

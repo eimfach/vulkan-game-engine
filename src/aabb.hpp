@@ -17,8 +17,18 @@ namespace SJFGame::ECS {
 		glm::vec3 max{};
 		std::shared_ptr<Engine::VertexModel> model = nullptr;
 
-		AABB(const std::vector<Engine::VertexBase>& verticies, Engine::Device& device);
+		AABB(Engine::Device& device, const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform);
+		AABB(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform);
 		AABB() = default;
-		bool inline intersects(AABB aabb) const;
+		//AABB(const AABB&) = delete;
+		//AABB& operator= (const AABB&) = delete;
+
+		void inline calcuateMinMax(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform);
+		virtual bool intersects(const AABB& aabb) const;
+	};
+
+	struct Voxel : AABB {
+		Voxel(const glm::mat4& transform);
+		Voxel() = default;
 	};
 }

@@ -1,31 +1,60 @@
 #include "aabb.hpp"
 
+#include "vertex_model.hpp"
+#include <array>
+
 namespace SJFGame::ECS {
 
-	AABB::AABB(const std::vector<Engine::VertexBase>& verticies, Engine::Device& device) {
-		for (auto& vertex : verticies) {
+	void AABB::calcuateMinMax(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
+		min = glm::vec3(FLT_MAX);
+		max = glm::vec3(-FLT_MAX);
+
+		for (const auto& vertex : verticies) {
 			auto position = vertex.position;
-			if (position.z > min.z) {
-				min.z = position.z;
-			}
-			if (position.y > min.y) {
-				min.y = position.y;
-			}
-			if (position.x < min.x) {
-				min.x = position.x;
-			}
+			min.x = std::min(min.x, position.x);
+			min.y = std::min(min.y, position.y);
+			min.z = std::min(min.z, position.z);
 
-			if (position.z < max.z) {
-				max.z = position.z;
-			}
-			if (position.y < max.y) {
-				max.y = position.y;
-			}
-			if (position.x > max.x) {
-				max.x = position.x;
-			}
-
+			max.x = std::max(max.x, position.x);
+			max.y = std::max(max.y, position.y);
+			max.z = std::max(max.z, position.z);
 		}
+
+		std::array<glm::vec3, 8> edges{
+			glm::vec3{ min.x, min.y, min.z },
+			glm::vec3{ max.x, min.y, min.z },
+			glm::vec3{ min.x, max.y, min.z },
+			glm::vec3{ max.x, max.y, min.z },
+			glm::vec3{ min.x, min.y, max.z },
+			glm::vec3{ max.x, min.y, max.z },
+			glm::vec3{ min.x, max.y, max.z },
+			glm::vec3{ max.x, max.y, max.z }
+		};
+
+		for (size_t i = 0; i < edges.size(); i++) {
+			 edges[i] = transform * glm::vec4{edges[i], 1.0f};
+		}
+
+		min = glm::vec3(FLT_MAX);
+		max = glm::vec3(-FLT_MAX);
+
+		for (const auto& transformed_position : edges) {
+			min.x = std::min(min.x, transformed_position.x);
+			min.y = std::min(min.y, transformed_position.y);
+			min.z = std::min(min.z, transformed_position.z);
+
+			max.x = std::max(max.x, transformed_position.x);
+			max.y = std::max(max.y, transformed_position.y);
+			max.z = std::max(max.z, transformed_position.z);
+		}
+
+		assert(min.x <= max.x && "AABB min.x must be less than or equal to max.x");
+		assert(min.y <= max.y && "AABB min.y must be less than or equal to max.y");
+		assert(min.z <= max.z && "AABB min.z must be less than or equal to max.z");
+	}
+	AABB::AABB(Engine::Device& device, const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
+
+		calcuateMinMax(verticies, transform);
 
 		Engine::VertexModel::Builder model_builder{};
 
@@ -74,13 +103,64 @@ namespace SJFGame::ECS {
 			{{max.x, min.y, min.z}, {.1f, .8f, .1f}}, // 23
 		};
 
-		//for (auto& v : model_builder.verticies) {
-		//	v.position += offset;
-		//}
 		model = std::make_shared<Engine::VertexModel>(device, model_builder);
 	}
 
-	bool AABB::intersects(AABB aabb) const {
-		return glm::all(glm::greaterThan(max, aabb.min) && glm::lessThan(min, max));
+	AABB::AABB(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
+		calcuateMinMax(verticies, transform);
+	}
+
+	bool AABB::intersects(const AABB& aabb) const {
+		return (
+			max.x >= aabb.min.x &&
+			max.y >= aabb.min.y &&
+			max.z >= aabb.min.z &&
+			min.x <= aabb.max.x &&
+			min.y <= aabb.max.y &&
+			min.z <= aabb.max.z
+			);
+		//return glm::all(glm::greaterThan(max, aabb.min) && glm::lessThan(min, max));
+	}
+
+	Voxel::Voxel(const glm::mat4& transform) {
+		std::vector<Engine::VertexBase> verticies = {
+			// left face (white)
+			{{-.5f, -.5f, -.5f}},
+			{{-.5f, .5f, .5f}},
+			{{-.5f, -.5f, .5f}},
+			{{-.5f, .5f, -.5f}},
+
+			// right face (yellow)
+			{{.5f, -.5f, -.5f}},
+			{{.5f, .5f, .5f}},
+			{{.5f, -.5f, .5f}},
+			{{.5f, .5f, -.5f}},
+
+			// top face (orange, remember y axis points down)
+			{{-.5f, -.5f, -.5f}},
+			{{.5f, -.5f, .5f}},
+			{{-.5f, -.5f, .5f}},
+			{{.5f, -.5f, -.5f}},
+
+			// bottom face (red)
+			{{-.5f, .5f, -.5f}},
+			{{.5f, .5f, .5f}},
+			{{-.5f, .5f, .5f}},
+			{{.5f, .5f, -.5f}},
+
+			// nose face (blue)
+			{{-.5f, -.5f, 0.5f}},
+			{{.5f, .5f, 0.5f}},
+			{{-.5f, .5f, 0.5f}},
+			{{.5f, -.5f, 0.5f}},
+
+			// tail face (green)
+			{{-.5f, -.5f, -0.5f}},
+			{{.5f, .5f, -0.5f}},
+			{{-.5f, .5f, -0.5f}},
+			{{.5f, -.5f, -0.5f}},
+		};
+
+		calcuateMinMax(verticies, transform);
 	}
 }

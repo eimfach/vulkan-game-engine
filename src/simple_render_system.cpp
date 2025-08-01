@@ -72,7 +72,7 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
+		auto& group = frame.ecsManager.getEntityGroup<ECS::Identification, ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
 		for (ECS::EntityId id : group) {
 			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
 			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
