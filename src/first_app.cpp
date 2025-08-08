@@ -144,6 +144,7 @@ namespace SJFGame {
 		///////////////////////////////////////////
 
 		ecsManager.reserve_size_entities(50004);
+		ecsManager.reserve_size_components<ECS::Voxel>(Settings::VOXEL_GRID_EXTENT * Settings::VOXEL_GRID_EXTENT * Settings::VOXEL_GRID_EXTENT);
 		ecsManager.reserve_size_components<ECS::AABB>(4);
 		ecsManager.reserve_size_components<ECS::Transform>(50004);
 		ecsManager.reserve_size_components<ECS::Mesh>(50004);
@@ -154,14 +155,14 @@ namespace SJFGame {
 
 		ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
 		ecsManager.commit(createMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
 		ecsManager.commit(createMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
 
 		const int ext = Settings::VOXEL_GRID_EXTENT;
 		for (int x = -ext; x < ext; x++) {
 			for (int y = -ext; y < ext; y++) {
 				for (int z = -ext; z < ext; z++) {
-					ECS::Transform transform{ {float(x), float(y), float(z)} };
+					ECS::Transform transform{ {float(x), float(y), float(z)}, glm::vec3{1.f} };
 					ECS::Voxel voxel{ transform.mat4() };
 					auto e = ecsManager.createEntity();
 					ecsManager.addComponent(e, voxel);

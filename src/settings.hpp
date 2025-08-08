@@ -9,7 +9,7 @@ namespace SJFGame::Settings {
 	inline float NEAR_PLANE{.1f};
 	inline float FAR_PLANE{75.f};
 
-	inline int VOXEL_GRID_EXTENT = 10;
+	inline int VOXEL_GRID_EXTENT = 20;
 
 	inline bool VSYNC = false;
 	inline bool GAMMA_CORRECTION = false;

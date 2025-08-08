@@ -63,7 +63,12 @@ namespace SJFGame::Engine {
 	}
 
 	void AABBRenderSystem::render(Frame& frame, std::vector<ECS::AABB>& boxes) {
-
+		// cull near and far plane (just for testing)
+		//glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition() };
+		//float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
+		//if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
+		//	continue;
+		//}
 		pipeline->bind(frame.cmdBuffer);
 
 		vkCmdBindDescriptorSets(frame.cmdBuffer,
@@ -76,17 +81,24 @@ namespace SJFGame::Engine {
 
 		auto& voxels = frame.ecsManager.getComponents<ECS::Voxel>();
 		std::unordered_map<ECS::EntityId, std::vector<ECS::EntityId>> active_voxels{};
+		static int counter = -1;
+		counter++;
+		counter = counter % 60;
 
-		for (ECS::EntityId aabb_id = 0; aabb_id < boxes.size(); aabb_id++) {
-			ECS::AABB& aabb = boxes[aabb_id];
-			for (ECS::EntityId voxel = 0; voxel < voxels.size(); voxel++) {
-				auto& v = voxels[voxel];
-				if (aabb.intersects(voxels[voxel])) {
-					if (active_voxels.count(voxel) == 0) {
-						active_voxels.emplace(voxel, std::vector<ECS::EntityId>{aabb_id});
-					}
-					else {
-						active_voxels.at(voxel).push_back(aabb_id);
+		// TODO: Calculate this only once. Later only check neighbors (per frame) and refresh accordingly.
+		// active_voxels becomes a class member then.
+		if (counter == 0) {
+			for (ECS::EntityId aabb_id = 0; aabb_id < boxes.size(); aabb_id++) {
+				ECS::AABB& aabb = boxes[aabb_id];
+				for (ECS::EntityId voxel = 0; voxel < voxels.size(); voxel++) {
+					auto& v = voxels[voxel];
+					if (aabb.intersects(voxels[voxel])) {
+						if (active_voxels.count(voxel) == 0) {
+							active_voxels.emplace(voxel, std::vector<ECS::EntityId>{aabb_id});
+						}
+						else {
+							active_voxels.at(voxel).push_back(aabb_id);
+						}
 					}
 				}
 			}
@@ -102,7 +114,8 @@ namespace SJFGame::Engine {
 				glm::vec3 draw_color{ .1f, .9f, .3f };
 
 				ECS::AABB& aabb = boxes[aabb_id];
-				auto& aabb_name = frame.ecsManager.getEntityComponent<ECS::Identification>(aabb_id);
+				//auto& aabb_name = frame.ecsManager.getEntityComponent<ECS::Identification>(aabb_id);
+
 				for (ECS::EntityId other_aabb_id : aabbs_in_voxel) {
 					if (other_aabb_id == aabb_id) continue;
 					auto& other_box = boxes[other_aabb_id];
@@ -126,12 +139,7 @@ namespace SJFGame::Engine {
 				model->bind(frame.cmdBuffer);
 				model->draw(frame.cmdBuffer);
 			}
-			// cull near and far plane (just for testing)
-			//glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition() };
-			//float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
-			//if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
-			//	continue;
-			//}
+
 
 
 
