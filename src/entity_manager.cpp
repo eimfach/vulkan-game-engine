@@ -9,7 +9,7 @@ namespace SJFGame::ECS {
 		commitStage = true;
 		assert(counter < MAX_ENTITIES && "MAX Entities reached!");
 
-		Entity e{ counter++, {} };
+		Entity e{ counter++ };
 		return e;
 	}
 

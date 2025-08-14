@@ -52,9 +52,15 @@ namespace SJFGame {
 		main_render.getGobalSetLayout() };
 
 		Engine::Camera camera{};
-		camera.setViewTarget(glm::vec3{ -1.f, -2.f, -5.f }, glm::vec3{ .5f, .5f, 0.f });
-		auto viewer = GameObject::createGameObject();
-		viewer.transform.translation.z = -2.5f;
+		camera.setViewTarget({ -1.f, -2.f, -5.f }, { .5f, .5f, 0.f });
+
+		// TODO: refactor viewer to be a entity with transform component
+		auto viewer = ecsManager.createEntity();
+		ECS::Transform t{};
+		t.translation.z = -2.5f;
+		ecsManager.addComponent(viewer, t);
+		ecsManager.commit(viewer);
+		ECS::Transform& viewer_transfrom = ecsManager.getEntityComponent<ECS::Transform>(viewer.id);
 		Engine::MovementControl camera_control{};
 
 		auto current_time = std::chrono::high_resolution_clock::now();
@@ -67,8 +73,8 @@ namespace SJFGame {
 			current_time = new_time;
 			//frame_delta_time = glm::min(frame_delta_time, MAX_FRAME_TIME);
 
-			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, viewer);
-			camera.setViewYXZ(viewer.transform.translation, viewer.transform.rotation);
+			camera_control.moveInPlaneXZ(window.getGLFWwindow(), frame_delta_time, viewer_transfrom);
+			camera.setViewYXZ(viewer_transfrom.translation, viewer_transfrom.rotation);
 			float aspect = renderer.getAspectRatio();
 			camera.setPerspectiveProjection(glm::radians(Settings::FOV_DEGREES), aspect, Settings::NEAR_PLANE, Settings::FAR_PLANE);
 

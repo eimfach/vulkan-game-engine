@@ -1,7 +1,7 @@
 #include "movement.hpp"
 
 namespace SJFGame::Engine {
-	void MovementControl::moveInPlaneXZ(GLFWwindow* window, float delta, GameObject& game_obj) {
+	void MovementControl::moveInPlaneXZ(GLFWwindow* window, float delta, ECS::Transform& transform) {
 		glm::vec3 rotate{};
 
 		if (glfwGetKey(window, keys.lookRight) == GLFW_PRESS) { rotate.y += 1.f; }
@@ -13,15 +13,15 @@ namespace SJFGame::Engine {
 		if (glm::dot(rotate, rotate) > std::numeric_limits<float>::epsilon()) {
 			// scale rotate with lookspeed and delta time (frame time unindepentent) 
 			// and normalize the rotation vector to be even in speed in all directions (diagonal is faster)
-			game_obj.transform.rotation += lookSpeed * delta * glm::normalize(rotate);
+			transform.rotation += lookSpeed * delta * glm::normalize(rotate);
 		}
 
 		// clamp angle ranges
-		game_obj.transform.rotation.x = glm::clamp(game_obj.transform.rotation.x, -1.5f, 1.5f);
-		game_obj.transform.rotation.y = glm::mod(game_obj.transform.rotation.y, glm::two_pi<float>());
+		transform.rotation.x = glm::clamp(transform.rotation.x, -1.5f, 1.5f);
+		transform.rotation.y = glm::mod(transform.rotation.y, glm::two_pi<float>());
 		
 		// face direction
-		float yaw = game_obj.transform.rotation.y;
+		float yaw = transform.rotation.y;
 		const glm::vec3 forward_dir{ glm::sin(yaw), 0.f, glm::cos(yaw) };
 		const glm::vec3 right_dir{ forward_dir.z, 0.f, -forward_dir.x };
 		const glm::vec3 up_dir{ 0.f, -1.f, 0.f };
@@ -37,7 +37,7 @@ namespace SJFGame::Engine {
 		if (glm::dot(move_dir, move_dir) > std::numeric_limits<float>::epsilon()) {
 			// scale rotate with lookspeed and delta time (frame time unindepentent) 
 			// and normalize the rotation vector to be even in speed in all directions (diagonal is faster)
-			game_obj.transform.translation += moveSpeed * delta * glm::normalize(move_dir);
+			transform.translation += moveSpeed * delta * glm::normalize(move_dir);
 		}
 	}
 }

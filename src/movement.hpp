@@ -2,6 +2,7 @@
 
 #include "game_object.hpp"
 #include "window.hpp"
+#include "entity_manager.hpp"
 
 namespace SJFGame::Engine {
 	class MovementControl {
@@ -19,7 +20,7 @@ namespace SJFGame::Engine {
             int lookDown = GLFW_KEY_DOWN;
 		};
 
-        void moveInPlaneXZ(GLFWwindow* window, float delta, GameObject& game_obj);
+        void moveInPlaneXZ(GLFWwindow* window, float delta, ECS::Transform& transform);
 
         KeyMappings keys{};
         float moveSpeed{ 3.f };
