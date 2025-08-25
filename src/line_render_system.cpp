@@ -72,19 +72,15 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Mesh, ECS::Color, ECS::Visibility, ECS::RenderLines>();
+		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::AABB, ECS::Mesh, ECS::Color, ECS::Visibility, ECS::RenderLines>();
 		for (ECS::EntityId id : group) {
+
+			auto& aabb = frame.ecsManager.getEntityComponent<ECS::AABB>(id);
+			if (!frame.camera.isWorldSpaceAABBfrustumVisible(aabb)) continue;
 
 			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
 			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
 			auto& color = frame.ecsManager.getEntityComponent<ECS::Color>(id);
-
-			// cull near and far plane (just for testing)
-			glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition()};
-			float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
-			if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
-				continue;
-			}
 
 			LinePushConstantData push{};
 			auto& model_matrix = transform.mat4();

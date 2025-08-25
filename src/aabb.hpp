@@ -53,6 +53,9 @@ namespace SJFGame::ECS {
 	struct AABB {
 		glm::vec3 min{};
 		glm::vec3 max{};
+		glm::vec3 center{};
+		glm::vec3 size{};
+		glm::vec3 halfSize{};
 		std::shared_ptr<Engine::VertexModel> model = nullptr;
 
 		AABB(Engine::Device& device, const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform);
@@ -63,11 +66,5 @@ namespace SJFGame::ECS {
 
 		void inline calcuateMinMax(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform);
 		virtual bool intersects(const AABB& aabb) const;
-	};
-
-	struct Voxel : AABB {
-		Voxel(Engine::Device& device, const glm::mat4& transform);
-		Voxel(const glm::mat4& transform);
-		Voxel() = default;
 	};
 }

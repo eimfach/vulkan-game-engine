@@ -3,6 +3,7 @@
 // std
 #include <cassert>
 #include <limits>
+#include <cmath>
 
 namespace SJFGame::Engine {
 	void Camera::setOrthographicProjection(
@@ -104,5 +105,39 @@ namespace SJFGame::Engine {
 		inverseViewMatrix[3][0] = position.x;
 		inverseViewMatrix[3][1] = position.y;
 		inverseViewMatrix[3][2] = position.z;
+	}
+
+	const Frustum Camera::produceFrustum() {
+		glm::mat4 pv{ getProjection() * getView() };
+
+		for (std::uint32_t i = 0; i < 4; ++i) { frustum[0][i] = pv[i][3] + pv[i][0]; }
+		for (std::uint32_t i = 0; i < 4; ++i) { frustum[1][i] = pv[i][3] - pv[i][0]; }
+		for (std::uint32_t i = 0; i < 4; ++i) { frustum[2][i] = pv[i][3] + pv[i][1]; }
+		for (std::uint32_t i = 0; i < 4; ++i) { frustum[3][i] = pv[i][3] - pv[i][1]; }
+		for (std::uint32_t i = 0; i < 4; ++i) { frustum[4][i] = pv[i][3] + pv[i][2]; }
+		for (std::uint32_t i = 0; i < 4; ++i) { frustum[5][i] = pv[i][3] - pv[i][2]; }
+		for (std::uint32_t i = 0; i < 6; ++i) {
+			frustum[i] /= glm::length(glm::vec3(frustum[i]));
+			frustum[i].w = -frustum[i].w;
+		}
+
+		return frustum;
+	}
+
+	bool Camera::isWorldSpaceAABBinsidePlane(const glm::vec3& center, const glm::vec3& size, const glm::vec4& plane) const {
+		const glm::vec3 normal = glm::vec3(plane);
+		const float radius = dot(size, abs(normal));
+		return (dot(normal, center) - plane.w) >= -radius;
+	}
+
+	bool Camera::isWorldSpaceAABBfrustumVisible(const SJFGame::ECS::AABB& aabb) const {
+		const std::uint32_t planes = 6;
+		for (std::uint32_t i = 0; i < planes; ++i) {
+			if (!isWorldSpaceAABBinsidePlane(aabb.center, aabb.size, frustum[i])) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

@@ -79,70 +79,25 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
-		auto& voxels = frame.ecsManager.getComponents<ECS::Voxel>();
-		std::unordered_map<ECS::EntityId, std::vector<ECS::EntityId>> active_voxels{};
-		static int counter = -1;
-		counter++;
-		counter = counter % 60;
+		auto& group = frame.ecsManager.getEntityGroup<ECS::Identification, ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
+		for (ECS::EntityId id : group) {
+			auto& aabb = frame.ecsManager.getEntityComponent<ECS::AABB>(id);
+			if (!frame.camera.isWorldSpaceAABBfrustumVisible(aabb)) continue;
 
-		// TODO: Calculate this only once. Later only check neighbors (per frame) and refresh accordingly.
-		// active_voxels becomes a class member then.
-		if (counter == 0) {
-			for (ECS::EntityId aabb_id = 0; aabb_id < boxes.size(); aabb_id++) {
-				ECS::AABB& aabb = boxes[aabb_id];
-				for (ECS::EntityId voxel = 0; voxel < voxels.size(); voxel++) {
-					auto& v = voxels[voxel];
-					if (aabb.intersects(voxels[voxel])) {
-						if (active_voxels.count(voxel) == 0) {
-							active_voxels.emplace(voxel, std::vector<ECS::EntityId>{aabb_id});
-						}
-						else {
-							active_voxels.at(voxel).push_back(aabb_id);
-						}
-					}
-				}
-			}
-		}
+			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
+			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
 
+			AABBPushConstantData push{};
 
-		for (std::pair<ECS::EntityId, std::vector<ECS::EntityId>> kv : active_voxels) {
-			std::vector<ECS::EntityId>& aabbs_in_voxel = kv.second;
+			auto& model = aabb.model;
+			vkCmdPushConstants(frame.cmdBuffer,
+				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+				0,
+				sizeof(AABBPushConstantData),
+				&push);
 
-			for (ECS::EntityId aabb_id : aabbs_in_voxel) {
-				assert(frame.ecsManager.hasEntityComponents<ECS::Transform>(aabb_id) && "An Entity with AABB Component should have also a Transform Component");
-				auto& entity_transform = frame.ecsManager.getEntityComponent<ECS::Transform>(aabb_id);
-				glm::vec3 draw_color{ .1f, .9f, .3f };
-
-				ECS::AABB& aabb = boxes[aabb_id];
-				//auto& aabb_name = frame.ecsManager.getEntityComponent<ECS::Identification>(aabb_id);
-
-				for (ECS::EntityId other_aabb_id : aabbs_in_voxel) {
-					if (other_aabb_id == aabb_id) continue;
-					auto& other_box = boxes[other_aabb_id];
-
-					if (aabb.intersects(other_box)) {
-						draw_color = { .9f, .1f, .3f };
-						//std::cout << aabb_name.name << " intersects: " << frame.ecsManager.getEntityComponent<ECS::Identification>(other_aabb_id).name << "\n";
-					}
-				}
-
-				AABBPushConstantData push{};
-				push.color = draw_color;
-
-				auto& model = aabb.model;
-				vkCmdPushConstants(frame.cmdBuffer,
-					pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-					0,
-					sizeof(AABBPushConstantData),
-					&push);
-
-				model->bind(frame.cmdBuffer);
-				model->draw(frame.cmdBuffer);
-			}
-
-
-
-
+			model->bind(frame.cmdBuffer);
+			model->draw(frame.cmdBuffer);
 		}
 	}
 }

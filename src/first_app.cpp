@@ -54,7 +54,6 @@ namespace SJFGame {
 		Engine::Camera camera{};
 		camera.setViewTarget({ -1.f, -2.f, -5.f }, { .5f, .5f, 0.f });
 
-		// TODO: refactor viewer to be a entity with transform component
 		auto viewer = ecsManager.createEntity();
 		ECS::Transform t{};
 		t.translation.z = -2.5f;
@@ -64,6 +63,9 @@ namespace SJFGame {
 		Engine::MovementControl camera_control{};
 
 		auto current_time = std::chrono::high_resolution_clock::now();
+
+		int frame_index{};
+		Engine::Frame frame{ 0, .0, camera, nullptr, nullptr, gameObjects, ecsManager };
 
 		while (!renderer.windowShouldClose()) {
 			glfwPollEvents();
@@ -77,11 +79,15 @@ namespace SJFGame {
 			camera.setViewYXZ(viewer_transfrom.translation, viewer_transfrom.rotation);
 			float aspect = renderer.getAspectRatio();
 			camera.setPerspectiveProjection(glm::radians(Settings::FOV_DEGREES), aspect, Settings::NEAR_PLANE, Settings::FAR_PLANE);
+			camera.produceFrustum();
 
 			if (auto cmd_buffer = renderer.beginFrame()) {
-				int frame_index = renderer.getFrameIndex();
-				Engine::Frame frame{frame_index, frame_delta_time, camera, 
-					cmd_buffer, main_render.getGlobalDiscriptorSet(frame_index), gameObjects, ecsManager };
+				// frame informations
+				frame_index = renderer.getFrameIndex();
+				frame.frameIndex = frame_index;
+				frame.delta = frame_delta_time;
+				frame.cmdBuffer = cmd_buffer;
+				frame.globalDescriptorSet = main_render.getGlobalDiscriptorSet(frame_index);
 
 				// update 
 				Engine::GlobalUniformBufferOutput ubo{};
@@ -98,7 +104,7 @@ namespace SJFGame {
 				// order here matters
 				simple_render.render(frame);
 				//point_light_render.render(frame);
-				//line_render.render(frame);
+				line_render.render(frame);
 				aabb_render.render(frame, ecsManager.getComponents<ECS::AABB>());
 				gui_render_sys.render(frame);
 
@@ -149,49 +155,38 @@ namespace SJFGame {
 		// new ECS System                        //
 		///////////////////////////////////////////
 
-		ecsManager.reserve_size_entities(50004);
-		ecsManager.reserve_size_components<ECS::Voxel>(Settings::VOXEL_GRID_EXTENT * Settings::VOXEL_GRID_EXTENT * Settings::VOXEL_GRID_EXTENT);
-		ecsManager.reserve_size_components<ECS::AABB>(4);
-		ecsManager.reserve_size_components<ECS::Transform>(50004);
-		ecsManager.reserve_size_components<ECS::Mesh>(50004);
-		ecsManager.reserve_size_components<ECS::Visibility>(50004);
+		ecsManager.reserve_size_entities(5004);
+		ecsManager.reserve_size_components<ECS::AABB>(5004);
+		ecsManager.reserve_size_components<ECS::Transform>(5004);
+		ecsManager.reserve_size_components<ECS::Mesh>(5004);
+		ecsManager.reserve_size_components<ECS::Visibility>(5004);
 
-		ecsManager.reserve_size_components<ECS::Color>(50000);
-		ecsManager.reserve_size_components<ECS::RenderLines>(50000);
+		ecsManager.reserve_size_components<ECS::Color>(5000);
+		ecsManager.reserve_size_components<ECS::RenderLines>(5000);
 
 		ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
 		ecsManager.commit(createMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
 		ecsManager.commit(createMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
 		ecsManager.commit(createMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
 
-		const int ext = Settings::VOXEL_GRID_EXTENT;
-		for (int x = -ext; x < ext; x++) {
-			for (int y = -ext; y < ext; y++) {
-				for (int z = -ext; z < ext; z++) {
-					ECS::Transform transform{ {float(x), float(y), float(z)}, glm::vec3{1.f} };
-					ECS::Voxel voxel{ transform.mat4() };
-					auto e = ecsManager.createEntity();
-					ecsManager.addComponent(e, voxel);
-					ecsManager.commit(e);
-				}
-			}
-		}
+		auto& line_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
 
-		//auto line_model = renderer.createLine(glm::vec3{ 0.f });
-		//for (int i = 0; i < 50000; i++)
-		//{
-		//	auto e = ecsManager.createEntity();
-		//	ecsManager.addComponent(e, ECS::RenderLines{});
-		//	ECS::Transform transform{};
-		//	const float z{ float(i) * .025f };
-		//	transform.translation = { -.5f, -1.5f, z };
-		//	ECS::Mesh mesh{ line_model };
-		//	ecsManager.addComponent(e, mesh);
-		//	ecsManager.addComponent(e, transform);
-		//	ecsManager.addComponent(e, ECS::Visibility{});
-		//	ECS::Color color{ { .3f, .1f, .6f } };
-		//	ecsManager.addComponent(e, color);
-		//	ecsManager.commit(e);
-		//}
+		for (int i = 0; i < 5000; i++)
+		{
+			auto e = ecsManager.createEntity();
+			ecsManager.addComponent(e, ECS::RenderLines{});
+			ECS::Transform transform{};
+			const float z{ float(i) * .025f };
+			transform.translation = { -.5f, -1.5f, z };
+			ECS::Mesh mesh{ line_model.first };
+			ECS::AABB aabb{ line_model.second.verticies, transform.mat4()};
+			ecsManager.addComponent(e, mesh);
+			ecsManager.addComponent(e, aabb);
+			ecsManager.addComponent(e, transform);
+			ecsManager.addComponent(e, ECS::Visibility{});
+			ECS::Color color{ { .3f, .1f, .6f } };
+			ecsManager.addComponent(e, color);
+			ecsManager.commit(e);
+		}
 	}
 }

@@ -101,8 +101,7 @@ namespace SJFGame::ECS {
 		std::vector<Mesh>,
 		std::vector<Color>,
 		std::vector<RenderLines>,
-		std::vector<AABB>,
-		std::vector<Voxel>
+		std::vector<AABB>
 	>;
 
 	using GeneralComponentStorageIndex = std::tuple<
@@ -113,8 +112,7 @@ namespace SJFGame::ECS {
 		std::pair<Mesh, EntityId>,
 		std::pair<Color, EntityId>,
 		std::pair<RenderLines, EntityId>,
-		std::pair<AABB, EntityId>,
-		std::pair<Voxel, EntityId>
+		std::pair<AABB, EntityId>
 	>;
 
 	/*
@@ -144,7 +142,7 @@ namespace SJFGame::ECS {
 
 		template<typename T> void addComponent(Entity& entity, T component) {
 			std::vector<T>& t_components = std::get<std::vector<T>>(components);
-			t_components.push_back(component);
+			t_components.emplace_back(component);
 			
 			entity.hasComponentsBitmask |= 1 << component_type_get_tuple_index<T>();
 		}
@@ -195,8 +193,7 @@ namespace SJFGame::ECS {
 			{{}, 4},
 			{{}, 5},
 			{{}, 6},
-			{{}, 7},
-			{{}, 8},
+			{{}, 7}
 		};
 
 		template<typename T> inline EntityId component_type_get_tuple_index() {
