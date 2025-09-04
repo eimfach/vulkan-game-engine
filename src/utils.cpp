@@ -13,4 +13,13 @@ namespace SJFGame::Utils {
 		file.close();
 		return buffer;
 	}
+
+	ECS::Transform randTransform() {
+		float x = float_distribution(generator);
+		float y = float_distribution(generator);
+		float z = float_distribution(generator);
+		ECS::Transform t{};
+		t.translation = { x, y, z };
+		return t;
+	}
 }

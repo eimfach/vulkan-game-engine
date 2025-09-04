@@ -7,7 +7,7 @@ namespace SJFGame::Settings {
 
 	inline float FOV_DEGREES{50.f};
 	inline float NEAR_PLANE{.1f};
-	inline float FAR_PLANE{75.f};
+	inline float FAR_PLANE{30.f};
 
 	inline int VOXEL_GRID_EXTENT = 20;
 

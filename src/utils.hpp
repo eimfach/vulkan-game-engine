@@ -1,4 +1,5 @@
 #pragma once
+#include "entity_manager.hpp"
 
 // std
 #include <fstream>
@@ -6,8 +7,12 @@
 #include <iterator>
 #include <string>
 #include <vector>
+#include <random>
 
 namespace SJFGame::Utils {
+	static std::default_random_engine generator{};
+	static std::uniform_real_distribution<float> float_distribution{ -10.f, 10.f };
+
 	// from: https://stackoverflow.com/a/57595105
 	template <typename T, typename... Rest>
 	void hashCombine(std::size_t& seed, const T& v, const Rest&... rest) {
@@ -16,4 +21,5 @@ namespace SJFGame::Utils {
 	};
 
 	std::vector<char> read_file(const std::string& filepath);
+	ECS::Transform randTransform();
 }

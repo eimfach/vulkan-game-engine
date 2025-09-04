@@ -7,6 +7,9 @@
 // lib
 #include "vulkan/vulkan.h"
 
+// std
+#include <array>
+
 namespace SJFGame::Engine {
 
 	const int MAX_LIGHTS{ 10 };
@@ -37,7 +40,7 @@ namespace SJFGame::Engine {
 		alignas(16) glm::vec4 directionalLightColor = { 0.f, 1.0f, .3f, 0.f }; // w is intensity
 		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .05f }; // w is intensity
 
-		PointLight pointLights[MAX_LIGHTS];
+		std::array<PointLight, MAX_LIGHTS> pointLights;
 		int numLights{};
 	};
 

@@ -18,6 +18,7 @@
 #include <vector>
 #include <unordered_map>
 #include <array>
+#include <iostream>
 
 
 namespace SJFGame::ECS {
@@ -133,6 +134,7 @@ namespace SJFGame::ECS {
 	public:
 		Entity createEntity(bool set_default_components = true);
 		void commit(Entity e);
+		void lock();
 
 		void reserve_size_entities(size_t size);
 
@@ -152,10 +154,16 @@ namespace SJFGame::ECS {
 		}
 
 		template<typename T> T& getEntityComponent(EntityId id) {
-			auto& entity = entities[id];
-			auto& block = contigiousComponentsBlocks[entity.blockId];
-			auto& offset = block.offsets[component_type_get_tuple_index<T>()];
-			return getComponents<T>().at(id - offset);
+			try {
+				auto& entity = entities.at(id);
+				auto& block = contigiousComponentsBlocks.at(entity.blockId);
+				auto& offset = block.offsets.at(component_type_get_tuple_index<T>());
+				return getComponents<T>().at(id - offset);
+			}
+			catch (const std::exception& e) {
+				std::cerr << "entity_manager.cpp: [======= EXCEPTION =======] " << e.what() << "\n";
+				return T{};
+			}
 		}
 
 		template<typename... T> bool hasEntityComponents(EntityId id) {
@@ -179,7 +187,8 @@ namespace SJFGame::ECS {
 	private:
 		const EntityId MAX_ENTITIES{65000};
 		EntityId counter{};
-		bool commitStage{false};
+		bool commitStage{ false };
+		bool locked{ false };
 		std::vector<Entity> entities{};
 		std::vector<ContigiuousComponentsBlock> contigiousComponentsBlocks{};
 		// TODO: Entity can be in multiple groups ?

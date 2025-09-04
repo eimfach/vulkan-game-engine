@@ -1,4 +1,5 @@
 #include "pointlight_render_system.hpp"
+#include "entity_manager.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -75,34 +76,37 @@ namespace SJFGame::Engine {
 			frame.delta,
 			{ 0.f, -1.f, 0.f });
 
+		std::vector<ECS::EntityId>& pointlights = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Color, ECS::PointLight>();
+
+		assert(pointlights.size() <= MAX_LIGHTS && "Point lights exceed maximum specified");
 		int light_index{};
-		for (auto& kv : frame.gameObjects) {
-			auto& obj = kv.second;
-			if (obj.pointLight == nullptr) continue;
-			assert(light_index < MAX_LIGHTS && "Point lights exceed maximum specified");
+		for(ECS::EntityId id : pointlights) {
+			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
+			auto& color = frame.ecsManager.getEntityComponent<ECS::Color>(id);
+			auto& light = frame.ecsManager.getEntityComponent<ECS::PointLight>(id);
 
 			// animate light pos
-			obj.transform.translation = glm::vec3(rotate_transform_matrix * glm::vec4(obj.transform.translation, 1.f));
+			transform.translation = glm::vec3(rotate_transform_matrix * glm::vec4(transform.translation, 1.f));
 
 			// copy light to ubo
-			ubo.pointLights[light_index].position = glm::vec4(obj.transform.translation, 0.f);
-			ubo.pointLights[light_index].color = glm::vec4(obj.color, obj.pointLight->lightIntensity);
-			
+			ubo.pointLights[light_index].position = glm::vec4(transform.translation, 0.f);
+			ubo.pointLights[light_index].color = glm::vec4(color.rgb, light.lightIntensity);
+
 			light_index += 1;
 		}
 		ubo.numLights = light_index;
 	}
 
 	void PointLightRenderSystem::render(const Frame& frame) {
-		// sort ligghts
-		std::map<float, GameObject::id_t>sorted{};
-		for (auto& kv : frame.gameObjects) {
-			auto& obj = kv.second;
-			if (obj.pointLight == nullptr) continue;
-
-			auto offset = frame.camera.getPosition() - obj.transform.translation;
+		std::vector<ECS::EntityId>& pointlights = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Color, ECS::PointLight>();
+		// sort lights
+		std::map<float, ECS::EntityId> sorted{};
+		std::vector<ECS::Transform> transforms = frame.ecsManager.getComponents<ECS::Transform>();
+		for (ECS::EntityId id : pointlights) {
+			ECS::Transform& transform = transforms[id];
+			auto offset = frame.camera.getPosition() - transform.translation;
 			float distance_squared = glm::dot(offset, offset);
-			sorted[distance_squared] = obj.getId();
+			sorted[distance_squared] = id;
 		}
 
 		pipeline->bind(frame.cmdBuffer);
@@ -117,13 +121,16 @@ namespace SJFGame::Engine {
 
 		// iterate through sorted lights in reverse order
 		for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
-			auto& obj = frame.gameObjects.at(it->second);
+			ECS::EntityId id = it->second;
+			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
+			auto& color = frame.ecsManager.getEntityComponent<ECS::Color>(id);
+			auto& light = frame.ecsManager.getEntityComponent<ECS::PointLight>(id);
 
 			// copy light to push constants
 			PointLightPushConstants push{};
-			push.position = glm::vec4(obj.transform.translation, 1.f);
-			push.color = glm::vec4(obj.color, obj.pointLight->lightIntensity);
-			push.radius = obj.transform.scale.x;
+			push.position = glm::vec4(transform.translation, 1.f);
+			push.color = glm::vec4(color.rgb, light.lightIntensity);
+			push.radius = transform.scale.x;
 
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout,

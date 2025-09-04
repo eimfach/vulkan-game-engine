@@ -6,8 +6,10 @@ namespace SJFGame::ECS {
 
 	Entity Manager::createEntity(bool set_default_components) {
 		assert(!commitStage && "Cannot create new entity, because another is uncommited");
+		assert(!locked && "Cannot create new entity, because manager is locked");
+
 		commitStage = true;
-		assert(counter < MAX_ENTITIES && "MAX Entities reached!");
+		assert(counter <= MAX_ENTITIES && "MAX Entities reached!");
 
 		Entity e{ counter++ };
 		return e;
@@ -46,11 +48,15 @@ namespace SJFGame::ECS {
 			}
 				
 		}
-			
 
 		e.blockId = contigiousComponentsBlocks.size() - 1;
 		entities.push_back(e);
 		commitStage = false;
+	}
+
+	void Manager::lock() {
+		assert(!commitStage && "Tried to lock ecs manager but uncommited entity currently exists.");
+		locked = true;
 	}
 
 	void Manager::reserve_size_entities(size_t size) {

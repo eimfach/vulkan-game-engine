@@ -16,6 +16,7 @@
 #include "assets.hpp"
 #include "entity_manager.hpp"
 #include "settings.hpp"
+#include "utils.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -59,6 +60,8 @@ namespace SJFGame {
 		t.translation.z = -2.5f;
 		ecsManager.addComponent(viewer, t);
 		ecsManager.commit(viewer);
+		ecsManager.lock();
+
 		ECS::Transform& viewer_transfrom = ecsManager.getEntityComponent<ECS::Transform>(viewer.id);
 		Engine::MovementControl camera_control{};
 
@@ -103,9 +106,9 @@ namespace SJFGame {
 
 				// order here matters
 				simple_render.render(frame);
-				//point_light_render.render(frame);
+				point_light_render.render(frame);
 				line_render.render(frame);
-				aabb_render.render(frame, ecsManager.getComponents<ECS::AABB>());
+				//aabb_render.render(frame, ecsManager.getComponents<ECS::AABB>());
 				gui_render_sys.render(frame);
 
 				renderer.endSwapChainRenderPass(cmd_buffer);
@@ -132,54 +135,36 @@ namespace SJFGame {
 
 	void FirstApp::loadGameEntities() {
 
-		std::vector<glm::vec3> light_colors{
-		 {1.f, .1f, .1f},
-		 {.1f, .1f, 1.f},
-		 {.1f, 1.f, .1f},
-		 {1.f, 1.f, .1f},
-		 {.1f, 1.f, 1.f},
-		 {1.f, 1.f, 1.f}  //
-		};
-
-		for (size_t i{}; i < light_colors.size(); i++) {
-			auto point_light = GameObject::createPointLight(.5f, .1f, light_colors[i]);
-			auto rotate_transform_matrix = glm::rotate(
-				glm::mat4{ 1.f },
-				(i * glm::two_pi<float>()) / light_colors.size(),
-				{ 0.f, -1.f, 0.f });
-			point_light.transform.translation = glm::vec3{ rotate_transform_matrix * glm::vec4{-1.f, -1.f, -1.f, 1.f} };
-			gameObjects.emplace(point_light.getId(), std::move(point_light));
-		}
-
 		///////////////////////////////////////////
-		// new ECS System                        //
+		// Archetype ECS System                  //
 		///////////////////////////////////////////
+		constexpr int DYNAMIC_OBJECTS_COUNT = 1000;
+		constexpr int STATIC_OBJECTS_COUNT = 3;
+		constexpr int OBJECTS_COUNT = DYNAMIC_OBJECTS_COUNT + STATIC_OBJECTS_COUNT;
+		constexpr int LINE_OBJECTS_COUNT = 8;
+		constexpr int POINT_LIGHT_OBJECTS_COUNT = 10;
 
-		ecsManager.reserve_size_entities(5004);
-		ecsManager.reserve_size_components<ECS::AABB>(5004);
-		ecsManager.reserve_size_components<ECS::Transform>(5004);
-		ecsManager.reserve_size_components<ECS::Mesh>(5004);
-		ecsManager.reserve_size_components<ECS::Visibility>(5004);
+		ecsManager.reserve_size_entities(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::AABB>(LINE_OBJECTS_COUNT + OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::Transform>(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::Mesh>(LINE_OBJECTS_COUNT + OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::Visibility>(LINE_OBJECTS_COUNT);
 
-		ecsManager.reserve_size_components<ECS::Color>(5000);
-		ecsManager.reserve_size_components<ECS::RenderLines>(5000);
+		ecsManager.reserve_size_components<ECS::Color>(LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::RenderLines>(LINE_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::PointLight>(POINT_LIGHT_OBJECTS_COUNT);
 
-		ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
-		ecsManager.commit(createMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
-
+		// Lines
 		auto& line_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
 
-		for (int i = 0; i < 5000; i++)
-		{
+		for (int i = 0; i < LINE_OBJECTS_COUNT; i++) {
 			auto e = ecsManager.createEntity();
 			ecsManager.addComponent(e, ECS::RenderLines{});
 			ECS::Transform transform{};
-			const float z{ float(i) * .025f };
+			const float z{ float(i) * .15f };
 			transform.translation = { -.5f, -1.5f, z };
 			ECS::Mesh mesh{ line_model.first };
-			ECS::AABB aabb{ line_model.second.verticies, transform.mat4()};
+			ECS::AABB aabb{ line_model.second.verticies, transform.mat4() };
 			ecsManager.addComponent(e, mesh);
 			ecsManager.addComponent(e, aabb);
 			ecsManager.addComponent(e, transform);
@@ -188,5 +173,42 @@ namespace SJFGame {
 			ecsManager.addComponent(e, color);
 			ecsManager.commit(e);
 		}
+
+		// Pointlights
+		std::vector<glm::vec3> light_colors{
+		 {1.f, .1f, .1f},
+		 {.1f, .1f, 1.f},
+		 {.1f, 1.f, .1f},
+		 {1.f, 1.f, .1f},
+		 {.1f, 1.f, 1.f},
+		 {1.f, 1.f, 1.f}
+		};
+
+		for (size_t i{}; i < light_colors.size(); i++) {
+			auto e = ecsManager.createEntity();
+			ECS::Transform t{};
+			auto rotate_transform_matrix = glm::rotate(
+				glm::mat4{ 1.f },
+				(i * glm::two_pi<float>()) / light_colors.size(),
+				{ 0.f, -1.f, 0.f });
+			t.translation = glm::vec3{ rotate_transform_matrix * glm::vec4{-1.f, -1.f, -1.f, 1.f} };
+			t.scale.x = .1f;
+			ecsManager.addComponent(e, t);
+			ecsManager.addComponent(e, ECS::PointLight{.5f});
+			ecsManager.addComponent(e, ECS::Color{ light_colors[i] });
+			ecsManager.commit(e);
+		}
+
+		ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
+		ecsManager.commit(createMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
+
+		// Objects
+		for (size_t i = 0; i < DYNAMIC_OBJECTS_COUNT; i++) {
+			ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", Utils::randTransform()));
+		}
+
+
 	}
 }
