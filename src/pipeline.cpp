@@ -4,7 +4,6 @@
 #include "utils.hpp"
 
 #include <fstream>
-#include <iostream>
 #include <cassert>
 
 // TODO: need better solution
@@ -46,8 +45,8 @@ namespace SJFGame::Engine {
 		auto vertex_code = Utils::read_file(vertex_filepath);
 		auto fragment_code = Utils::read_file(fragment_filepath);
 
-		std::cout << "Vertex Shader Code size is: " << vertex_code.size() << "\n";
-		std::cout << "Fragment Shader Code size is: " << fragment_code.size() << "\n";
+		//std::cout << "Vertex Shader Code size is: " << vertex_code.size() << "\n";
+		//std::cout << "Fragment Shader Code size is: " << fragment_code.size() << "\n";
 
 		createShaderModule(vertex_code, &vertexShaderModule);
 		createShaderModule(fragment_code, &fragmentShaderModule);

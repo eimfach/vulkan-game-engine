@@ -40,7 +40,7 @@ namespace SJFGame {
 	}
 
 	void FirstApp::run() {
-
+		std::cout << "[Running Game]";
 		Engine::MainRenderSystem main_render{ device };
 		Engine::SimpleRenderSystem simple_render{ device, renderer.getSwapChainRenderPass(),
 			main_render.getGobalSetLayout() };

@@ -154,16 +154,10 @@ namespace SJFGame::ECS {
 		}
 
 		template<typename T> T& getEntityComponent(EntityId id) {
-			try {
-				auto& entity = entities.at(id);
-				auto& block = contigiousComponentsBlocks.at(entity.blockId);
-				auto& offset = block.offsets.at(component_type_get_tuple_index<T>());
-				return getComponents<T>().at(id - offset);
-			}
-			catch (const std::exception& e) {
-				std::cerr << "entity_manager.cpp: [======= EXCEPTION =======] " << e.what() << "\n";
-				return T{};
-			}
+			auto& entity = entities.at(id);
+			auto& block = contigiousComponentsBlocks.at(entity.blockId);
+			auto& offset = block.offsets.at(component_type_get_tuple_index<T>());
+			return getComponents<T>().at(id - offset);
 		}
 
 		template<typename... T> bool hasEntityComponents(EntityId id) {
