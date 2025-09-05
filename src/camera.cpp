@@ -107,21 +107,20 @@ namespace SJFGame::Engine {
 		inverseViewMatrix[3][2] = position.z;
 	}
 
-	const Frustum Camera::produceFrustum() {
+	void Camera::produceFrustum() {
 		glm::mat4 pv{ getProjection() * getView() };
-
-		for (std::uint32_t i = 0; i < 4; ++i) { frustum[0][i] = pv[i][3] + pv[i][0]; }
-		for (std::uint32_t i = 0; i < 4; ++i) { frustum[1][i] = pv[i][3] - pv[i][0]; }
-		for (std::uint32_t i = 0; i < 4; ++i) { frustum[2][i] = pv[i][3] + pv[i][1]; }
-		for (std::uint32_t i = 0; i < 4; ++i) { frustum[3][i] = pv[i][3] - pv[i][1]; }
-		for (std::uint32_t i = 0; i < 4; ++i) { frustum[4][i] = pv[i][3] + pv[i][2]; }
-		for (std::uint32_t i = 0; i < 4; ++i) { frustum[5][i] = pv[i][3] - pv[i][2]; }
+		for (std::uint32_t i = 0; i < 4; ++i) {
+			frustum[0][i] = pv[i][3] + pv[i][0];
+			frustum[1][i] = pv[i][3] - pv[i][0];
+			frustum[2][i] = pv[i][3] + pv[i][1];
+			frustum[3][i] = pv[i][3] - pv[i][1];
+			frustum[4][i] = pv[i][3] + pv[i][2];
+			frustum[5][i] = pv[i][3] - pv[i][2];
+		}
 		for (std::uint32_t i = 0; i < 6; ++i) {
 			frustum[i] /= glm::length(glm::vec3(frustum[i]));
 			frustum[i].w = -frustum[i].w;
 		}
-
-		return frustum;
 	}
 
 	bool Camera::isWorldSpaceAABBinsidePlane(const glm::vec3& center, const glm::vec3& size, const glm::vec4& plane) const {
@@ -131,8 +130,7 @@ namespace SJFGame::Engine {
 	}
 
 	bool Camera::isWorldSpaceAABBfrustumVisible(const SJFGame::ECS::AABB& aabb) const {
-		const std::uint32_t planes = 6;
-		for (std::uint32_t i = 0; i < planes; ++i) {
+		for (std::uint32_t i = 0; i < 6; ++i) {
 			if (!isWorldSpaceAABBinsidePlane(aabb.center, aabb.size, frustum[i])) {
 				return false;
 			}

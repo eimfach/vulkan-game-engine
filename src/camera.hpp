@@ -30,7 +30,7 @@ namespace SJFGame::Engine {
 		const glm::mat4& getInverseView() const { return inverseViewMatrix; }
 		const glm::vec3 getPosition() const { return glm::vec3(inverseViewMatrix[3]); }
 
-		const Frustum produceFrustum();
+		void produceFrustum();
 		bool isWorldSpaceAABBfrustumVisible(const SJFGame::ECS::AABB& aabb) const;
 
 	private:
@@ -39,6 +39,6 @@ namespace SJFGame::Engine {
 		glm::mat4 inverseViewMatrix{ 1.f };
 		Frustum frustum{};
 
-		bool isWorldSpaceAABBinsidePlane(const glm::vec3& center, const glm::vec3& size, const glm::vec4& plane) const;
+		inline bool isWorldSpaceAABBinsidePlane(const glm::vec3& center, const glm::vec3& size, const glm::vec4& plane) const;
 	};
 }

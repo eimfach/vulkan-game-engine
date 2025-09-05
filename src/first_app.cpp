@@ -53,11 +53,12 @@ namespace SJFGame {
 		main_render.getGobalSetLayout() };
 
 		Engine::Camera camera{};
-		camera.setViewTarget({ -1.f, -2.f, -5.f }, { .5f, .5f, 0.f });
+		camera.setViewTarget({ 0.f, -7.1f, -20.1f }, { 5.f, -10.f, 0.f });
 
 		auto viewer = ecsManager.createEntity();
-		ECS::Transform t{};
-		t.translation.z = -2.5f;
+		ECS::Transform t{ {0.f, -3.1f, -20.1f} };
+		//t.translation.z = -2.5f;
+		//t.rotation.x = glm::radians(-45.0f);
 		ecsManager.addComponent(viewer, t);
 		ecsManager.commit(viewer);
 		ecsManager.lock();
