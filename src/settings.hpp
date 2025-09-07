@@ -14,4 +14,5 @@ namespace SJFGame::Settings {
 	inline bool VSYNC = false;
 	inline bool GAMMA_CORRECTION = false;
 	inline bool SHOW_DETAILED_METRICS = false;
+	const int MAX_LIGHTS{ 10 };
 }

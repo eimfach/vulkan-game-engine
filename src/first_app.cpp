@@ -54,14 +54,16 @@ namespace SJFGame {
 		camera.setViewTarget({ 0.f, -7.1f, -20.1f }, { 5.f, -10.f, 0.f });
 
 		auto viewer = ecsManager.createEntity();
+		auto viewer_entity = viewer.first;
+		auto viewer_id = viewer.second;
 		ECS::Transform t{ {0.f, -3.1f, -20.1f} };
 		//t.translation.z = -2.5f;
 		//t.rotation.x = glm::radians(-45.0f);
-		ecsManager.addComponent(viewer, t);
-		ecsManager.commit(viewer);
+		ecsManager.addComponent(viewer_entity, t);
+		ecsManager.commit(viewer_entity);
 		ecsManager.lock();
 
-		ECS::Transform& viewer_transfrom = ecsManager.getEntityComponent<ECS::Transform>(viewer.id);
+		ECS::Transform& viewer_transfrom = ecsManager.getEntityComponent<ECS::Transform>(viewer_id);
 		Engine::MovementControl camera_control{};
 
 		auto current_time = std::chrono::high_resolution_clock::now();
@@ -118,18 +120,19 @@ namespace SJFGame {
 		renderer.deviceWaitIdle();
 	}
 
-	ECS::Entity FirstApp::createMeshEntity(std::string name, std::string modelpath, ECS::Transform transform) {
+	ECS::Entity FirstApp::createStaticMeshEntity(std::string name, std::string modelpath, ECS::Transform transform) {
 		auto& model = Engine::VertexModel::createModelFromFile(device, modelpath);
 		auto e = ecsManager.createEntity();
+		auto entity = e.first;
 		ECS::Identification id{ name };
-		ecsManager.addComponent(e, id);
+		ecsManager.addComponent(entity, id);
 		ECS::Mesh mesh{ model.first };
-		ECS::AABB aabb{ device, model.second.verticies, transform.mat4() };
-		ecsManager.addComponent(e, mesh);
-		ecsManager.addComponent(e, aabb);
-		ecsManager.addComponent(e, transform);
-		ecsManager.addComponent(e, ECS::Visibility{});
-		return e;
+		ECS::AABB aabb{ device, model.second.verticies, transform.modelMatrix()};
+		ecsManager.addComponent(entity, mesh);
+		ecsManager.addComponent(entity, aabb);
+		ecsManager.addComponent(entity, transform);
+		ecsManager.addComponent(entity, ECS::Visibility{});
+		return entity;
 	}
 
 	void FirstApp::loadGameEntities() {
@@ -137,10 +140,10 @@ namespace SJFGame {
 		///////////////////////////////////////////
 		// Archetype ECS System                  //
 		///////////////////////////////////////////
-		constexpr int DYNAMIC_OBJECTS_COUNT = 1000;
+		constexpr int RANDOMLY_PLACED_STATIC_OBJECTS_COUNT = 10000;
 		constexpr int STATIC_OBJECTS_COUNT = 3;
-		constexpr int OBJECTS_COUNT = DYNAMIC_OBJECTS_COUNT + STATIC_OBJECTS_COUNT;
-		constexpr int LINE_OBJECTS_COUNT = 8;
+		constexpr int OBJECTS_COUNT = RANDOMLY_PLACED_STATIC_OBJECTS_COUNT + STATIC_OBJECTS_COUNT;
+		constexpr int LINE_OBJECTS_COUNT = 4;
 		constexpr int POINT_LIGHT_OBJECTS_COUNT = 10;
 
 		ecsManager.reserve_size_entities(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
@@ -158,19 +161,21 @@ namespace SJFGame {
 
 		for (int i = 0; i < LINE_OBJECTS_COUNT; i++) {
 			auto e = ecsManager.createEntity();
-			ecsManager.addComponent(e, ECS::RenderLines{});
+			auto entity = e.first;
+			ecsManager.addComponent(entity, ECS::RenderLines{});
 			ECS::Transform transform{};
 			const float z{ float(i) * .15f };
-			transform.translation = { -.5f, -1.5f, z };
+			transform.translation = { 0.f, -1.f, -0.15f };
+			transform.rotation = { glm::radians(90.f), 0.f, 0.f };
 			ECS::Mesh mesh{ line_model.first };
-			ECS::AABB aabb{ line_model.second.verticies, transform.mat4() };
-			ecsManager.addComponent(e, mesh);
-			ecsManager.addComponent(e, aabb);
-			ecsManager.addComponent(e, transform);
-			ecsManager.addComponent(e, ECS::Visibility{});
+			ECS::AABB aabb{ line_model.second.verticies, transform.modelMatrix() };
+			ecsManager.addComponent(entity, mesh);
+			ecsManager.addComponent(entity, aabb);
+			ecsManager.addComponent(entity, transform);
+			ecsManager.addComponent(entity, ECS::Visibility{});
 			ECS::Color color{ { .3f, .1f, .6f } };
-			ecsManager.addComponent(e, color);
-			ecsManager.commit(e);
+			ecsManager.addComponent(entity, color);
+			ecsManager.commit(entity);
 		}
 
 		// Pointlights
@@ -185,6 +190,7 @@ namespace SJFGame {
 
 		for (size_t i{}; i < light_colors.size(); i++) {
 			auto e = ecsManager.createEntity();
+			auto entity = e.first;
 			ECS::Transform t{};
 			auto rotate_transform_matrix = glm::rotate(
 				glm::mat4{ 1.f },
@@ -192,20 +198,20 @@ namespace SJFGame {
 				{ 0.f, -1.f, 0.f });
 			t.translation = glm::vec3{ rotate_transform_matrix * glm::vec4{-1.f, -1.f, -1.f, 1.f} };
 			t.scale.x = .1f;
-			ecsManager.addComponent(e, t);
-			ecsManager.addComponent(e, ECS::PointLight{.5f});
-			ecsManager.addComponent(e, ECS::Color{ light_colors[i] });
-			ecsManager.commit(e);
+			ecsManager.addComponent(entity, t);
+			ecsManager.addComponent(entity, ECS::PointLight{3.5f});
+			ecsManager.addComponent(entity, ECS::Color{ light_colors[i] });
+			ecsManager.commit(entity);
 		}
 
-		ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
-		ecsManager.commit(createMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createStaticMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createStaticMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(createStaticMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
+		ecsManager.commit(createStaticMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
 
 		// Objects
-		for (size_t i = 0; i < DYNAMIC_OBJECTS_COUNT; i++) {
-			ecsManager.commit(createMeshEntity("flat_vase", "models/flat_vase.obj", Utils::randTransform()));
+		for (size_t i = 0; i < RANDOMLY_PLACED_STATIC_OBJECTS_COUNT; i++) {
+			ecsManager.commit(createStaticMeshEntity("flat_vase", "models/flat_vase.obj", Utils::randTransform()));
 		}
 
 

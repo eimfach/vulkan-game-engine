@@ -125,8 +125,8 @@ namespace SJFGame::Engine {
 
 	bool Camera::isWorldSpaceAABBinsidePlane(const glm::vec3& center, const glm::vec3& size, const glm::vec4& plane) const {
 		const glm::vec3 normal = glm::vec3(plane);
-		const float radius = dot(size, abs(normal));
-		return (dot(normal, center) - plane.w) >= -radius;
+		const float radius = glm::dot(size, glm::abs(normal));
+		return (glm::dot(normal, center) - plane.w) >= -radius;
 	}
 
 	bool Camera::isWorldSpaceAABBfrustumVisible(const SJFGame::ECS::AABB& aabb) const {

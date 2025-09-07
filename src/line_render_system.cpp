@@ -83,7 +83,7 @@ namespace SJFGame::Engine {
 			auto& color = frame.ecsManager.getEntityComponent<ECS::Color>(id);
 
 			LinePushConstantData push{};
-			auto& model_matrix = transform.mat4();
+			auto model_matrix = transform.modelMatrix();
 			push.modelMatrix = model_matrix;
 			push.color = color.rgb;
 			auto& model = mesh.model;

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "settings.hpp"
 #include "camera.hpp"
 #include "game_object.hpp"
 #include "entity_manager.hpp"
+
 
 // lib
 #include "vulkan/vulkan.h"
@@ -11,8 +13,6 @@
 #include <array>
 
 namespace SJFGame::Engine {
-
-	const int MAX_LIGHTS{ 10 };
 
 	struct PointLight {
 		glm::vec4 position{}; // ignore w
@@ -40,7 +40,7 @@ namespace SJFGame::Engine {
 		alignas(16) glm::vec4 directionalLightColor = { 0.f, 1.0f, .3f, 0.f }; // w is intensity
 		glm::vec4 ambientLightColor{ 1.f, 1.f, 1.f, .05f }; // w is intensity
 
-		std::array<PointLight, MAX_LIGHTS> pointLights;
+		std::array<PointLight, Settings::MAX_LIGHTS> pointLights;
 		int numLights{};
 	};
 

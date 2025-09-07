@@ -72,6 +72,7 @@ namespace SJFGame::Engine {
 			0, nullptr
 		);
 
+		static std::shared_ptr<VertexModel> last_model = nullptr;
 		auto& group = frame.ecsManager.getEntityGroup<ECS::Identification, ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
 		for (ECS::EntityId id : group) {
 			auto& aabb = frame.ecsManager.getEntityComponent<ECS::AABB>(id);
@@ -82,10 +83,9 @@ namespace SJFGame::Engine {
 
 
 			SimplePushConstantData push{};
-			auto& model_matrix = transform.mat4();
-			push.modelMatrix = model_matrix;
-			//push.normalMatrix = obj.transform.normalMatrix();
-			push.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model_matrix)));
+			auto modelMatrix = transform.modelMatrix();
+			push.modelMatrix = modelMatrix;
+			push.normalMatrix = transform.normalMatrix(modelMatrix);
 
 			auto& model = mesh.model;
 			vkCmdPushConstants(frame.cmdBuffer,
@@ -93,8 +93,12 @@ namespace SJFGame::Engine {
 				0,
 				sizeof(SimplePushConstantData),
 				&push);
-
-			model->bind(frame.cmdBuffer);
+			
+			if (model != last_model) {
+				model->bind(frame.cmdBuffer);
+				last_model = model;
+			}
+			
 			model->draw(frame.cmdBuffer);
 		}
 	}

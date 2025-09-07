@@ -7,12 +7,7 @@
 int main() {
     SJFGame::FirstApp app{};
 
-    try {
-        app.run();
-    } catch (const std::exception &e) {
-        std::cerr << "main.cpp: [======= EXCEPTION =======] " << e.what() << "\n";
-        return EXIT_FAILURE;
-    }
+    app.run();
 
     return EXIT_SUCCESS;
 }

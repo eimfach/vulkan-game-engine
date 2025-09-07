@@ -20,8 +20,8 @@ namespace SJFGame::Engine {
 	void Renderer::recreateSwapChain() {
 		auto extent = window.getExtent();
 		while (extent.width == 0 || extent.height == 0) {
-			extent = window.getExtent();
 			glfwWaitEvents();
+			extent = window.getExtent();
 		}
 
 		auto result = vkDeviceWaitIdle(device.device());

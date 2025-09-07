@@ -1,5 +1,6 @@
 #include "pointlight_render_system.hpp"
 #include "entity_manager.hpp"
+#include "utils.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -78,15 +79,26 @@ namespace SJFGame::Engine {
 
 		std::vector<ECS::EntityId>& pointlights = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Color, ECS::PointLight>();
 
-		assert(pointlights.size() <= MAX_LIGHTS && "Point lights exceed maximum specified");
+		assert(pointlights.size() <= Settings::MAX_LIGHTS && "Point lights exceed maximum specified");
 		int light_index{};
+		static std::array<glm::vec3, Settings::MAX_LIGHTS> move_targets{};
+
 		for(ECS::EntityId id : pointlights) {
 			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
 			auto& color = frame.ecsManager.getEntityComponent<ECS::Color>(id);
 			auto& light = frame.ecsManager.getEntityComponent<ECS::PointLight>(id);
 
+			auto& move_target = move_targets[light_index];
 			// animate light pos
-			transform.translation = glm::vec3(rotate_transform_matrix * glm::vec4(transform.translation, 1.f));
+			//transform.translation = glm::vec3(rotate_transform_matrix * glm::vec4(transform.translation, 1.f));
+			auto target_distance = glm::distance(transform.translation, move_target);
+			if (target_distance < 1.f) {
+				move_targets[light_index] = Utils::randTransform().translation;
+			}
+			
+			auto move_direction = glm::normalize(transform.translation - move_target);
+			auto movement = move_direction * 2.0f * frame.delta;
+			transform.translation -= movement;
 
 			// copy light to ubo
 			ubo.pointLights[light_index].position = glm::vec4(transform.translation, 0.f);
