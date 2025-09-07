@@ -12,44 +12,6 @@
 #include <vector>
 
 namespace SJFGame::ECS {
-	const std::vector<Engine::VertexBase> voxelVerticies{ // represents a cube
-		// left face (white)
-		{{-.5f, -.5f, -.5f}},
-		{{-.5f, .5f, .5f}},
-		{{-.5f, -.5f, .5f}},
-		{{-.5f, .5f, -.5f}},
-
-		// right face (yellow)
-		{{.5f, -.5f, -.5f}},
-		{{.5f, .5f, .5f}},
-		{{.5f, -.5f, .5f}},
-		{{.5f, .5f, -.5f}},
-
-		// top face (orange, remember y axis points down)
-		{{-.5f, -.5f, -.5f}},
-		{{.5f, -.5f, .5f}},
-		{{-.5f, -.5f, .5f}},
-		{{.5f, -.5f, -.5f}},
-
-		// bottom face (red)
-		{{-.5f, .5f, -.5f}},
-		{{.5f, .5f, .5f}},
-		{{-.5f, .5f, .5f}},
-		{{.5f, .5f, -.5f}},
-
-		// nose face (blue)
-		{{-.5f, -.5f, 0.5f}},
-		{{.5f, .5f, 0.5f}},
-		{{-.5f, .5f, 0.5f}},
-		{{.5f, -.5f, 0.5f}},
-
-		// tail face (green)
-		{{-.5f, -.5f, -0.5f}},
-		{{.5f, .5f, -0.5f}},
-		{{-.5f, .5f, -0.5f}},
-		{{.5f, -.5f, -0.5f}},
-	};
-
 	struct AABB {
 		glm::vec3 min{};
 		glm::vec3 max{};

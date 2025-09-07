@@ -35,9 +35,7 @@ namespace SJFGame {
 		loadGameEntities();
 	}
 
-	FirstApp::~FirstApp() {
-		
-	}
+	FirstApp::~FirstApp() {}
 
 	void FirstApp::run() {
 		std::cout << "[Running Game]";
