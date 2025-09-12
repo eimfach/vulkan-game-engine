@@ -140,7 +140,7 @@ namespace SJFGame {
 		///////////////////////////////////////////
 		// Archetype ECS System                  //
 		///////////////////////////////////////////
-		constexpr int RANDOMLY_PLACED_STATIC_OBJECTS_COUNT = 10000;
+		constexpr int RANDOMLY_PLACED_STATIC_OBJECTS_COUNT = 1000;
 		constexpr int STATIC_OBJECTS_COUNT = 3;
 		constexpr int OBJECTS_COUNT = RANDOMLY_PLACED_STATIC_OBJECTS_COUNT + STATIC_OBJECTS_COUNT;
 		constexpr int LINE_OBJECTS_COUNT = 4;
@@ -166,7 +166,7 @@ namespace SJFGame {
 			ECS::Transform transform{};
 			const float z{ float(i) * .15f };
 			transform.translation = { 0.f, -1.f, -0.15f };
-			transform.rotation = { glm::radians(90.f), 0.f, 0.f };
+			transform.rotation = { glm::radians(90.f), 0.f, glm::radians(90.f) };
 			ECS::Mesh mesh{ line_model.first };
 			ECS::AABB aabb{ line_model.second.verticies, transform.modelMatrix() };
 			ecsManager.addComponent(entity, mesh);
