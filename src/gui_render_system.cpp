@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	GuiRenderSystem::GuiRenderSystem(Device& device, GLFWwindow* window, VkRenderPass render_pass) : device{device} {
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();

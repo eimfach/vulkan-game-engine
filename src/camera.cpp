@@ -5,7 +5,7 @@
 #include <limits>
 #include <cmath>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	void Camera::setOrthographicProjection(
 		float left, float right, float top, float bottom, float near, float far) {
 		projectionMatrix = glm::mat4{ 1.0f };
@@ -129,7 +129,7 @@ namespace SJFGame::Engine {
 		return (glm::dot(normal, center) - plane.w) >= -radius;
 	}
 
-	bool Camera::isWorldSpaceAABBfrustumVisible(const SJFGame::ECS::AABB& aabb) const {
+	bool Camera::isWorldSpaceAABBfrustumVisible(const nEngine::ECS::AABB& aabb) const {
 		for (std::uint32_t i = 0; i < 6; ++i) {
 			if (!isWorldSpaceAABBinsidePlane(aabb.center, aabb.size, frustum[i])) {
 				return false;

@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
 	struct AABBPushConstantData {
 		glm::vec3 color{ .1f, .9f, .05f };

@@ -4,7 +4,7 @@
 #include "window.hpp"
 #include "entity_manager.hpp"
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	class MovementControl {
 	public:
 		struct KeyMappings {

@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-namespace SJFGame::ECS {
+namespace nEngine::ECS {
 	struct AABB {
 		glm::vec3 min{};
 		glm::vec3 max{};

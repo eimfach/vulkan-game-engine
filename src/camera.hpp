@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <array>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	const glm::vec3 UP{ 0.f, -1.f, 0.f };
 	const glm::vec3 RIGHT{ 1.f, 0.f, 0.f };
 	const glm::vec3 FRONT{ 0.f, 0.f, -1.f };
@@ -31,7 +31,7 @@ namespace SJFGame::Engine {
 		const glm::vec3 getPosition() const { return glm::vec3(inverseViewMatrix[3]); }
 
 		void produceFrustum();
-		bool isWorldSpaceAABBfrustumVisible(const SJFGame::ECS::AABB& aabb) const;
+		bool isWorldSpaceAABBfrustumVisible(const nEngine::ECS::AABB& aabb) const;
 
 	private:
 		glm::mat4 projectionMatrix{ 1.f };

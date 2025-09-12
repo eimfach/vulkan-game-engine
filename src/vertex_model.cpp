@@ -20,16 +20,16 @@
 
 namespace std {
 	template<>
-	struct hash<SJFGame::Engine::VertexBase> {
-		size_t operator()(SJFGame::Engine::VertexBase const &vertex) const {
+	struct hash<nEngine::Engine::VertexBase> {
+		size_t operator()(nEngine::Engine::VertexBase const &vertex) const {
 			size_t seed = 0;
-			SJFGame::Utils::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+			nEngine::Utils::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
 			return seed;
 		}
 	};
 }
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	VertexModel::VertexModel(Device& device, const VertexModel::Builder& builder) : device{device} {
 		createVertexBuffers(builder.verticies);
 		createIndexBuffers(builder.indicies);

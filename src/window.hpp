@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	class Window {
 	
 	public:

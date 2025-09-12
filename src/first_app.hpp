@@ -11,7 +11,7 @@
 // std
 #include <memory>
 
-namespace SJFGame {
+namespace nEngine {
 	class FirstApp {
 	public:
 		static constexpr int WIDTH = 1024;

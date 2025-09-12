@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-namespace SJFGame::Utils {
+namespace nEngine::Utils {
 	std::vector<char> read_file(const std::string& filepath) {
 		std::ifstream file{ filepath, std::ios::binary };
 

@@ -9,7 +9,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	class GuiRenderSystem {
 	public:
 		GuiRenderSystem(Device& device, GLFWwindow* window, VkRenderPass render_pass);

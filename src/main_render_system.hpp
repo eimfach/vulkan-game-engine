@@ -10,7 +10,7 @@
 #include <vector>
 #include <utility>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
 	struct TexturePoolItem {
 		std::shared_ptr<Texture> texture{};

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
 struct SwapChainSupportDetails {
   VkSurfaceCapabilitiesKHR capabilities;

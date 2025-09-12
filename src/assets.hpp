@@ -1,5 +1,5 @@
 #include <string>
 
-namespace SJFGame::Assets {
+namespace nEngine::Assets {
     bool import_model(const std::string& filepath);
 }

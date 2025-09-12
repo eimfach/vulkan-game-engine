@@ -13,7 +13,7 @@
 #include <stdexcept>
 #include <map>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
 	/*
 	We could render our lights by indexing into the global ubo information, which has the

@@ -11,7 +11,7 @@
 #include <set>
 #include <stdexcept>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
 SwapChain::SwapChain(Device &deviceRef, VkExtent2D extent)
     : device{ deviceRef }, windowExtent{ extent } {

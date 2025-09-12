@@ -12,7 +12,7 @@
 // std
 #include <array>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
 	struct PointLight {
 		glm::vec4 position{}; // ignore w

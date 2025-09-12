@@ -23,7 +23,7 @@
 #include <limits>
 
 
-namespace SJFGame::ECS {
+namespace nEngine::ECS {
 
 	///////////////////////////////////////////
 	// Components							 //

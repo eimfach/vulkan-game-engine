@@ -12,7 +12,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	class Renderer {
 	public:
 		static constexpr int WIDTH = 800;

@@ -1,6 +1,6 @@
 #include "movement.hpp"
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	void MovementControl::moveInPlaneXZ(GLFWwindow* window, float delta, ECS::Transform& transform) {
 		glm::vec3 rotate{};
 

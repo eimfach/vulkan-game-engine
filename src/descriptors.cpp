@@ -4,7 +4,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
     // *************** Descriptor Set Layout Builder *********************
 

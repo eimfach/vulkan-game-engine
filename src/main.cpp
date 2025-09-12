@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 int main() {
-    SJFGame::FirstApp app{};
+    nEngine::FirstApp app{};
 
     app.run();
 

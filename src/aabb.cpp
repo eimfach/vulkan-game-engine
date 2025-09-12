@@ -3,7 +3,7 @@
 #include "vertex_model.hpp"
 #include <array>
 
-namespace SJFGame::ECS {
+namespace nEngine::ECS {
 
 	void AABB::calcuateMinMax(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
 		min = glm::vec3(FLT_MAX);

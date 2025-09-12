@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace SJFGame::Settings {
+namespace nEngine::Settings {
 	const std::string FONT_PATH = "fonts/Roboto-Medium.ttf";
 	const int32_t IM_GUI_POOL_SIZE = 16;
 

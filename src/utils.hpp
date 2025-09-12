@@ -9,7 +9,7 @@
 #include <vector>
 #include <random>
 
-namespace SJFGame::Utils {
+namespace nEngine::Utils {
 	static std::default_random_engine generator{};
 	static std::uniform_real_distribution<float> float_distribution{ -10.f, 10.f };
 

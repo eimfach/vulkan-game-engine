@@ -1,6 +1,6 @@
 #include "entity_manager.hpp"
 
-namespace SJFGame::ECS {
+namespace nEngine::ECS {
 	Manager::Manager() {};
 	Manager::~Manager() {};
 

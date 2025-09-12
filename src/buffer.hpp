@@ -2,7 +2,7 @@
 
 #include "device.hpp"
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
     class Buffer {
     public:

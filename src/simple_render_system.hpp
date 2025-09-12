@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	class SimpleRenderSystem {
 	public:
 		SimpleRenderSystem(Device& device, VkRenderPass render_pass, VkDescriptorSetLayout global_set_layout);

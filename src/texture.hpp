@@ -8,7 +8,7 @@
 // std
 #include <string>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	class Texture {
 	public:
 		Texture(Device& device, const std::string& filepath);

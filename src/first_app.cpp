@@ -28,7 +28,7 @@
 #include <ratio>
 #include <memory>
 
-namespace SJFGame {
+namespace nEngine {
 
 
 	FirstApp::FirstApp() {

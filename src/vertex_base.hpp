@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	struct VertexBase {
 		glm::vec3 position{};
 		glm::vec3 color{};

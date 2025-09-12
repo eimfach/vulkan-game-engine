@@ -12,7 +12,7 @@
 #include <cassert>
 #include <cstring>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
     /**
      * Returns the minimum instance size required to be compatible with devices minOffsetAlignment

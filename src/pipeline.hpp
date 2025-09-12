@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	struct PipelineConfig {
 		PipelineConfig() = default;
 		PipelineConfig(const PipelineConfig&) = delete;

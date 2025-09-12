@@ -1,6 +1,6 @@
 #include "game_object.hpp"
 
-namespace SJFGame {
+namespace nEngine {
 	glm::mat4 Transform::mat4() const {
 		const float c3 = glm::cos(rotation.z);
 		const float s3 = glm::sin(rotation.z);

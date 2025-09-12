@@ -12,7 +12,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
 	struct LinePushConstantData {
 		glm::mat4 modelMatrix{ 1.f };

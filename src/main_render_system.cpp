@@ -2,7 +2,7 @@
 
 #include "frame.hpp"
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	MainRenderSystem::MainRenderSystem(Device& device) : device{device} {
 
 		globalPool = Engine::DescriptorPool::Builder(device)

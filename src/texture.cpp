@@ -10,7 +10,7 @@
 #include <cmath>
 #include <fstream>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
     Texture::Texture(Device& device, const std::string& filepath) : device{device} {
 		int channels{};
 		int bytes_per_pixel{};

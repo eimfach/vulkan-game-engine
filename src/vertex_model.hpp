@@ -14,7 +14,7 @@
 #include <vector>
 #include <memory>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 	class VertexModel {
 	public:
 

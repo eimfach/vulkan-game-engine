@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace SJFGame::Engine {
+namespace nEngine::Engine {
 
     class DescriptorSetLayout {
     public:
