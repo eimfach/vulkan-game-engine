@@ -10,6 +10,7 @@
 
 // std
 #include <memory>
+#include <future>
 
 namespace nEngine {
 	class FirstApp {
@@ -32,9 +33,15 @@ namespace nEngine {
 		Engine::Renderer renderer{window, device};
 
 		GameObject::Map gameObjects;
+		ECS::EntityId viewerId{};
 		ECS::Manager ecsManager{};
 
+		std::vector<std::future<void>> futures;
+
 		void loadGameEntities();
-		ECS::Entity createStaticMeshEntity(std::string name, std::string modelpath, ECS::Transform transform);
+		void loadLineEntities(const int count);
+		void loadPointLightEntities();
+		void loadStaticObjects();
+		void loadViewer();
 	};
 }

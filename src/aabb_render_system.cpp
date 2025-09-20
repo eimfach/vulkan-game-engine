@@ -63,12 +63,6 @@ namespace nEngine::Engine {
 	}
 
 	void AABBRenderSystem::render(Frame& frame, std::vector<ECS::AABB>& boxes) {
-		// cull near and far plane (just for testing)
-		//glm::vec3 direction_to_camera{ transform.translation - frame.camera.getPosition() };
-		//float distance_forward{ glm::dot(direction_to_camera, glm::vec3{0.f,0.f,1.f}) };
-		//if (distance_forward < Settings::NEAR_PLANE || distance_forward > Settings::FAR_PLANE) {
-		//	continue;
-		//}
 		pipeline->bind(frame.cmdBuffer);
 
 		vkCmdBindDescriptorSets(frame.cmdBuffer,

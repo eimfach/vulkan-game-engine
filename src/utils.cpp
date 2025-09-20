@@ -1,5 +1,8 @@
 #include "utils.hpp"
 
+// std
+#include <iostream>
+
 namespace nEngine::Utils {
 	std::vector<char> read_file(const std::string& filepath) {
 		std::ifstream file{ filepath, std::ios::binary };
@@ -21,5 +24,17 @@ namespace nEngine::Utils {
 		ECS::Transform t{};
 		t.translation = { x, y, z };
 		return t;
+	}
+
+	Timer::Timer(std::string ref) : reference{ref} {
+		start = std::chrono::high_resolution_clock::now();
+	}
+
+	Timer::~Timer() {
+		end = std::chrono::high_resolution_clock::now();
+		duration = end - start;
+
+		float ms = duration.count() * 1000.f;
+		std::cout << "[" << reference << "] " << ms << " ms\n";
 	}
 }

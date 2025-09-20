@@ -1,6 +1,6 @@
 #pragma once
 
-#include "aabb.hpp"
+#include "entity_manager.hpp"
 
 // libs
 // don't use degrees, force use radians
@@ -31,7 +31,7 @@ namespace nEngine::Engine {
 		const glm::vec3 getPosition() const { return glm::vec3(inverseViewMatrix[3]); }
 
 		void produceFrustum();
-		bool isWorldSpaceAABBfrustumVisible(const nEngine::ECS::AABB& aabb) const;
+		bool isWorldSpaceAABBfrustumVisible(const ECS::AABB& aabb) const;
 
 	private:
 		glm::mat4 projectionMatrix{ 1.f };

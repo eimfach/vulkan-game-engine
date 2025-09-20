@@ -302,6 +302,9 @@
     <ClInclude Include="src\aabb.hpp">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\buffered_vector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\simple_shader.vert">

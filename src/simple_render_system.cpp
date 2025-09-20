@@ -12,6 +12,7 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
+#include <mutex>
 
 namespace nEngine::Engine {
 
@@ -61,7 +62,6 @@ namespace nEngine::Engine {
 	}
 
 	void SimpleRenderSystem::render(Frame& frame) {
-
 		pipeline->bind(frame.cmdBuffer);
 
 		vkCmdBindDescriptorSets(frame.cmdBuffer,
@@ -74,6 +74,7 @@ namespace nEngine::Engine {
 
 		static std::shared_ptr<VertexModel> last_model = nullptr;
 		auto& group = frame.ecsManager.getEntityGroup<ECS::Identification, ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
+
 		for (ECS::EntityId id : group) {
 			auto& aabb = frame.ecsManager.getEntityComponent<ECS::AABB>(id);
 			if (!frame.camera.isWorldSpaceAABBfrustumVisible(aabb)) continue;

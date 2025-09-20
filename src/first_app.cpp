@@ -27,18 +27,25 @@
 #include <chrono>
 #include <ratio>
 #include <memory>
+#include <functional>
+#include <mutex>
+#include <shared_mutex>
+#include <thread>
 
 namespace nEngine {
 
+	using namespace std::string_literals;
+
+	static std::mutex Mutex;
 
 	FirstApp::FirstApp() {
+		//std::async(std::launch::async)
 		loadGameEntities();
 	}
 
 	FirstApp::~FirstApp() {}
 
 	void FirstApp::run() {
-		std::cout << "[Running Game]";
 		Engine::MainRenderSystem main_render{ device };
 		Engine::SimpleRenderSystem simple_render{ device, renderer.getSwapChainRenderPass(),
 			main_render.getGobalSetLayout() };
@@ -53,17 +60,7 @@ namespace nEngine {
 		Engine::Camera camera{};
 		camera.setViewTarget({ 0.f, -7.1f, -20.1f }, { 5.f, -10.f, 0.f });
 
-		auto viewer = ecsManager.createEntity();
-		auto viewer_entity = viewer.first;
-		auto viewer_id = viewer.second;
-		ECS::Transform t{ {0.f, -3.1f, -20.1f} };
-		//t.translation.z = -2.5f;
-		//t.rotation.x = glm::radians(-45.0f);
-		ecsManager.addComponent(viewer_entity, t);
-		ecsManager.commit(viewer_entity);
-		ecsManager.lock();
-
-		ECS::Transform& viewer_transfrom = ecsManager.getEntityComponent<ECS::Transform>(viewer_id);
+		ECS::Transform& viewer_transfrom = ecsManager.getEntityComponent<ECS::Transform>(viewerId);
 		Engine::MovementControl camera_control{};
 
 		auto current_time = std::chrono::high_resolution_clock::now();
@@ -98,6 +95,9 @@ namespace nEngine {
 				ubo.projectionMatrix = camera.getProjection();
 				ubo.viewMatrix = camera.getView();
 				ubo.inverseViewMatrix = camera.getInverseView();
+
+				std::lock_guard<std::mutex> lk(Mutex);
+
 				point_light_render.update(frame, ubo);
 				main_render.getUboBuffer(frame_index)->writeToBuffer(&ubo);
 				main_render.getUboBuffer(frame_index)->flush();
@@ -114,28 +114,45 @@ namespace nEngine {
 
 				renderer.endSwapChainRenderPass(cmd_buffer);
 				renderer.endFrame();
+
 			}
 		}
 
 		renderer.deviceWaitIdle();
 	}
 
-	ECS::Entity FirstApp::createStaticMeshEntity(std::string name, std::string modelpath, ECS::Transform transform) {
-		auto& model = Engine::VertexModel::createModelFromFile(device, modelpath);
-		auto e = ecsManager.createEntity();
-		auto entity = e.first;
+
+	static ECS::Entity CreateStaticMeshEntity(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform) {
+		auto model = Engine::VertexModel::createModelFromFile(device, modelpath);
+
 		ECS::Identification id{ name };
-		ecsManager.addComponent(entity, id);
 		ECS::Mesh mesh{ model.first };
-		ECS::AABB aabb{ device, model.second.verticies, transform.modelMatrix()};
-		ecsManager.addComponent(entity, mesh);
-		ecsManager.addComponent(entity, aabb);
-		ecsManager.addComponent(entity, transform);
-		ecsManager.addComponent(entity, ECS::Visibility{});
+		ECS::AABB aabb{ device, model.second.verticies, transform.modelMatrix() };
+
+		auto e = manager.createEntity();
+		auto entity = e.first;
+
+		manager.addComponent(entity, id);
+		manager.addComponent(entity, mesh);
+		manager.addComponent(entity, aabb);
+		manager.addComponent(entity, transform);
+		manager.addComponent(entity, ECS::Visibility{});
 		return entity;
 	}
 
+	static void LoadRandomObjects(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform, int count) {
+		using namespace std::chrono_literals;
+		Utils::Timer timer{ "FirstApp::LoadRandomObjects" };
+
+		for (size_t i = 0; i < count; i++) {
+			std::this_thread::sleep_for(std::chrono::duration<float>(50ms));
+			std::lock_guard<std::mutex> lk(Mutex);
+			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::randTransform()));
+		}
+	}
+
 	void FirstApp::loadGameEntities() {
+		Utils::Timer timer{"FirstApp::loadGameEntities"};
 
 		///////////////////////////////////////////
 		// Archetype ECS System                  //
@@ -144,41 +161,64 @@ namespace nEngine {
 		constexpr int STATIC_OBJECTS_COUNT = 3;
 		constexpr int OBJECTS_COUNT = RANDOMLY_PLACED_STATIC_OBJECTS_COUNT + STATIC_OBJECTS_COUNT;
 		constexpr int LINE_OBJECTS_COUNT = 4;
-		constexpr int POINT_LIGHT_OBJECTS_COUNT = 10;
+		constexpr int POINT_LIGHT_OBJECTS_COUNT = 6;
 
 		ecsManager.reserve_size_entities(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::AABB>(LINE_OBJECTS_COUNT + OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::Transform>(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::Mesh>(LINE_OBJECTS_COUNT + OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::Visibility>(LINE_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::Identification>(STATIC_OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::Mesh>(LINE_OBJECTS_COUNT + OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::AABB>(LINE_OBJECTS_COUNT + OBJECTS_COUNT+ RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.reserve_size_components<ECS::Transform>(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+
+		ecsManager.reserve_size_components<ECS::Visibility>(LINE_OBJECTS_COUNT + OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
 
 		ecsManager.reserve_size_components<ECS::Color>(LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
 		ecsManager.reserve_size_components<ECS::RenderLines>(LINE_OBJECTS_COUNT);
 		ecsManager.reserve_size_components<ECS::PointLight>(POINT_LIGHT_OBJECTS_COUNT);
 
-		// Lines
-		auto& line_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
+		// Viewer (Camera)
+		loadViewer();
 
-		for (int i = 0; i < LINE_OBJECTS_COUNT; i++) {
+		// Lines
+		loadLineEntities(LINE_OBJECTS_COUNT);
+
+		// Pointlights
+		loadPointLightEntities();
+
+		loadStaticObjects();
+
+		// Objects
+		futures.reserve(1);
+		futures.push_back(std::async(std::launch::async, LoadRandomObjects, std::ref(ecsManager), std::ref(device), "flat_vase"s, "models/flat_vase.obj"s, Utils::randTransform(), RANDOMLY_PLACED_STATIC_OBJECTS_COUNT));
+	}
+
+	void FirstApp::loadLineEntities(const int count) {
+		Utils::Timer timer{ "FirstApp::loadLineEntities" };
+		auto line_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
+
+		for (int i = 0; i < count; i++) {
 			auto e = ecsManager.createEntity();
 			auto entity = e.first;
-			ecsManager.addComponent(entity, ECS::RenderLines{});
+
 			ECS::Transform transform{};
 			const float z{ float(i) * .15f };
 			transform.translation = { 0.f, -1.f, -0.15f };
 			transform.rotation = { glm::radians(90.f), 0.f, glm::radians(90.f) };
+
 			ECS::Mesh mesh{ line_model.first };
 			ECS::AABB aabb{ line_model.second.verticies, transform.modelMatrix() };
+			ECS::Color color{ { .3f, .1f, .6f } };
+
+			ecsManager.addComponent(entity, ECS::RenderLines{});
 			ecsManager.addComponent(entity, mesh);
 			ecsManager.addComponent(entity, aabb);
 			ecsManager.addComponent(entity, transform);
 			ecsManager.addComponent(entity, ECS::Visibility{});
-			ECS::Color color{ { .3f, .1f, .6f } };
 			ecsManager.addComponent(entity, color);
 			ecsManager.commit(entity);
 		}
-
-		// Pointlights
+	}
+	void FirstApp::loadPointLightEntities() {
+		Utils::Timer timer{ "FirstApp::loadPointLightEntities" };
 		std::vector<glm::vec3> light_colors{
 		 {1.f, .1f, .1f},
 		 {.1f, .1f, 1.f},
@@ -192,28 +232,37 @@ namespace nEngine {
 			auto e = ecsManager.createEntity();
 			auto entity = e.first;
 			ECS::Transform t{};
+
 			auto rotate_transform_matrix = glm::rotate(
 				glm::mat4{ 1.f },
 				(i * glm::two_pi<float>()) / light_colors.size(),
 				{ 0.f, -1.f, 0.f });
+
 			t.translation = glm::vec3{ rotate_transform_matrix * glm::vec4{-1.f, -1.f, -1.f, 1.f} };
 			t.scale.x = .1f;
 			ecsManager.addComponent(entity, t);
-			ecsManager.addComponent(entity, ECS::PointLight{3.5f});
+			ecsManager.addComponent(entity, ECS::PointLight{ 3.5f });
 			ecsManager.addComponent(entity, ECS::Color{ light_colors[i] });
 			ecsManager.commit(entity);
 		}
-
-		ecsManager.commit(createStaticMeshEntity("flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createStaticMeshEntity("smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(createStaticMeshEntity("smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
-		ecsManager.commit(createStaticMeshEntity("floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
-
-		// Objects
-		for (size_t i = 0; i < RANDOMLY_PLACED_STATIC_OBJECTS_COUNT; i++) {
-			ecsManager.commit(createStaticMeshEntity("flat_vase", "models/flat_vase.obj", Utils::randTransform()));
-		}
-
-
 	}
+	void FirstApp::loadStaticObjects() {
+		Utils::Timer timer{ "FirstApp::loadStaticObjects" };
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
+	}
+
+	void FirstApp::loadViewer() {
+		auto viewer = ecsManager.createEntity();
+		auto viewer_entity = viewer.first;
+		viewerId = viewer.second;
+		ECS::Transform t{ {0.f, -3.1f, -20.1f} };
+		//t.translation.z = -2.5f;
+		//t.rotation.x = glm::radians(-45.0f);
+		ecsManager.addComponent(viewer_entity, t);
+		ecsManager.commit(viewer_entity);
+	}
+
 }

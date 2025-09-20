@@ -21,6 +21,7 @@
 #include <array>
 #include <iostream>
 #include <limits>
+#include <mutex>
 
 
 namespace nEngine::ECS {
@@ -192,6 +193,7 @@ namespace nEngine::ECS {
 		std::pair<Entity, EntityId> createEntity(bool set_default_components = true);
 		void commit(Entity e);
 		void lock();
+		std::mutex mutex;
 
 		void reserve_size_entities(size_t size);
 
@@ -200,6 +202,7 @@ namespace nEngine::ECS {
 		}
 
 		template<typename T> void addComponent(Entity& entity, T component) {
+			assert((entity.hasComponentsBitmask & createComponentsMask<T>()) == 0 && "Entity already has this component!");
 			std::vector<T>& t_components = std::get<std::vector<T>>(components);
 			t_components.emplace_back(component);
 			
@@ -224,7 +227,7 @@ namespace nEngine::ECS {
 
 		template <typename... T> std::vector<EntityId>& getEntityGroup() {
 			ComponentsMask mask = createComponentsMask<T...>();
-			assert((entityGroups.count(mask) > 0) && "Requested Component Group does not exist!");
+			//assert((entityGroups.count(mask) > 0) && "Requested Component Group does not exist!");
 			return entityGroups.at(mask);
 		}
 

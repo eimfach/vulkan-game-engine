@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <chrono>
+#include <iostream>
 
 namespace nEngine::Utils {
 	static std::default_random_engine generator{};
@@ -22,4 +24,15 @@ namespace nEngine::Utils {
 
 	std::vector<char> read_file(const std::string& filepath);
 	ECS::Transform randTransform();
+
+	class Timer {
+	public:
+		Timer(std::string ref);
+		~Timer();
+	private:
+		std::chrono::time_point<std::chrono::steady_clock> start;
+		std::chrono::time_point<std::chrono::steady_clock> end;
+		std::chrono::duration<float> duration;
+		std::string reference;
+	};
 }

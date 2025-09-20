@@ -24,19 +24,18 @@ namespace nEngine::ECS {
 			entityGroups.at(e.hasComponentsBitmask).push_back(entityCounter);
 		}
 
-		entityCounter += 1;
-
 		constexpr EntityId components_size = std::tuple_size_v<RegisteredComponentsStorage>;
 		constexpr EntityId inverter_mask = (1 << components_size) - 1; // 2 to the power of 8 (or currrent components_size) - 1 = all bits set to 1
 
 		if (contigiousComponentsBlocks.size() == 0) {
 			// example: 00010100 (used components) ^ 11111111 (xor inverter) -> components that weren't used
 			EntityId unused_components_mask = e.hasComponentsBitmask ^ inverter_mask;
-			contigiousComponentsBlocks.push_back(ContigiuousComponentsBlock{ 1, e.hasComponentsBitmask,  unused_components_mask });
+			contigiousComponentsBlocks.push_back(ContigiuousComponentsBlock{ 0, e.hasComponentsBitmask,  unused_components_mask });
 		}
 		else if (contigiousComponentsBlocks.back().hasComponentsBitmask != e.hasComponentsBitmask) {
 			EntityId unused_components_mask = e.hasComponentsBitmask ^ inverter_mask;
-			contigiousComponentsBlocks.push_back(ContigiuousComponentsBlock{ 1, e.hasComponentsBitmask,  unused_components_mask, contigiousComponentsBlocks.back().next_offsets});
+			auto prev_offsets = contigiousComponentsBlocks.back().next_offsets;
+			contigiousComponentsBlocks.push_back(ContigiuousComponentsBlock{ 0, e.hasComponentsBitmask,  unused_components_mask, prev_offsets, prev_offsets});
 		}
 
 		auto& current_block = contigiousComponentsBlocks.back();
@@ -45,13 +44,17 @@ namespace nEngine::ECS {
 
 		for (EntityId component_index = 0; component_index < components_size; component_index++) {
 
+			// 11110110
+			// 00001001 &
+			// 00000001
 			// example: 00010100 (unused components) & 00000100 (and component index) > 0 -> component index was not used, add offset
-			if ((current_block.unusedComponentsBitMask & (0 | 1 << component_index)) > 0) {
+			if ((current_block.unusedComponentsBitMask & (1 << component_index)) > 0) {
 				current_block.next_offsets[component_index] += 1;
 			}
-				
+
 		}
 
+		entityCounter += 1;
 		e.blockId = contigiousComponentsBlocks.size() - 1;
 		entities.push_back(e);
 		commitStage = false;
