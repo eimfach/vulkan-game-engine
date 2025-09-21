@@ -3,6 +3,7 @@
 #include "vertex_model.hpp"
 #include "device.hpp"
 #include "aabb.hpp"
+#include "buffered_vector.hpp"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
@@ -186,37 +187,79 @@ namespace nEngine::ECS {
 		ComponentsMask unusedComponentsBitMask{};
 		std::array<EntityId, std::tuple_size_v<RegisteredComponentsStorage>> offsets{}; // no offsets can be changed at the moment (copy), after the block was connected with another block 
 		std::array<EntityId, std::tuple_size_v<RegisteredComponentsStorage>> next_offsets{};
+		bool merge{ false };
+
+		ContigiuousComponentsBlock& operator+=(ContigiuousComponentsBlock& rhs) {
+			entityCount += 1;
+			for (int i{}; i < next_offsets.size(); i++) {
+				if (next_offsets[i] == 0) {
+					continue;
+				}
+				next_offsets[i] += 1;
+			}
+
+			return *this;
+		}
 	};
 
+	constexpr std::make_index_sequence<std::tuple_size_v<RegisteredComponentsStorage>> COMPONENTS_INDEX_SEQUENCE{};
+
+
+
+
+	/*///////////////////////////////////////////
+	  // Archetype ECS System                  //
+	  ///////////////////////////////////////////
+
+	  Entity Component System Manager
+	  This manager contains entities (think game objects) and each entity can build from different components (Like Transform, Color, Mesh etc.).
+	  The components are stored in a vector for each component type.
+	*/
 	class Manager {
 	public:
+		BufferedVector<ECS::Transform> bf{}; // testing
+
 		std::pair<Entity, EntityId> createEntity(bool set_default_components = true);
 		void commit(Entity e);
 		void lock();
-		std::mutex mutex;
-
-		void reserve_size_entities(size_t size);
-
-		template<typename T> void reserve_size_components(size_t s_components) {
-			getComponents<T>().reserve(s_components);
-		}
 
 		template<typename T> void addComponent(Entity& entity, T component) {
 			assert((entity.hasComponentsBitmask & createComponentsMask<T>()) == 0 && "Entity already has this component!");
+			// 1. t_components.pushBuffer(component);
 			std::vector<T>& t_components = std::get<std::vector<T>>(components);
 			t_components.emplace_back(component);
-			
-			entity.hasComponentsBitmask |= 1 << component_type_get_tuple_index<T>();
+
+			entity.hasComponentsBitmask |= 1 << componentTypeGetTupleIndex<T>();
+		}
+
+		// https://www.cppstories.com/2022/tuple-iteration-basics/
+		template <std::size_t... Is> void syncBuffers(std::index_sequence<Is...>) {
+			if (commitStage) {
+				return;
+			}
+
+			bf.syncElement();
+			// 2a. entities.sync_element();
+			// 2b. contigiousComponentsBlocks.sync_element();
+			// 2c. std::get<BufferedVector<Transform>>(components).sync_element();
+			// 2c. (std::get<Is>(components).sync_element(), ...);
+		}
+
+		void reserveSizeEntities(size_t size);
+
+		template<typename T> void reserveSizeComponents(size_t s_components) {
+			getComponents<T>().reserve(s_components);
 		}
 
 		template<typename T> std::vector<T>& getComponents() {
+			// 3. std::get<BufferedVector<T>>(components)
 			return std::get<std::vector<T>>(components);
 		}
 
 		template<typename T> T& getEntityComponent(EntityId id) {
 			auto& entity = entities.at(id);
 			auto& block = contigiousComponentsBlocks.at(entity.blockId);
-			auto& offset = block.offsets.at(component_type_get_tuple_index<T>());
+			auto& offset = block.offsets.at(componentTypeGetTupleIndex<T>());
 			return getComponents<T>().at(id - offset);
 		}
 
@@ -239,13 +282,13 @@ namespace nEngine::ECS {
 		~Manager();
 
 	private:
-		template<typename T> inline EntityId component_type_get_tuple_index() {
+		template<typename T> inline EntityId componentTypeGetTupleIndex() {
 			return std::get<std::pair<T, EntityId>>(componentIndex).second;
 		}
 
 		template<typename... T> ComponentsMask createComponentsMask() {
 			ComponentsMask mask{};
-			((mask |= 1 << component_type_get_tuple_index<T>()), ...);
+			((mask |= 1 << componentTypeGetTupleIndex<T>()), ...);
 			return mask;
 		}
 
@@ -253,9 +296,12 @@ namespace nEngine::ECS {
 		EntityId entityCounter{};
 		bool commitStage{ false };
 		bool locked{ false };
-		std::vector<Entity> entities{};
-		std::vector<ContigiuousComponentsBlock> contigiousComponentsBlocks{};
-		// TODO: Entity can be in multiple groups ?
+		std::vector<Entity> entities{}; // TODO: BufferedVector
+		std::vector<ContigiuousComponentsBlock> contigiousComponentsBlocks{}; // TODO: BufferedVector
+		// 4b. Entity can be in multiple groups: Use enum for groups and on commit, 
+		// give a variable list of enums. Init each group as empty vector. 
+		// The groups member should be multiple BufferedVector's accordingly.
+		// TODO: reserve group vector boundaries
 		std::unordered_map<ComponentsMask, std::vector<EntityId>> entityGroups{};
 		RegisteredComponentsStorage components{};
 		RegisteredComponentsIndexTable componentIndex{ 

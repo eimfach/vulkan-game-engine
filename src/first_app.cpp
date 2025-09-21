@@ -17,6 +17,7 @@
 #include "entity_manager.hpp"
 #include "settings.hpp"
 #include "utils.hpp"
+#include "buffered_vector.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -70,6 +71,15 @@ namespace nEngine {
 
 		while (!renderer.windowShouldClose()) {
 			glfwPollEvents();
+
+			//testing
+			static size_t s = ecsManager.bf.get().size();
+			ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
+			if (ecsManager.bf.get().size() > s) {
+				s = ecsManager.bf.get().size();
+				auto& t = ecsManager.bf.get().at(s - 1);
+				std::cout << t.translation.x << "," << t.translation.y << "," << t.translation.z << "\n";
+			}
 
 			auto new_time = std::chrono::high_resolution_clock::now();
 			float frame_delta_time = std::chrono::duration<float, std::ratio<1>>(new_time - current_time).count();
@@ -144,36 +154,40 @@ namespace nEngine {
 		using namespace std::chrono_literals;
 		Utils::Timer timer{ "FirstApp::LoadRandomObjects" };
 
-		for (size_t i = 0; i < count; i++) {
-			std::this_thread::sleep_for(std::chrono::duration<float>(50ms));
-			std::lock_guard<std::mutex> lk(Mutex);
-			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::randTransform()));
+		for (size_t i = 0; i < 10000; i++) {
+			manager.bf.pushBuffer(Utils::randTransform());
 		}
+
+		//for (size_t i = 0; i < count; i++) {
+		//	std::this_thread::sleep_for(std::chrono::duration<float>(50ms));
+		//	std::lock_guard<std::mutex> lk(Mutex);
+		//	manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::randTransform()));
+		//}
 	}
 
 	void FirstApp::loadGameEntities() {
 		Utils::Timer timer{"FirstApp::loadGameEntities"};
 
-		///////////////////////////////////////////
-		// Archetype ECS System                  //
-		///////////////////////////////////////////
+
 		constexpr int RANDOMLY_PLACED_STATIC_OBJECTS_COUNT = 1000;
 		constexpr int STATIC_OBJECTS_COUNT = 3;
 		constexpr int OBJECTS_COUNT = RANDOMLY_PLACED_STATIC_OBJECTS_COUNT + STATIC_OBJECTS_COUNT;
 		constexpr int LINE_OBJECTS_COUNT = 4;
 		constexpr int POINT_LIGHT_OBJECTS_COUNT = 6;
 
-		ecsManager.reserve_size_entities(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::Identification>(STATIC_OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::Mesh>(LINE_OBJECTS_COUNT + OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::AABB>(LINE_OBJECTS_COUNT + OBJECTS_COUNT+ RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::Transform>(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.bf.reserve(RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
 
-		ecsManager.reserve_size_components<ECS::Visibility>(LINE_OBJECTS_COUNT + OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.reserveSizeEntities(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
+		ecsManager.reserveSizeComponents<ECS::Identification>(STATIC_OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.reserveSizeComponents<ECS::Mesh>(LINE_OBJECTS_COUNT + OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.reserveSizeComponents<ECS::AABB>(LINE_OBJECTS_COUNT + OBJECTS_COUNT+ RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+		ecsManager.reserveSizeComponents<ECS::Transform>(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
 
-		ecsManager.reserve_size_components<ECS::Color>(LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::RenderLines>(LINE_OBJECTS_COUNT);
-		ecsManager.reserve_size_components<ECS::PointLight>(POINT_LIGHT_OBJECTS_COUNT);
+		ecsManager.reserveSizeComponents<ECS::Visibility>(LINE_OBJECTS_COUNT + OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
+
+		ecsManager.reserveSizeComponents<ECS::Color>(LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
+		ecsManager.reserveSizeComponents<ECS::RenderLines>(LINE_OBJECTS_COUNT);
+		ecsManager.reserveSizeComponents<ECS::PointLight>(POINT_LIGHT_OBJECTS_COUNT);
 
 		// Viewer (Camera)
 		loadViewer();
