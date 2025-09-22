@@ -1,5 +1,6 @@
 #pragma once
 
+#include "entity_manager.hpp"
 #include "camera.hpp"
 #include "device.hpp"
 #include "game_object.hpp"

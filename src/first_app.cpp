@@ -73,13 +73,7 @@ namespace nEngine {
 			glfwPollEvents();
 
 			//testing
-			static size_t s = ecsManager.bf.get().size();
 			ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
-			if (ecsManager.bf.get().size() > s) {
-				s = ecsManager.bf.get().size();
-				auto& t = ecsManager.bf.get().at(s - 1);
-				std::cout << t.translation.x << "," << t.translation.y << "," << t.translation.z << "\n";
-			}
 
 			auto new_time = std::chrono::high_resolution_clock::now();
 			float frame_delta_time = std::chrono::duration<float, std::ratio<1>>(new_time - current_time).count();
@@ -154,15 +148,16 @@ namespace nEngine {
 		using namespace std::chrono_literals;
 		Utils::Timer timer{ "FirstApp::LoadRandomObjects" };
 
-		for (size_t i = 0; i < 10000; i++) {
-			manager.bf.pushBuffer(Utils::randTransform());
-		}
-
-		//for (size_t i = 0; i < count; i++) {
-		//	std::this_thread::sleep_for(std::chrono::duration<float>(50ms));
-		//	std::lock_guard<std::mutex> lk(Mutex);
-		//	manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::randTransform()));
+		//for (size_t i = 0; i < 10000; i++) {
+		//	manager.bf.pushBuffer(Utils::randTransform());
 		//}
+
+		std::vector<ECS::Groups> groups{ ECS::Groups::simple_render };
+		for (size_t i = 0; i < count; i++) {
+			//std::this_thread::sleep_for(std::chrono::duration<float>(50ms));
+			//std::lock_guard<std::mutex> lk(Mutex);
+			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::randTransform()), groups);
+		}
 	}
 
 	void FirstApp::loadGameEntities() {
@@ -174,8 +169,6 @@ namespace nEngine {
 		constexpr int OBJECTS_COUNT = RANDOMLY_PLACED_STATIC_OBJECTS_COUNT + STATIC_OBJECTS_COUNT;
 		constexpr int LINE_OBJECTS_COUNT = 4;
 		constexpr int POINT_LIGHT_OBJECTS_COUNT = 6;
-
-		ecsManager.bf.reserve(RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
 
 		ecsManager.reserveSizeEntities(OBJECTS_COUNT + LINE_OBJECTS_COUNT + POINT_LIGHT_OBJECTS_COUNT);
 		ecsManager.reserveSizeComponents<ECS::Identification>(STATIC_OBJECTS_COUNT + RANDOMLY_PLACED_STATIC_OBJECTS_COUNT);
@@ -209,6 +202,7 @@ namespace nEngine {
 		Utils::Timer timer{ "FirstApp::loadLineEntities" };
 		auto line_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
 
+		std::vector<ECS::Groups> groups{ ECS::Groups::line_render };
 		for (int i = 0; i < count; i++) {
 			auto e = ecsManager.createEntity();
 			auto entity = e.first;
@@ -228,7 +222,8 @@ namespace nEngine {
 			ecsManager.addComponent(entity, transform);
 			ecsManager.addComponent(entity, ECS::Visibility{});
 			ecsManager.addComponent(entity, color);
-			ecsManager.commit(entity);
+			ecsManager.commit(entity, groups);
+			ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
 		}
 	}
 	void FirstApp::loadPointLightEntities() {
@@ -242,6 +237,7 @@ namespace nEngine {
 		 {1.f, 1.f, 1.f}
 		};
 
+		std::vector<ECS::Groups> groups{ ECS::Groups::pointlight_render };
 		for (size_t i{}; i < light_colors.size(); i++) {
 			auto e = ecsManager.createEntity();
 			auto entity = e.first;
@@ -257,18 +253,25 @@ namespace nEngine {
 			ecsManager.addComponent(entity, t);
 			ecsManager.addComponent(entity, ECS::PointLight{ 3.5f });
 			ecsManager.addComponent(entity, ECS::Color{ light_colors[i] });
-			ecsManager.commit(entity);
+			ecsManager.commit(entity, groups);
+			ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
 		}
 	}
 	void FirstApp::loadStaticObjects() {
 		Utils::Timer timer{ "FirstApp::loadStaticObjects" };
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }));
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }));
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }));
+		std::vector<ECS::Groups> groups{ ECS::Groups::simple_render };
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }), groups);
+		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }), groups);
+		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }), groups);
+		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }), groups);
+		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
 	}
 
 	void FirstApp::loadViewer() {
+		std::vector<ECS::Groups> groups{ ECS::Groups::camera };
 		auto viewer = ecsManager.createEntity();
 		auto viewer_entity = viewer.first;
 		viewerId = viewer.second;
@@ -276,7 +279,8 @@ namespace nEngine {
 		//t.translation.z = -2.5f;
 		//t.rotation.x = glm::radians(-45.0f);
 		ecsManager.addComponent(viewer_entity, t);
-		ecsManager.commit(viewer_entity);
+		ecsManager.commit(viewer_entity, groups);
+		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
 	}
 
 }

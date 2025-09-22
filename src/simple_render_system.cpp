@@ -1,6 +1,5 @@
 #include "simple_render_system.hpp"
 
-#include "entity_manager.hpp"
 #include "settings.hpp"
 
 // libs
@@ -73,7 +72,7 @@ namespace nEngine::Engine {
 		);
 
 		static std::shared_ptr<VertexModel> last_model = nullptr;
-		auto& group = frame.ecsManager.getEntityGroup<ECS::Identification, ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
+		auto& group = frame.ecsManager.getEntityGroup(ECS::Groups::simple_render);
 
 		for (ECS::EntityId id : group) {
 			auto& aabb = frame.ecsManager.getEntityComponent<ECS::AABB>(id);

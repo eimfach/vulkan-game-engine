@@ -11,6 +11,7 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
+#include "entity_manager.hpp"
 
 namespace nEngine::Engine {
 
@@ -71,7 +72,7 @@ namespace nEngine::Engine {
 			0, nullptr
 		);
 
-		auto& group = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::AABB, ECS::Mesh, ECS::Color, ECS::Visibility, ECS::RenderLines>();
+		auto& group = frame.ecsManager.getEntityGroup(ECS::Groups::line_render);
 		for (ECS::EntityId id : group) {
 
 			auto& aabb = frame.ecsManager.getEntityComponent<ECS::AABB>(id);

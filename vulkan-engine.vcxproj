@@ -199,6 +199,7 @@
     <ClInclude Include="src\renderer.hpp" />
     <ClInclude Include="src\simple_render_system.hpp" />
     <ClInclude Include="src\swap_chain.hpp" />
+    <ClInclude Include="src\entity_types.hpp" />
     <ClInclude Include="src\utils.hpp" />
     <ClInclude Include="src\vertex_base.hpp" />
     <ClInclude Include="src\vertex_model.hpp" />

@@ -77,7 +77,7 @@ namespace nEngine::Engine {
 			frame.delta,
 			{ 0.f, -1.f, 0.f });
 
-		std::vector<ECS::EntityId>& pointlights = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Color, ECS::PointLight>();
+		auto& pointlights = frame.ecsManager.getEntityGroup(ECS::Groups::pointlight_render);
 
 		assert(pointlights.size() <= Settings::MAX_LIGHTS && "Point lights exceed maximum specified");
 		int light_index{};
@@ -110,7 +110,7 @@ namespace nEngine::Engine {
 	}
 
 	void PointLightRenderSystem::render(const Frame& frame) {
-		std::vector<ECS::EntityId>& pointlights = frame.ecsManager.getEntityGroup<ECS::Transform, ECS::Color, ECS::PointLight>();
+		auto& pointlights = frame.ecsManager.getEntityGroup(ECS::Groups::pointlight_render);
 		// sort lights
 		std::map<float, ECS::EntityId> sorted{};
 		std::vector<ECS::Transform> transforms = frame.ecsManager.getComponents<ECS::Transform>();

@@ -11,7 +11,6 @@
 #include <array>
 #include <cassert>
 #include <stdexcept>
-#include <iostream>
 
 namespace nEngine::Engine {
 
@@ -73,13 +72,12 @@ namespace nEngine::Engine {
 			0, nullptr
 		);
 
-		auto& group = frame.ecsManager.getEntityGroup<ECS::Identification, ECS::Transform, ECS::Mesh, ECS::Visibility, ECS::AABB>();
+		auto& group = frame.ecsManager.getEntityGroup(ECS::Groups::simple_render);
 		for (ECS::EntityId id : group) {
 			auto& aabb = frame.ecsManager.getEntityComponent<ECS::AABB>(id);
 			if (!frame.camera.isWorldSpaceAABBfrustumVisible(aabb)) continue;
 
 			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
-			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
 
 			AABBPushConstantData push{};
 
