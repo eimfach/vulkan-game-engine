@@ -37,7 +37,7 @@ namespace nEngine::Engine {
 		VertexModel(const VertexModel&) = delete;
 		VertexModel& operator= (const VertexModel&) = delete;
 
-		static std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder> createModelFromFile(Device& device, const std::string& filepath);
+		static std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder>& createModelFromFile(Device& device, const std::string& filepath);
 
 		void bind(VkCommandBuffer cmd_buffer);
 		void draw(VkCommandBuffer cmd_buffer);

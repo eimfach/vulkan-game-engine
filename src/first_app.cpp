@@ -71,7 +71,7 @@ namespace nEngine {
 		while (!renderer.windowShouldClose()) {
 			glfwPollEvents();
 
-			//testing
+			ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
 			ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
 
 			auto new_time = std::chrono::high_resolution_clock::now();
@@ -119,6 +119,7 @@ namespace nEngine {
 				renderer.endFrame();
 
 			}
+
 		}
 
 		renderer.deviceWaitIdle();
@@ -126,7 +127,7 @@ namespace nEngine {
 
 
 	static ECS::Entity CreateStaticMeshEntity(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform) {
-		auto model = Engine::VertexModel::createModelFromFile(device, modelpath);
+		auto& model = Engine::VertexModel::createModelFromFile(device, modelpath);
 
 		ECS::Identification id{ name };
 		ECS::Mesh mesh{ model.first };

@@ -73,7 +73,7 @@ namespace nEngine::ECS {
 			contigiousComponentsBlocks.syncElement();
 
 			for (int i = 0; i < entityGroups.size(); i++) {
-				entityGroups.at(i).syncElement();
+				entityGroups[i].syncElement();
 			}
 			
 			(std::get<Is>(components).syncElement(), ...);
@@ -90,10 +90,10 @@ namespace nEngine::ECS {
 		}
 
 		template<typename T> T& getEntityComponent(EntityId id) {
-			auto& entity = entities.getWriteable().at(id);
-			auto& block = contigiousComponentsBlocks.getWriteable().at(entity.blockId);
-			auto& offset = block.offsets.at(componentTypeGetTupleIndex<T>());
-			return getComponents<T>().at(id - offset);
+			auto& entity = entities.getWriteable()[id];
+			auto& block = contigiousComponentsBlocks.getWriteable()[entity.blockId];
+			auto& offset = block.offsets[componentTypeGetTupleIndex<T>()];
+			return getComponents<T>()[id - offset];
 		}
 
 		template<typename... T> bool hasEntityComponents(EntityId id) {

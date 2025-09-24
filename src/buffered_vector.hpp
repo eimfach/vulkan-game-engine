@@ -44,7 +44,7 @@ namespace nEngine {
 	void BufferedVector<VectorT, BufferT>::pushBuffer(BufferT element) {
 		std::lock_guard<std::mutex> lock{ mutex };
 
-		buffer.push(element);
+		buffer.emplace(element);
 	}
 
 	template<class VectorT, class BufferT>

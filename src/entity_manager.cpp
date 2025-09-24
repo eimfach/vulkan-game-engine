@@ -15,10 +15,10 @@ namespace nEngine::ECS {
 		for (EntityId i{}; i < entityGroups.size(); i++) {
 			for (auto& group : groups) {
 				if (i == (EntityId)group) {
-					entityGroups.at(i).pushBuffer(entityCounter);
+					entityGroups[i].pushBuffer(entityCounter);
 				}
 				else {
-					entityGroups.at(i).pushBuffer(std::nullopt);
+					entityGroups[i].pushBuffer(std::nullopt);
 				}
 			}
 		}
@@ -68,7 +68,7 @@ namespace nEngine::ECS {
 
 	std::vector<EntityId>& Manager::getEntityGroup(Groups group) {
 		//assert((entityGroups.count(mask) > 0) && "Requested Component Group does not exist!");
-		return entityGroups.at((int)group).getWriteable();
+		return entityGroups[(std::size_t)group].getWriteable();
 	}
 
 	void Manager::lock() {
@@ -78,6 +78,9 @@ namespace nEngine::ECS {
 
 	void Manager::reserveSizeEntities(size_t size) {
 		entities.getWriteable().reserve(size);
+		for (std::size_t group{}; group < entityGroups.size(); group++) {
+			entityGroups[group].reserve(size);
+		}
 	}
 
 }

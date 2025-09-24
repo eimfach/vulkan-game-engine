@@ -36,18 +36,18 @@ namespace nEngine::Engine {
 	}
 	VertexModel::~VertexModel() {}
 
-	std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder> VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
+	std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder>& VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
 		// TODO: same ref to shared model from cache crashes in multiple threads
 		static std::unordered_map<std::string, std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder>> cache{};
 		if (cache.count(filepath) > 0) {
-			return cache.at(filepath);
+			return cache[filepath];
 		}
 
 		Builder builder{};
 		builder.loadModel(ENGINE_DIR + filepath);
 		cache.emplace(filepath, std::make_pair(std::make_shared<VertexModel>(device, builder), builder));
 
-		return cache.at(filepath);
+		return cache[filepath];
 	}
 
 	void VertexModel::createVertexBuffers(const std::vector<VertexBase>& verticies) {
