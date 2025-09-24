@@ -71,7 +71,7 @@ namespace nEngine::Engine {
 			0, nullptr
 		);
 
-		static std::shared_ptr<VertexModel> last_model = nullptr;
+		std::shared_ptr<VertexModel> previous_model = nullptr;
 		auto& group = frame.ecsManager.getEntityGroup(ECS::Groups::simple_render);
 
 		for (ECS::EntityId id : group) {
@@ -81,22 +81,21 @@ namespace nEngine::Engine {
 			auto& transform = frame.ecsManager.getEntityComponent<ECS::Transform>(id);
 			auto& mesh = frame.ecsManager.getEntityComponent<ECS::Mesh>(id);
 
-
 			SimplePushConstantData push{};
 			auto modelMatrix = transform.modelMatrix();
 			push.modelMatrix = modelMatrix;
 			push.normalMatrix = transform.normalMatrix(modelMatrix);
 
-			auto& model = mesh.model;
+			std::shared_ptr<VertexModel>& model = mesh.model;
 			vkCmdPushConstants(frame.cmdBuffer,
 				pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
 				sizeof(SimplePushConstantData),
 				&push);
 			
-			if (model != last_model) {
+			if (model != previous_model) {
 				model->bind(frame.cmdBuffer);
-				last_model = model;
+				previous_model = model;
 			}
 			
 			model->draw(frame.cmdBuffer);
