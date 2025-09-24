@@ -60,6 +60,8 @@ namespace nEngine::ECS {
 
 		calcuateMinMax(verticies, transform);
 
+		return;
+		
 		Engine::VertexModel::Builder model_builder{};
 
 		model_builder.indicies = { 0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
@@ -107,7 +109,8 @@ namespace nEngine::ECS {
 			{{max.x, min.y, min.z}, {.1f, .8f, .1f}}, // 23
 		};
 
-		model = std::make_shared<Engine::VertexModel>(device, model_builder);
+		// TODO: Crashes occasionally
+		//model = std::make_shared<Engine::VertexModel>(device, model_builder);
 	}
 
 	AABB::AABB(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {

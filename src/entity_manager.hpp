@@ -58,7 +58,6 @@ namespace nEngine::ECS {
 
 		template<typename T> void addComponent(Entity& entity, T component) {
 			assert((entity.hasComponentsBitmask & createComponentsMask<T>()) == 0 && "Entity already has this component!");
-			// 1. t_components.pushBuffer(component);
 			std::get<BufferedVector<T>>(components).pushBuffer(component);
 
 			entity.hasComponentsBitmask |= 1 << componentTypeGetTupleIndex<T>();
@@ -87,7 +86,6 @@ namespace nEngine::ECS {
 		}
 
 		template<typename T> std::vector<T>& getComponents() {
-			// 3. std::get<BufferedVector<T>>(components)
 			return std::get<BufferedVector<T>>(components).getWriteable();
 		}
 
@@ -121,9 +119,6 @@ namespace nEngine::ECS {
 		bool locked{ false };
 		BufferedVector<Entity> entities{};
 		BufferedVector<ContiguousComponentsBlock> contigiousComponentsBlocks{};
-		// 4b. Entity can be in multiple groups: Use enum for groups and on commit, 
-		// give a variable list of enums. Init each group as empty vector. 
-		// The groups member should be multiple BufferedVector's accordingly.
 		// TODO: reserve group vector boundaries
 		std::array<BufferedVector<EntityId, std::optional<EntityId>>, (size_t)Groups::size> entityGroups{};
 		RegisteredComponentsStorage components{};

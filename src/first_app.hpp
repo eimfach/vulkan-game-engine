@@ -9,8 +9,8 @@
 #include "entity_manager.hpp"
 
 // std
-#include <memory>
 #include <future>
+#include <vector>
 
 namespace nEngine {
 	class FirstApp {

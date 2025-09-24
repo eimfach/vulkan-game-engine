@@ -13,10 +13,10 @@
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-#include <optional>
 
 namespace nEngine::ECS {
 
@@ -124,7 +124,7 @@ namespace nEngine::ECS {
 		ContiguousComponentsBlock& operator+=(ContiguousComponentsBlock& rhs) {
 			entityCount += 1;
 			for (int i{}; i < next_offsets.size(); i++) {
-				if (next_offsets[i] == 0) {
+				if (rhs.next_offsets[i] == 0) {
 					continue;
 				}
 				next_offsets[i] += 1;

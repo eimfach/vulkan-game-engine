@@ -30,7 +30,6 @@
 #include <memory>
 #include <functional>
 #include <mutex>
-#include <shared_mutex>
 #include <thread>
 
 namespace nEngine {
@@ -145,24 +144,16 @@ namespace nEngine {
 	}
 
 	static void LoadRandomObjects(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform, int count) {
-		using namespace std::chrono_literals;
 		Utils::Timer timer{ "FirstApp::LoadRandomObjects" };
-
-		//for (size_t i = 0; i < 10000; i++) {
-		//	manager.bf.pushBuffer(Utils::randTransform());
-		//}
 
 		std::vector<ECS::Groups> groups{ ECS::Groups::simple_render };
 		for (size_t i = 0; i < count; i++) {
-			//std::this_thread::sleep_for(std::chrono::duration<float>(50ms));
-			//std::lock_guard<std::mutex> lk(Mutex);
 			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::randTransform()), groups);
 		}
 	}
 
 	void FirstApp::loadGameEntities() {
 		Utils::Timer timer{"FirstApp::loadGameEntities"};
-
 
 		constexpr int RANDOMLY_PLACED_STATIC_OBJECTS_COUNT = 1000;
 		constexpr int STATIC_OBJECTS_COUNT = 3;
