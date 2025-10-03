@@ -56,7 +56,8 @@ namespace nEngine::ECS {
 		Manager() {};
 		~Manager() {};
 
-		template<typename T> void addComponent(Entity& entity, T component) {
+		template<typename T>
+		void addComponent(Entity& entity, T component) {
 			assert((entity.hasComponentsBitmask & createComponentsMask<T>()) == 0 && "Entity already has this component!");
 			std::get<BufferedVector<T>>(components).pushBuffer(component);
 
@@ -64,7 +65,8 @@ namespace nEngine::ECS {
 		}
 
 		// https://www.cppstories.com/2022/tuple-iteration-basics/
-		template <std::size_t... Is> void syncBuffers(std::index_sequence<Is...>) {
+		template <std::size_t... Is>
+		void syncBuffers(std::index_sequence<Is...>) {
 			if (commitStage) {
 				return;
 			}
@@ -81,33 +83,45 @@ namespace nEngine::ECS {
 
 		void reserveSizeEntities(size_t size);
 
-		template<typename T> void reserveSizeComponents(size_t s_components) {
+		template<typename T>
+		void reserveSizeComponents(size_t s_components) {
 			getComponents<T>().reserve(s_components);
 		}
 
-		template<typename T> std::vector<T>& getComponents() {
+		template<typename T>
+		std::vector<T>& getComponents() {
 			return std::get<BufferedVector<T>>(components).getWriteable();
 		}
 
-		template<typename T> T& getEntityComponent(EntityId id) {
-			auto& entity = entities.getWriteable()[id];
-			auto& block = contigiousComponentsBlocks.getWriteable()[entity.blockId];
-			auto& offset = block.offsets[componentTypeGetTupleIndex<T>()];
+		template<typename T>
+		T& getEntityComponent(EntityId id) {
+			assert(id < entities.getWriteable().size() && "ECS::Manager::getEntityComponent Out of bounds access to entities vector");
+			Entity& entity = entities.getWriteable()[id];
+
+			assert(entity.blockId < contigiousComponentsBlocks.getWriteable().size() && "ECS::Manager::getEntityComponent Out of bounds access to contigiousComponentsBlocks vector");
+			ContiguousComponentsBlock& block = contigiousComponentsBlocks.getWriteable()[entity.blockId];
+
+			assert(componentTypeGetTupleIndex<T>() < block.offsets.size() && "ECS::Manager::getEntityComponent Out of bounds access to block.offsets array");
+			EntityId& offset = block.offsets[componentTypeGetTupleIndex<T>()];
+
 			return getComponents<T>()[id - offset];
 		}
 
-		template<typename... T> bool hasEntityComponents(EntityId id) {
+		template<typename... T>
+		bool hasEntityComponents(EntityId id) {
 			ComponentsMask requested_mask = createComponentsMask<T...>();
 			return ((requested_mask & entities[id].hasComponentsBitmask) == requested_mask);
 		}
 
 
 	private:
-		template<typename T> inline EntityId componentTypeGetTupleIndex() {
+		template<typename T>
+		inline EntityId componentTypeGetTupleIndex() {
 			return std::get<std::pair<T, EntityId>>(componentIndex).second;
 		}
 
-		template<typename... T> ComponentsMask createComponentsMask() {
+		template<typename... T>
+		ComponentsMask createComponentsMask() {
 			ComponentsMask mask{};
 			((mask |= 1 << componentTypeGetTupleIndex<T>()), ...);
 			return mask;

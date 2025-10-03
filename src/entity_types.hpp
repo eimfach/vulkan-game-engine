@@ -23,7 +23,7 @@ namespace nEngine::ECS {
 	using EntityId = std::uint16_t;
 	using ComponentsMask = std::uint16_t;
 
-	struct Entity {
+	struct [[nodiscard]] Entity {
 		ComponentsMask hasComponentsBitmask{};
 		EntityId blockId{};
 	};
@@ -32,22 +32,17 @@ namespace nEngine::ECS {
 	// Components							 //
 	///////////////////////////////////////////
 
-	struct Identification {
+	struct [[nodiscard]] Identification {
 		std::string name = "name_not_set";
 	};
 
-	enum RenderProperty {
-		RENDER_DEFAULT = 0,
-		RENDER_AS_LINES = 1,
-	};
-
-	struct Visibility {
+	struct [[nodiscard]] Visibility {
 		bool visible{ true };
 	};
 
 	struct RenderLines {};
 
-	struct Transform {
+	struct [[nodiscard]] Transform {
 		glm::vec3 translation{}; // position offset
 		glm::vec3 scale{ 1.f, 1.f, 1.f };
 		glm::vec3 rotation{};
@@ -55,7 +50,7 @@ namespace nEngine::ECS {
 		// Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
 		// Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
 		// https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
-		inline glm::mat4 modelMatrix() {
+		inline [[nodiscard]] glm::mat4 modelMatrix() const {
 			// Create quaternion from Tait-Bryan angles (y, x, z order)
 			glm::quat rotation_quat = glm::quat(rotation);
 
@@ -67,20 +62,20 @@ namespace nEngine::ECS {
 			return model_mat;
 		}
 
-		inline glm::mat3 normalMatrix(glm::mat4& model_matrix) {
+		inline [[nodiscard]] glm::mat3 normalMatrix(glm::mat4& model_matrix) const {
 			return glm::transpose(glm::inverse(glm::mat3(model_matrix)));
 		}
 	};
 
-	struct PointLight {
+	struct [[nodiscard]] PointLight {
 		float lightIntensity{ 1.0f };
 	};
 
-	struct Mesh {
+	struct [[nodiscard]] Mesh {
 		std::shared_ptr<Engine::VertexModel> model = nullptr;
 	};
 
-	struct Color {
+	struct [[nodiscard]] Color {
 		glm::vec3 rgb{ 1.f, 1.f, 1.f };
 	};
 
