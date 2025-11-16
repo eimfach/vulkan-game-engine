@@ -15,4 +15,6 @@ namespace nEngine::Settings {
 	inline bool GAMMA_CORRECTION = false;
 	inline bool SHOW_DETAILED_METRICS = false;
 	const int MAX_LIGHTS{ 10 };
+
+	inline std::string SAVEGAME_FOLDER{ "nEngine" };
 }

@@ -10,6 +10,8 @@
 #include <random>
 #include <chrono>
 #include <iostream>
+#include <optional>
+#include <filesystem>
 
 namespace nEngine::Utils {
 	static std::default_random_engine generator{};
@@ -23,7 +25,9 @@ namespace nEngine::Utils {
 	};
 
 	std::vector<char> read_file(const std::string& filepath);
-	ECS::Transform randTransform();
+	ECS::Transform rand_transform();
+	std::optional<std::filesystem::path> get_save_dir();
+	void write_save_state(ECS::Manager& manager);
 
 	class Timer {
 	public:

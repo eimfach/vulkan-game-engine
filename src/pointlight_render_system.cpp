@@ -93,7 +93,7 @@ namespace nEngine::Engine {
 			//transform.translation = glm::vec3(rotate_transform_matrix * glm::vec4(transform.translation, 1.f));
 			auto target_distance = glm::distance(transform.translation, move_target);
 			if (target_distance < 1.f) {
-				move_targets[light_index] = Utils::randTransform().translation;
+				move_targets[light_index] = Utils::rand_transform().translation;
 			}
 			
 			auto move_direction = glm::normalize(transform.translation - move_target);

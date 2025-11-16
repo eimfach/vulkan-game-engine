@@ -28,7 +28,7 @@ namespace nEngine {
 		void run();
 
 	private:
-		Engine::Window window{ WIDTH, HEIGHT, "Hello Vulkan!"};
+		Engine::Window window{ WIDTH, HEIGHT, "nEngine"};
 		Engine::Device device{ window };
 		Engine::Renderer renderer{window, device};
 

@@ -31,6 +31,8 @@
 #include <functional>
 #include <mutex>
 #include <thread>
+#include <filesystem>
+#include <optional>
 
 namespace nEngine {
 
@@ -39,7 +41,6 @@ namespace nEngine {
 	static std::mutex Mutex;
 
 	FirstApp::FirstApp() {
-		//std::async(std::launch::async)
 		loadGameEntities();
 	}
 
@@ -149,8 +150,14 @@ namespace nEngine {
 
 		std::vector<ECS::Groups> groups{ ECS::Groups::simple_render };
 		for (size_t i = 0; i < count; i++) {
-			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::randTransform()), groups);
+			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::rand_transform()), groups);
 		}
+
+		if (auto p = Utils::get_save_dir()) {
+			std::cout << "Savegames directory: " << p.value().string() << "\n";
+		}
+
+		Utils::write_save_state(manager);
 	}
 
 	void FirstApp::loadGameEntities() {
@@ -187,7 +194,7 @@ namespace nEngine {
 
 		// Objects
 		futures.reserve(1);
-		futures.push_back(std::async(std::launch::async, LoadRandomObjects, std::ref(ecsManager), std::ref(device), "flat_vase"s, "models/flat_vase.obj"s, Utils::randTransform(), RANDOMLY_PLACED_STATIC_OBJECTS_COUNT));
+		futures.push_back(std::async(std::launch::async, LoadRandomObjects, std::ref(ecsManager), std::ref(device), "flat_vase"s, "models/flat_vase.obj"s, Utils::rand_transform(), RANDOMLY_PLACED_STATIC_OBJECTS_COUNT));
 	}
 
 	void FirstApp::loadLineEntities(const int count) {
