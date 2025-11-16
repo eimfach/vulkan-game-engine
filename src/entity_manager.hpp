@@ -44,6 +44,7 @@ namespace nEngine::ECS {
 	*/
 	class Manager {
 	public:
+		bool sync_in_progress{ true };
 		std::pair<Entity, EntityId> createEntity(bool set_default_components = true);
 		void commit(Entity e, std::vector<Groups>& groups);
 		void lock();
@@ -58,6 +59,7 @@ namespace nEngine::ECS {
 
 		template<typename T>
 		void addComponent(Entity& entity, T component) {
+			sync_in_progress = true;
 			assert((entity.hasComponentsBitmask & createComponentsMask<T>()) == 0 && "Entity already has this component!");
 			std::get<BufferedVector<T>>(components).pushBuffer(component);
 
@@ -70,15 +72,19 @@ namespace nEngine::ECS {
 			if (commitStage) {
 				return;
 			}
+
+			bool buffers_filled{ false };
 			
-			entities.syncElement();
-			contigiousComponentsBlocks.syncElement();
+			buffers_filled |= entities.syncElement();
+			buffers_filled |= contigiousComponentsBlocks.syncElement();
 
 			for (int i = 0; i < entityGroups.size(); i++) {
-				entityGroups[i].syncElement();
+				buffers_filled |= entityGroups[i].syncElement();
 			}
 			
-			(std::get<Is>(components).syncElement(), ...);
+			((buffers_filled |= std::get<Is>(components).syncElement()), ...);
+
+			sync_in_progress = buffers_filled;
 		}
 
 		void reserveSizeEntities(size_t size);

@@ -26,7 +26,7 @@ namespace nEngine::ECS {
 		//AABB(const AABB&) = delete;
 		//AABB& operator= (const AABB&) = delete;
 
-		void inline calcuate_min_max(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform);
+		void inline calcuateMinMax(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform);
 		virtual bool intersects(const AABB& aabb) const;
 	};
 }

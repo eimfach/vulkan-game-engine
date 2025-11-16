@@ -7,6 +7,7 @@
 #include "game_object.hpp"
 #include "descriptors.hpp"
 #include "entity_manager.hpp"
+#include "settings.hpp"
 
 // std
 #include <future>
@@ -18,6 +19,9 @@ namespace nEngine {
 		static constexpr int WIDTH = 1024;
 		static constexpr int HEIGHT = 768;
 
+		Settings::KeyMappings keys{};
+		bool loadingOrSavingGame{ false };
+
 		FirstApp();
 		~FirstApp();
 
@@ -26,6 +30,8 @@ namespace nEngine {
 		FirstApp& operator= (const FirstApp&) = delete;
 
 		void run();
+
+		static void keyCallbacks(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	private:
 		Engine::Window window{ WIDTH, HEIGHT, "nEngine"};
@@ -37,6 +43,7 @@ namespace nEngine {
 		ECS::Manager ecsManager{};
 
 		std::vector<std::future<void>> futures;
+
 
 		void loadGameEntities();
 		void loadLineEntities(const int count);

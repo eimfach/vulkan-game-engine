@@ -63,10 +63,12 @@ namespace nEngine::Utils {
 		#endif
 	}
 
-	void write_save_state(ECS::Manager& manager) {
+	std::optional<std::filesystem::path> write_save_state(ECS::Manager& manager) {
 		if (auto path = get_save_dir()) {
 			std::filesystem::create_directories(path.value());
-			std::ofstream file{ path.value() / "save.ne", std::ios::binary | std::ios::out };
+			std::string filename = "save" + Settings::SAVEGAME_EXT;
+			std::filesystem::path savestate = path.value() / filename;
+			std::ofstream file{ savestate, std::ios::binary | std::ios::out };
 
 			size_t size{};
 
@@ -74,18 +76,52 @@ namespace nEngine::Utils {
 			size = vc.size();
 			file.write(reinterpret_cast<const char*>(&size), sizeof(size));
 			for (ECS::Visibility v : vc) {
-				file.write(reinterpret_cast<const char*>(&v), sizeof(ECS::Visibility));
+				file.write(reinterpret_cast<const char*>(&v), sizeof(v));
 			}
 
 			auto& vt = manager.getComponents<ECS::Transform>();
 			size = vt.size();
 			file.write(reinterpret_cast<const char*>(&size), sizeof(size));
 			for (ECS::Transform t : vt) {
-				file.write(reinterpret_cast<const char*>(&t), sizeof(ECS::Transform));
+				file.write(reinterpret_cast<const char*>(&t), sizeof(t));
 			}
 
 			file.close();
+
+			return savestate;
 		}
+
+		return {};
+	}
+
+	std::optional<std::filesystem::path> load_save_state(ECS::Manager& manager) {
+		if (auto path = get_save_dir()) {
+			std::string filename = "save" + Settings::SAVEGAME_EXT;
+			std::filesystem::path savestate = path.value() / filename;
+			std::ifstream file{ savestate, std::ios::binary | std::ios::in};
+
+			size_t vector_size{};
+			file.read(reinterpret_cast<char*>(&vector_size), sizeof(vector_size));
+			auto& vc = manager.getComponents<ECS::Visibility>();
+			for (size_t i = 0; i < vector_size; i++) {
+				ECS::Visibility v{};
+				file.read(reinterpret_cast<char*>(&v), sizeof(v));
+				vc[i] = v;
+			}
+
+			vector_size = 0;
+			file.read(reinterpret_cast<char*>(&vector_size), sizeof(vector_size));
+			auto& vt = manager.getComponents<ECS::Transform>();
+			for (size_t i = 0; i < vector_size; i++) {
+				ECS::Transform t{};
+				file.read(reinterpret_cast<char*>(&t), sizeof(t));
+				vt[i] = t;
+			}
+
+			return savestate;
+		}
+		
+		return {};
 	}
 
 	Timer::Timer(std::string ref) : reference{ref} {

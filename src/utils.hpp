@@ -27,7 +27,8 @@ namespace nEngine::Utils {
 	std::vector<char> read_file(const std::string& filepath);
 	ECS::Transform rand_transform();
 	std::optional<std::filesystem::path> get_save_dir();
-	void write_save_state(ECS::Manager& manager);
+	std::optional<std::filesystem::path> write_save_state(ECS::Manager& manager);
+	std::optional<std::filesystem::path> load_save_state(ECS::Manager& manager);
 
 	class Timer {
 	public:

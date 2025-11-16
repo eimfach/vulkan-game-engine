@@ -5,7 +5,7 @@
 
 namespace nEngine::ECS {
 
-	void AABB::calcuate_min_max(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
+	void AABB::calcuateMinMax(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
 		min = glm::vec3(FLT_MAX);
 		max = glm::vec3(-FLT_MAX);
 
@@ -58,7 +58,7 @@ namespace nEngine::ECS {
 	}
 	AABB::AABB(Engine::Device& device, const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
 
-		calcuate_min_max(verticies, transform);
+		calcuateMinMax(verticies, transform);
 
 		return;
 		
@@ -114,7 +114,7 @@ namespace nEngine::ECS {
 	}
 
 	AABB::AABB(const std::vector<Engine::VertexBase>& verticies, const glm::mat4& transform) {
-		calcuate_min_max(verticies, transform);
+		calcuateMinMax(verticies, transform);
 	}
 
 	bool AABB::intersects(const AABB& aabb) const {

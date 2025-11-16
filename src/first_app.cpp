@@ -41,6 +41,8 @@ namespace nEngine {
 	static std::mutex Mutex;
 
 	FirstApp::FirstApp() {
+		glfwSetWindowUserPointer(window.getGLFWwindow(), this);
+		auto a = glfwSetKeyCallback(window.getGLFWwindow(), keyCallbacks);
 		loadGameEntities();
 	}
 
@@ -120,12 +122,27 @@ namespace nEngine {
 				renderer.endFrame();
 
 			}
-
 		}
 
 		renderer.deviceWaitIdle();
 	}
 
+	void FirstApp::keyCallbacks(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		FirstApp* app = static_cast<FirstApp*>(glfwGetWindowUserPointer(window));
+		if (app->ecsManager.sync_in_progress) {
+			return;
+		}
+
+		if (key == app->keys.saveGame && action == GLFW_PRESS) {
+			auto state = Utils::write_save_state(app->ecsManager);
+			std::cout << "Saving game: " << state.value_or("failed") << "\n";
+		} 
+		else if (key == app->keys.loadGame && action == GLFW_PRESS) {
+			auto state = Utils::load_save_state(app->ecsManager);
+			std::cout << "Loading game: " << state.value_or("failed") << "\n";
+		}
+
+	}
 
 	static ECS::Entity CreateStaticMeshEntity(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform) {
 		auto& model = Engine::VertexModel::createModelFromFile(device, modelpath);
@@ -152,12 +169,6 @@ namespace nEngine {
 		for (size_t i = 0; i < count; i++) {
 			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::rand_transform()), groups);
 		}
-
-		if (auto p = Utils::get_save_dir()) {
-			std::cout << "Savegames directory: " << p.value().string() << "\n";
-		}
-
-		Utils::write_save_state(manager);
 	}
 
 	void FirstApp::loadGameEntities() {
