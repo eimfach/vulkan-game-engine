@@ -20,7 +20,6 @@ namespace nEngine {
 		static constexpr int HEIGHT = 768;
 
 		Settings::KeyMappings keys{};
-		bool loadingOrSavingGame{ false };
 
 		FirstApp();
 		~FirstApp();

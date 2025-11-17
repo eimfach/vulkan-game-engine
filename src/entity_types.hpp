@@ -37,15 +37,15 @@ namespace nEngine::ECS {
 	};
 
 	struct [[nodiscard]] Visibility {
-		bool visible{ true };
+		bool visible;
 	};
 
 	struct RenderLines {};
 
 	struct [[nodiscard]] Transform {
-		glm::vec3 translation{}; // position offset
-		glm::vec3 scale{ 1.f, 1.f, 1.f };
-		glm::vec3 rotation{};
+		glm::vec3 translation; // position offset
+		glm::vec3 scale;
+		glm::vec3 rotation;
 
 		// Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
 		// Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)

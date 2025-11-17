@@ -33,7 +33,7 @@ namespace nEngine::Utils {
 		float x = float_distribution(generator);
 		float y = float_distribution(generator);
 		float z = float_distribution(generator);
-		ECS::Transform t{};
+		ECS::Transform t{ {}, { 1.f, 1.f, 1.f }, {} };
 		t.translation = { x, y, z };
 		return t;
 	}
@@ -63,30 +63,26 @@ namespace nEngine::Utils {
 		#endif
 	}
 
-	std::optional<std::filesystem::path> write_save_state(ECS::Manager& manager) {
+	std::optional<std::filesystem::path> write_save_state(ECS::Manager& manager, std::string& name) {
 		if (auto path = get_save_dir()) {
 			std::filesystem::create_directories(path.value());
-			std::string filename = "save" + Settings::SAVEGAME_EXT;
+			std::string filename = name + Settings::SAVEGAME_EXT;
 			std::filesystem::path savestate = path.value() / filename;
+
+			std::vector<char> file_copy = read_file(savestate.string());
 			std::ofstream file{ savestate, std::ios::binary | std::ios::out };
 
-			size_t size{};
-
-			auto& vc = manager.getComponents<ECS::Visibility>();
-			size = vc.size();
-			file.write(reinterpret_cast<const char*>(&size), sizeof(size));
-			for (ECS::Visibility v : vc) {
-				file.write(reinterpret_cast<const char*>(&v), sizeof(v));
+			//TODO: write OS type flag and savestate compat version
+			try {
+				serialize_collected_pods_guarded(manager.getComponents<ECS::Visibility>(), file);
+				serialize_collected_pods_guarded(manager.getComponents<ECS::Transform>(), file);
+				file.close();
 			}
-
-			auto& vt = manager.getComponents<ECS::Transform>();
-			size = vt.size();
-			file.write(reinterpret_cast<const char*>(&size), sizeof(size));
-			for (ECS::Transform t : vt) {
-				file.write(reinterpret_cast<const char*>(&t), sizeof(t));
+			catch (const std::exception& e) {
+				file.close();
+				std::ofstream file_rollback{ savestate, std::ios::binary | std::ios::out };
+				file_rollback.write(file_copy.data(), file_copy.size() * sizeof(char));
 			}
-
-			file.close();
 
 			return savestate;
 		}
@@ -94,34 +90,35 @@ namespace nEngine::Utils {
 		return {};
 	}
 
-	std::optional<std::filesystem::path> load_save_state(ECS::Manager& manager) {
+	std::optional<std::filesystem::path> load_save_state(ECS::Manager& manager, std::string& name) {
 		if (auto path = get_save_dir()) {
-			std::string filename = "save" + Settings::SAVEGAME_EXT;
+			std::string filename = name + Settings::SAVEGAME_EXT;
 			std::filesystem::path savestate = path.value() / filename;
 			std::ifstream file{ savestate, std::ios::binary | std::ios::in};
 
-			size_t vector_size{};
-			file.read(reinterpret_cast<char*>(&vector_size), sizeof(vector_size));
-			auto& vc = manager.getComponents<ECS::Visibility>();
-			for (size_t i = 0; i < vector_size; i++) {
-				ECS::Visibility v{};
-				file.read(reinterpret_cast<char*>(&v), sizeof(v));
-				vc[i] = v;
+			try {
+				deserialize_collected_pods_guarded(manager.getComponents<ECS::Visibility>(), file);
+				deserialize_collected_pods_guarded(manager.getComponents<ECS::Transform>(), file);
 			}
-
-			vector_size = 0;
-			file.read(reinterpret_cast<char*>(&vector_size), sizeof(vector_size));
-			auto& vt = manager.getComponents<ECS::Transform>();
-			for (size_t i = 0; i < vector_size; i++) {
-				ECS::Transform t{};
-				file.read(reinterpret_cast<char*>(&t), sizeof(t));
-				vt[i] = t;
+			catch (const std::exception& e) {
+				std::cout << "Error loading save state";
 			}
 
 			return savestate;
 		}
 		
 		return {};
+	}
+
+	void _assert(bool assertation, std::string&& fail_message) {
+		#ifndef NDEBUG
+		using namespace std::string_literals;
+
+		if (!assertation) {
+			std::cout << "Debug Assertion Abort: "s << fail_message << "\n";
+			std::abort();
+		}
+		#endif
 	}
 
 	Timer::Timer(std::string ref) : reference{ref} {

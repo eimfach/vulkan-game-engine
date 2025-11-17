@@ -42,7 +42,7 @@ namespace nEngine {
 
 	FirstApp::FirstApp() {
 		glfwSetWindowUserPointer(window.getGLFWwindow(), this);
-		auto a = glfwSetKeyCallback(window.getGLFWwindow(), keyCallbacks);
+		glfwSetKeyCallback(window.getGLFWwindow(), keyCallbacks);
 		loadGameEntities();
 	}
 
@@ -129,23 +129,25 @@ namespace nEngine {
 
 	void FirstApp::keyCallbacks(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		FirstApp* app = static_cast<FirstApp*>(glfwGetWindowUserPointer(window));
-		if (app->ecsManager.sync_in_progress) {
+		if (app->ecsManager.syncInProgress) {
 			return;
 		}
 
 		if (key == app->keys.saveGame && action == GLFW_PRESS) {
-			auto state = Utils::write_save_state(app->ecsManager);
+			std::string filename = "save";
+			auto state = Utils::write_save_state(app->ecsManager, filename);
 			std::cout << "Saving game: " << state.value_or("failed") << "\n";
 		} 
 		else if (key == app->keys.loadGame && action == GLFW_PRESS) {
-			auto state = Utils::load_save_state(app->ecsManager);
+			std::string filename = "save";
+			auto state = Utils::load_save_state(app->ecsManager, filename);
 			std::cout << "Loading game: " << state.value_or("failed") << "\n";
 		}
 
 	}
 
 	static ECS::Entity CreateStaticMeshEntity(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform) {
-		auto& model = Engine::VertexModel::createModelFromFile(device, modelpath);
+		auto& model = Engine::VertexModel::createModelFromFile(device, { modelpath });
 
 		ECS::Identification id{ name };
 		ECS::Mesh mesh{ model.first };
@@ -158,7 +160,7 @@ namespace nEngine {
 		manager.addComponent(entity, mesh);
 		manager.addComponent(entity, aabb);
 		manager.addComponent(entity, transform);
-		manager.addComponent(entity, ECS::Visibility{});
+		manager.addComponent(entity, ECS::Visibility{ true });
 		return entity;
 	}
 
@@ -167,7 +169,7 @@ namespace nEngine {
 
 		std::vector<ECS::Groups> groups{ ECS::Groups::simple_render };
 		for (size_t i = 0; i < count; i++) {
-			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase", "models/flat_vase.obj", Utils::rand_transform()), groups);
+			manager.commit(CreateStaticMeshEntity(manager, device, "flat_vase"s, "models/flat_vase.obj"s, Utils::rand_transform()), groups);
 		}
 	}
 
@@ -210,7 +212,7 @@ namespace nEngine {
 
 	void FirstApp::loadLineEntities(const int count) {
 		Utils::Timer timer{ "FirstApp::loadLineEntities" };
-		auto line_model = Engine::VertexModel::createModelFromFile(device, "models/quad.obj");
+		auto line_model = Engine::VertexModel::createModelFromFile(device, { "models/quad.obj"s });
 
 		std::vector<ECS::Groups> groups{ ECS::Groups::line_render };
 		for (int i = 0; i < count; i++) {
@@ -230,7 +232,7 @@ namespace nEngine {
 			ecsManager.addComponent(entity, mesh);
 			ecsManager.addComponent(entity, aabb);
 			ecsManager.addComponent(entity, transform);
-			ecsManager.addComponent(entity, ECS::Visibility{});
+			ecsManager.addComponent(entity, ECS::Visibility{ true });
 			ecsManager.addComponent(entity, color);
 			ecsManager.commit(entity, groups);
 			ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
@@ -270,13 +272,13 @@ namespace nEngine {
 	void FirstApp::loadStaticObjects() {
 		Utils::Timer timer{ "FirstApp::loadStaticObjects" };
 		std::vector<ECS::Groups> groups{ ECS::Groups::simple_render };
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }), groups);
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "flat_vase", "models/flat_vase.obj", ECS::Transform{ { -.1f, .5f, 0.f } , { 3.f, 1.5f, 3.f }, {} }), groups);
 		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f } }), groups);
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase", "models/smooth_vase.obj", ECS::Transform{ { .1f, .5f, 0.f } , { 3.f, 1.5f, 3.f }, {} }), groups);
 		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f } }), groups);
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "smooth_vase2", "models/smooth_vase.obj", ECS::Transform{ { -1.f, -.5f, 0.f } , { 1.f, 1.1f, 1.f }, {} }), groups);
 		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
-		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f } }), groups);
+		ecsManager.commit(CreateStaticMeshEntity(ecsManager, device, "floor", "models/quad.obj", ECS::Transform{ { .5f, .7f, 0.f } , { 3.f, 1.5f, 3.f }, {} }), groups);
 		ecsManager.syncBuffers(ECS::COMPONENTS_INDEX_SEQUENCE);
 	}
 

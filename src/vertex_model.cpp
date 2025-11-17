@@ -1,5 +1,4 @@
 #include "vertex_model.hpp"
-
 #include "utils.hpp"
 
 // libs
@@ -8,15 +7,11 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
-// TODO: need better solution
-#ifndef ENGINE_DIR
-#define ENGINE_DIR "./"
-#endif
-
 // std
 #include <cassert>
 #include <stdexcept>
 #include <unordered_map>
+#include <iostream>
 
 namespace std {
 	template<>
@@ -36,18 +31,28 @@ namespace nEngine::Engine {
 	}
 	VertexModel::~VertexModel() {}
 
-	std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder>& VertexModel::createModelFromFile(Device& device, const std::string& filepath) {
+	std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder>& VertexModel::createModelFromFile(Device& device, const std::filesystem::path& filepath) {
+		using namespace std::string_literals;
+
+		std::string key = filepath.string();
 		// TODO: same ref to shared model from cache crashes in multiple threads
 		static std::unordered_map<std::string, std::pair<std::shared_ptr<VertexModel>, VertexModel::Builder>> cache{};
-		if (cache.count(filepath) > 0) {
-			return cache[filepath];
+		if (cache.count(key) > 0) {
+			return cache[key];
 		}
 
 		Builder builder{};
-		builder.loadModel(ENGINE_DIR + filepath);
-		cache.emplace(filepath, std::make_pair(std::make_shared<VertexModel>(device, builder), builder));
 
-		return cache[filepath];
+		std::filesystem::path model_path{ std::filesystem::current_path() / filepath };
+
+		if (!std::filesystem::exists(model_path)) {
+			throw std::runtime_error("File does not exist: " + model_path.string());
+		}
+
+		builder.loadModel(model_path.string());
+		cache.emplace(key, std::make_pair(std::make_shared<VertexModel>(device, builder), builder));
+
+		return cache[key];
 	}
 
 	void VertexModel::createVertexBuffers(const std::vector<VertexBase>& verticies) {
