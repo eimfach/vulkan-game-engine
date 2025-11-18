@@ -15,6 +15,9 @@
 #include <type_traits>
 
 namespace nEngine::Utils {
+
+	using byte = char;
+
 	static std::default_random_engine generator{};
 	static std::uniform_real_distribution<float> float_distribution{ -10.f, 10.f };
 
@@ -27,7 +30,7 @@ namespace nEngine::Utils {
 
 	void _assert(bool assertation, std::string&& fail_message);
 
-	std::vector<char> read_file(const std::string& filepath);
+	std::vector<byte> read_file(const std::string& filepath);
 	ECS::Transform rand_transform();
 	std::optional<std::filesystem::path> get_save_dir();
 	std::optional<std::filesystem::path> write_save_state(ECS::Manager& manager, std::string& filename);
@@ -41,11 +44,11 @@ namespace nEngine::Utils {
 		size_t vector_size{};
 
 		vector_size = vec.size();
-		if (!file.write(reinterpret_cast<const char*>(&vector_size), sizeof(vector_size))) {
+		if (!file.write(reinterpret_cast<const byte*>(&vector_size), sizeof(vector_size))) {
 			throw std::runtime_error("Error writing Savestate: Failed to write to file.");
 		}
 
-		if (!file.write(reinterpret_cast<const char*>(vec.data()), vector_size * sizeof(T))) {
+		if (!file.write(reinterpret_cast<const byte*>(vec.data()), vector_size * sizeof(T))) {
 			throw std::runtime_error("Error writing Savestate: Failed to write to file.");
 		}
 	}
@@ -56,7 +59,7 @@ namespace nEngine::Utils {
 		static_assert(std::is_standard_layout_v<T> == true);
 
 		size_t vector_size{};
-		if (!file.read(reinterpret_cast<char*>(&vector_size), sizeof(vector_size))) {
+		if (!file.read(reinterpret_cast<byte*>(&vector_size), sizeof(vector_size))) {
 			throw std::runtime_error("Error loading Savestate: Corrupted file.");
 		}
 
@@ -64,8 +67,8 @@ namespace nEngine::Utils {
 			throw std::runtime_error("Error loading Savestate: State invalid.");
 		}
 
-		if (!file.read(reinterpret_cast<char*>(vec.data()), vector_size * sizeof(T))) {
-			throw std::runtime_error("Error loading Savestate: State invalid.");
+		if (!file.read(reinterpret_cast<byte*>(vec.data()), vector_size * sizeof(T))) {
+			throw std::runtime_error("Error loading Savestate: Corrupted file.");
 		}
 	}
 

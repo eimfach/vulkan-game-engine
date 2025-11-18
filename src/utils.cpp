@@ -16,14 +16,17 @@
 #include <cstdlib>
 
 namespace nEngine::Utils {
-	std::vector<char> read_file(const std::string& filepath) {
+
+	using namespace std::string_literals;
+
+	std::vector<byte> read_file(const std::string& filepath) {
 		std::ifstream file{ filepath, std::ios::binary };
 
 		if (!file.is_open()) {
 			throw std::runtime_error("Utils::read_file: Failed to open file: " + filepath);
 		}
 
-		std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
+		std::vector<byte> buffer(std::istreambuf_iterator<byte>(file), {});
 
 		file.close();
 		return buffer;
@@ -58,7 +61,7 @@ namespace nEngine::Utils {
 		const char* homedir = pw->pw_dir;
 
 		std::filesystem::path p{ homedir };
-		p = p / "." << Settings::SAVEGAME_FOLDER / "saves";
+		p = p / ("."s + Settings::SAVEGAME_FOLDER) / "saves";
 		return p;
 		#endif
 	}
@@ -67,12 +70,17 @@ namespace nEngine::Utils {
 		if (auto path = get_save_dir()) {
 			std::filesystem::create_directories(path.value());
 			std::string filename = name + Settings::SAVEGAME_EXT;
-			std::filesystem::path savestate = path.value() / filename;
+			std::filesystem::path save_state_path = path.value() / filename;
 
-			std::vector<char> file_copy = read_file(savestate.string());
-			std::ofstream file{ savestate, std::ios::binary | std::ios::out };
+			std::vector<byte> file_copy{};
+			if (std::filesystem::exists(save_state_path)) {
+				file_copy = read_file(save_state_path.string());
+			}
+
+			std::ofstream file{ save_state_path, std::ios::binary | std::ios::out };
 
 			//TODO: write OS type flag and savestate compat version
+			//TODO: Compress with LZ4
 			try {
 				serialize_collected_pods_guarded(manager.getComponents<ECS::Visibility>(), file);
 				serialize_collected_pods_guarded(manager.getComponents<ECS::Transform>(), file);
@@ -80,11 +88,17 @@ namespace nEngine::Utils {
 			}
 			catch (const std::exception& e) {
 				file.close();
-				std::ofstream file_rollback{ savestate, std::ios::binary | std::ios::out };
-				file_rollback.write(file_copy.data(), file_copy.size() * sizeof(char));
+				std::cerr << e.what() << " while writing save data, rolling back. \n";
+
+				if (file_copy.size() > 0) {
+					std::ofstream file_rollback{ save_state_path, std::ios::binary | std::ios::out };
+					file_rollback.write(file_copy.data(), file_copy.size() * sizeof(byte));
+				}
+
+				return {};
 			}
 
-			return savestate;
+			return save_state_path;
 		}
 
 		return {};
@@ -93,18 +107,24 @@ namespace nEngine::Utils {
 	std::optional<std::filesystem::path> load_save_state(ECS::Manager& manager, std::string& name) {
 		if (auto path = get_save_dir()) {
 			std::string filename = name + Settings::SAVEGAME_EXT;
-			std::filesystem::path savestate = path.value() / filename;
-			std::ifstream file{ savestate, std::ios::binary | std::ios::in};
+			std::filesystem::path save_state_path = path.value() / filename;
+
+			if (!std::filesystem::exists(save_state_path)) {
+				return {};
+			}
+
+			std::ifstream file{ save_state_path, std::ios::binary | std::ios::in};
 
 			try {
 				deserialize_collected_pods_guarded(manager.getComponents<ECS::Visibility>(), file);
 				deserialize_collected_pods_guarded(manager.getComponents<ECS::Transform>(), file);
 			}
 			catch (const std::exception& e) {
-				std::cout << "Error loading save state";
+				std::cerr << e.what() << "\n";
+				return {};
 			}
 
-			return savestate;
+			return save_state_path;
 		}
 		
 		return {};

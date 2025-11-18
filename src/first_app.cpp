@@ -134,14 +134,14 @@ namespace nEngine {
 		}
 
 		if (key == app->keys.saveGame && action == GLFW_PRESS) {
-			std::string filename = "save";
+			std::string filename = "save0";
 			auto state = Utils::write_save_state(app->ecsManager, filename);
-			std::cout << "Saving game: " << state.value_or("failed") << "\n";
+			std::cout << "Saving game: " << filename << " " << state.value_or("failed") << "\n";
 		} 
 		else if (key == app->keys.loadGame && action == GLFW_PRESS) {
-			std::string filename = "save";
+			std::string filename = "save0";
 			auto state = Utils::load_save_state(app->ecsManager, filename);
-			std::cout << "Loading game: " << state.value_or("failed") << "\n";
+			std::cout << "Loading game: " << filename << " " << state.value_or("failed") << "\n";
 		}
 
 	}
