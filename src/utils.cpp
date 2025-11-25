@@ -116,8 +116,13 @@ namespace nEngine::Utils {
 			std::ifstream file{ save_state_path, std::ios::binary | std::ios::in};
 
 			try {
-				deserialize_collected_pods_guarded(manager.getComponents<ECS::Visibility>(), file);
-				deserialize_collected_pods_guarded(manager.getComponents<ECS::Transform>(), file);
+				//TODO: Make copies of the component vectors, which are overwritten with the binary data, 
+				// if nothing throws, reassign them to the ecs manager at the end
+				const std::vector<ECS::Visibility>& v1 = deserialize_collected_pods_guarded(manager.getComponents<ECS::Visibility>(), file);
+				const std::vector<ECS::Transform>& v2 = deserialize_collected_pods_guarded(manager.getComponents<ECS::Transform>(), file);
+
+				manager.loadIntoBuffer(v1);
+				manager.loadIntoBuffer(v2);
 			}
 			catch (const std::exception& e) {
 				std::cerr << e.what() << "\n";
@@ -135,7 +140,7 @@ namespace nEngine::Utils {
 		using namespace std::string_literals;
 
 		if (!assertation) {
-			std::cout << "Debug Assertion Abort: "s << fail_message << "\n";
+			std::cerr << "Debug Assertion Abort: "s << fail_message << "\n";
 			std::abort();
 		}
 		#endif

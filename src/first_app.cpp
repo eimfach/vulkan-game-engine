@@ -141,12 +141,13 @@ namespace nEngine {
 		else if (key == app->keys.loadGame && action == GLFW_PRESS) {
 			std::string filename = "save0";
 			auto state = Utils::load_save_state(app->ecsManager, filename);
+			//app->saveStateFutures.push_back(std::async(std::launch::async, Utils::load_save_state, std::ref(app->ecsManager), filename));
 			std::cout << "Loading game: " << filename << " " << state.value_or("failed") << "\n";
 		}
 
 	}
 
-	static ECS::Entity CreateStaticMeshEntity(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform) {
+	static ECS::Entity CreateStaticMeshEntity(ECS::Manager& manager, Engine::Device& device, std::string&& name, std::string&& modelpath, ECS::Transform transform) {
 		auto& model = Engine::VertexModel::createModelFromFile(device, { modelpath });
 
 		ECS::Identification id{ name };
@@ -164,7 +165,7 @@ namespace nEngine {
 		return entity;
 	}
 
-	static void LoadRandomObjects(ECS::Manager& manager, Engine::Device& device, std::string name, std::string modelpath, ECS::Transform transform, int count) {
+	static void LoadRandomObjects(ECS::Manager& manager, Engine::Device& device, std::string&& name, std::string&& modelpath, ECS::Transform transform, int count) {
 		Utils::Timer timer{ "FirstApp::LoadRandomObjects" };
 
 		std::vector<ECS::Groups> groups{ ECS::Groups::simple_render };

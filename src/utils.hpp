@@ -44,7 +44,7 @@ namespace nEngine::Utils {
 		size_t vector_size{};
 
 		vector_size = vec.size();
-		if (!file.write(reinterpret_cast<const byte*>(&vector_size), sizeof(vector_size))) {
+		if (!file.write(reinterpret_cast<const byte*>(&vector_size), sizeof(size_t))) {
 			throw std::runtime_error("Error writing Savestate: Failed to write to file.");
 		}
 
@@ -54,7 +54,7 @@ namespace nEngine::Utils {
 	}
 
 	template <typename T>
-	void deserialize_collected_pods_guarded(std::vector<T>& vec, std::ifstream& file) {
+	std::vector<T> deserialize_collected_pods_guarded(std::vector<T> vec, std::ifstream& file) {
 		static_assert(std::is_trivial_v<T> == true);
 		static_assert(std::is_standard_layout_v<T> == true);
 
@@ -67,9 +67,15 @@ namespace nEngine::Utils {
 			throw std::runtime_error("Error loading Savestate: State invalid.");
 		}
 
-		if (!file.read(reinterpret_cast<byte*>(vec.data()), vector_size * sizeof(T))) {
-			throw std::runtime_error("Error loading Savestate: Corrupted file.");
+		for (size_t i = 0; i < vector_size; i++) {
+			T t{};
+			if (!file.read(reinterpret_cast<byte*>(&t), sizeof(T))) {
+				throw std::runtime_error("Error loading Savestate: Corrupted file.");
+			}
+			vec.at(i) = t;
 		}
+
+		return vec;
 	}
 
 	class Timer {

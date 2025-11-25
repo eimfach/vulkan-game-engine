@@ -5,12 +5,21 @@
 #include <queue>
 #include <type_traits>
 #include <vector>
+#include <stdexcept>
 
 namespace nEngine {
+
+	enum class SyncMode {
+		create,
+		replace,
+		end
+	};
 
 	template <class VectorT, class BufferT = VectorT>
 	class BufferedVector {
 	public:
+		SyncMode mode{ SyncMode::create };
+
 		BufferedVector() {}
 		~BufferedVector() {}
 		BufferedVector(BufferedVector&& other) = delete;
@@ -69,7 +78,29 @@ namespace nEngine {
 
 	template<class VectorT, class BufferT>
 	void BufferedVector<VectorT, BufferT>::_sync() {
-		data.push_back(std::move(buffer.front()));
+		static size_t replacer_index = 0;
+
+		switch (mode) {
+		case SyncMode::create:
+			data.push_back(std::move(buffer.front()));
+			break;
+		case SyncMode::replace:
+			data.at(replacer_index) = buffer.front();
+
+			if (replacer_index == data.size() - 1) {
+				replacer_index = 0;
+				mode = SyncMode::end;
+			}
+			else {
+				replacer_index += 1;
+			}
+			break;
+
+		case SyncMode::end:
+			throw std::runtime_error("Tried to sync BufferedVector in an ended state");
+			break;
+		}
+		
 		buffer.pop();
 	}
 

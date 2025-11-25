@@ -1,4 +1,3 @@
-#pragma once
 /*
  * Encapsulates a vulkan buffer
  *

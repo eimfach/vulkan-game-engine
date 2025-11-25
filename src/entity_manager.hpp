@@ -101,6 +101,16 @@ namespace nEngine::ECS {
 		}
 
 		template<typename T>
+		void loadIntoBuffer(const std::vector<T>& vec) {
+			syncInProgress = true;
+			BufferedVector<T>& buffer = std::get<BufferedVector<T>>(components);
+			buffer.mode = SyncMode::replace;
+			for (T component : vec) {
+				buffer.pushBuffer(component);
+			}
+		}
+
+		template<typename T>
 		T& getEntityComponent(EntityId id) {
 			assert(id < entities.getWriteable().size() && "ECS::Manager::getEntityComponent Out of bounds access to entities vector");
 			Entity& entity = entities.getWriteable()[id];

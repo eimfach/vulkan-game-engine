@@ -19,8 +19,8 @@ namespace nEngine::Engine {
 		VkPipelineMultisampleStateCreateInfo multisampleInfo;
 		VkPipelineColorBlendAttachmentState colorBlendAttachment;
 		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-		VkPipelineLayout pipelineLayout = nullptr;
-		VkRenderPass renderPass = nullptr;
+		VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+		VkRenderPass renderPass = VK_NULL_HANDLE;
 
 		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 		std::vector<VkDynamicState> dynamicStateEnables;

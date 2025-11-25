@@ -42,7 +42,7 @@ namespace nEngine {
 		ECS::Manager ecsManager{};
 
 		std::vector<std::future<void>> futures;
-
+		std::vector<std::future<std::optional<std::filesystem::path>>> saveStateFutures;
 
 		void loadGameEntities();
 		void loadLineEntities(const int count);
