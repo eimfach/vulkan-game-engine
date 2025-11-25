@@ -45,6 +45,9 @@ def config(c, mode=Mode.RELEASE, forceninja=False):
     source_cc = os.path.join(mode_dir, "compile_commands.json")
     target_cc = os.path.join(".", "compile_commands.json")
     
+    if platform.system() == "Windows" and not forceninja:
+        return
+        
     if os.path.lexists(target_cc):
         try:
             os.remove(target_cc)
@@ -52,22 +55,15 @@ def config(c, mode=Mode.RELEASE, forceninja=False):
             print("Warning: Could not remove compile_commands.json. LSP might not work as expected. \n", ose)
     
     # Symlinks on Windows often require admin privs, so we fallback to copy if link fails
-    
-    if platform.system() == "Windows":
-        return
-        
     try:
         os.symlink(source_cc, target_cc)
         print(f"Symlinked {target_cc}")
     except OSError:
         shutil.copy(source_cc, target_cc)
         print(f"Copied {target_cc} (Symlink failed or not supported)")
-    except PermissionError:
-        shutil.copy(source_cc, target_cc)
-        print("Permission Warning: Copied {target_cc} (Symlink failed or not supported. \n")
             
 @task(help = {"mode": "Compile the preconfigured build for given mode."})
-def build(c, mode=Mode.RELEASE, forceninja=False):):
+def build(c, mode=Mode.RELEASE, forceninja=False):
     """
     Builds the project.
     """
@@ -76,7 +72,7 @@ def build(c, mode=Mode.RELEASE, forceninja=False):):
     if not os.path.exists(mode_dir):
         print(f"build directory for mode: \"{mode}\" does not exist, configure the project first (invoke config --mode [Release|Debug]).")
         return
-    print(mode_dir)
+
     flags = ""
     if platform.system() == "Windows":
         flags = f"--config {mode}"
