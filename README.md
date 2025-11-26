@@ -2,9 +2,11 @@
 
 This is a  C++ learning project. It is based on [Little Vulkan Engine](https://github.com/blurrypiano/littleVulkanEngine).
 
-<img src="(./screenshots/Recording_2025-11-26_175151.gif" alt="Video" width="1010" height="756" loop=infinite>
+<img src="(./screenshots/Recording_2025-11-26_175151.gif" alt="Video" width="1010" height="756" loop=infinite />
 
 ![Screenshot](./screenshots/Screenshot_2025-11-26_173707.png)
+
+![Video](./screenshots/Recording_2025-11-26_174259.gif)
 
 I implemented:
 - Entity Component System
