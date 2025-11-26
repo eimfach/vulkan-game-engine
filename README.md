@@ -2,11 +2,17 @@
 
 This is a  C++ learning project. It is based on [Little Vulkan Engine](https://github.com/blurrypiano/littleVulkanEngine).
 
+![Screenshot](./screenshots/Screenshot_2025-11-26_173707.png)
+
+![Video](./screenshots/Recording_2025-11-26_174259.gif)
+
 I implemented:
 - Entity Component System
 - Loading Textures
 - AABB
 - Drawing Lines
+- Parallel loading of assets (separate thread)
+- Saving and Loading the game (F5,F7) as binary data
 - Integrate GLM
 - Integrate ImGui
 - Integrate FastGLTF
